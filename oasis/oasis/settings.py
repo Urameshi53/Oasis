@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from oscar.defaults import *
+import oscar
+#import environ
 
 #env = os.environ.Env()
 
@@ -81,9 +83,22 @@ INSTALLED_APPS = [
     'treebeard',
     'sorl.thumbnail',   # Default thumbnail backend, can be replaced
     'django_tables2',
+
+    # Django apps that the sandbox depends on
+    'django.contrib.sitemaps',
 ]
 
 SITE_ID = 1
+
+
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
+USE_I18N = True
+
+# If you set this to False, Django will not format dates, numbers and
+# calendars according to the current locale
+USE_L10N = True
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -105,15 +120,35 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+
+
+# Path helper
+location = lambda x: os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), x)
+
+#DEBUG = env.bool('DEBUG', default=True)
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+# Woosh settings
+
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-        'URL': 'http://127.0.0.1:8983/solr',
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': location('whoosh_index'),
         'INCLUDE_SPELLING': True,
     },
 }
+'''
 
-location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', x)
+HAYSTACK_CONNECTIONS = {
+   'default': {
+         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+         'URL': 'http://127.0.0.1:8983/solr/sandbox',
+        'ADMIN_URL': 'http://127.0.0.1:8983/solr/admin/cores',
+        'INCLUDE_SPELLING': True,
+    }
+}'''
 
 TEMPLATES = [
     {
@@ -214,3 +249,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 OSCAR_SHOP_NAME = "Oasis"
 OSCAR_SHOP_TAGLINE = "Premium with less cost"
+
+OSCAR_RECENTLY_VIEWED_PRODUCTS = 20
+OSCAR_ALLOW_ANON_CHECKOUT = True
