@@ -407,13 +407,6 @@ OSCAR_THUMBNAIL_PADDING_BORDER_SHADOW_CSS_INSET = 'inset 0 0 0 0 rgba(0,0,0,1)'
 # Oscar's default product image padding border shadow css outset
 OSCAR_THUMBNAIL_PADDING_BORDER_SHADOW_CSS_OUTSET = '0 0 0 0 rgba(0,0,0,1)'
 
-
-try:
-    from settings_local import *
-except ImportError:
-    pass
-
-
 # Momo Settings
 MOMO_SUBSCRIPTION_KEY = "my_momo_subscription_key"
 MOMO_AUTH_STRING = "base64_encoded(api_user: api_key)"
