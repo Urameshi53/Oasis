@@ -15,11 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.apps import apps
-from django.contrib import admin
-from django.urls import path, include
-from django.conf.urls.static import static
+from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
+from django.conf.urls.static import static
+from oasis.payment.views import MomoPaymentDetailsView
+
+
+
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
@@ -29,8 +32,13 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 
+    path('checkout/payment-details/', MomoPaymentDetailsView.as_view(), name='payment-details'),
+
     path('', include(apps.get_app_config('oscar').urls[0])),
-] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
 
 if settings.DEBUG:
+
+    # Server statics and uploaded media
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
