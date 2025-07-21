@@ -94,6 +94,7 @@
         {% endif %}
     </form>
 
+    {{ product_tags }}
     {% if products %}
         <section>
             <div>
@@ -108,7 +109,7 @@
             </div>
         </section>
     {% else %}
-        <p class="nonefound">{% trans "Zero00 products found." %}</p>
+        <p class="nonefound">{% trans "Zero products found." %}</p>
     {% endif %}
 
 {% endblock content %}

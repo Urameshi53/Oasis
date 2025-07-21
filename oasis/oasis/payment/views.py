@@ -1,9 +1,8 @@
-from django.shortcuts import redirect 
+from django.shortcuts import redirect
 from oscar.apps.checkout.views import PaymentDetailsView
 from .momo import request_payment
 
-
-class MomoPaymentDetailsView(PaymentDetailsView):
+class MoMoPaymentDetailsView(PaymentDetailsView):
     def handle_payment(self, order_number, total, **kwargs):
         phone = self.request.POST.get('momo_phone')
         external_id = order_number
@@ -18,16 +17,14 @@ class MomoPaymentDetailsView(PaymentDetailsView):
         )
 
         if status_code != 202:
-            raise Exception(f"Momo payment failed: {response}")
+            raise Exception(f"MoMo payment failed: {response}")
         
         # Store transaction reference in order's source
         self.add_payment_source(
             self.get_payment_source_model()(
-                source_type = self.get_payment_source_type(),
+                source_type=self.get_payment_source_type(),
                 amount_allocated=total.incl_tax,
-                reference=reference_id,
+                reference=reference_id
             )
         )
         self.add_payment_event('Authorised', total.incl_tax)
-
-

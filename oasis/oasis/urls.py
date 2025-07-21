@@ -19,9 +19,7 @@ from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from oasis.payment.views import MomoPaymentDetailsView
-
-
+#from oasis.payment.views import MomoPaymentDetailsView
 
 
 urlpatterns = [
@@ -32,10 +30,18 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 
-    path('checkout/payment-details/', MomoPaymentDetailsView.as_view(), name='payment-details'),
+    #path('checkout/payment-details/', MomoPaymentDetailsView.as_view(), name='payment-details'),
 
     path('', include(apps.get_app_config('oscar').urls[0])),
 ]
+'''
+from oasis.payment.views import MoMoPaymentDetailsView
+
+checkout_patterns = [
+    path('checkout/payment-details/', MoMoPaymentDetailsView.as_view(), name='payment-details'),
+    # other overrides
+]
+'''
 
 if settings.DEBUG:
 

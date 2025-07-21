@@ -18,18 +18,11 @@
 
 {% block payment_details %}
     {% block payment_details_content %}
-        <p>{% trans "This page needs implementing within your project.  You may want to use one of Oscar's payment gateway libraries:" %}</p>
-        <ul>
-            <li><a href="https://github.com/django-oscar/django-oscar-paypal">django-oscar-paypal</a></li>
-            <li><a href="https://github.com/django-oscar/django-oscar-adyen">django-oscar-adyen</a></li>
-            <li><a href="https://github.com/django-oscar/django-oscar-docdata">django-oscar-docdata</a></li>
-            <li><a href="https://github.com/django-oscar/django-oscar-accounts">django-oscar-accounts</a></li>
-        </ul>
-        <a id="view_preview" href="{% url 'checkout:preview' %}" class="btn btn-primary btn-lg">{% trans "Continue" %}</a>
-    
-        <label for="momo_phone">MoMo Phone Number</label>
+        <p>{% trans "Only payment through momo is allowed for now" %}</p>
+        <label for="momo_phone">MoMo Phone Number</label><br>
         <input type="text" name="momo_phone" required />
-
-    
+        <br>
+        <br>
+        <a id="view_preview" href="{% url 'checkout:preview' %}" class="btn btn-primary btn-lg">{% trans "Continue" %}</a>
         {% endblock payment_details_content %}
 {% endblock payment_details %}

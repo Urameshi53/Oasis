@@ -85,6 +85,8 @@ class ProductCategoryView(BaseSearchView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["category"] = self.category
+        context["test"] = 'Test'
+        context["products"] = Product.objects.filter(categories=self.category)
         return context
 
     def get_form_kwargs(self):

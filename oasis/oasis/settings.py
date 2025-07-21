@@ -15,15 +15,13 @@ from oscar.defaults import *
 import os
 import environ
 
-
-
 env = environ.Env()
 
 # Path helper
 location = lambda x: os.path.join(
     os.path.dirname(os.path.realpath(__file__)), x)
 
-DEBUG = env.bool('DEBUG', default=True)
+#DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
@@ -70,6 +68,7 @@ INSTALLED_APPS = [
     'oscar.apps.partner.apps.PartnerConfig',
     'oscar.apps.basket.apps.BasketConfig',
     'oscar.apps.payment.apps.PaymentConfig',
+    #'oasis.payment.apps.PaymentConfig',
     'oscar.apps.offer.apps.OfferConfig',
     'oscar.apps.order.apps.OrderConfig',
     'oscar.apps.customer.apps.CustomerConfig',
@@ -408,7 +407,14 @@ OSCAR_THUMBNAIL_PADDING_BORDER_SHADOW_CSS_INSET = 'inset 0 0 0 0 rgba(0,0,0,1)'
 OSCAR_THUMBNAIL_PADDING_BORDER_SHADOW_CSS_OUTSET = '0 0 0 0 rgba(0,0,0,1)'
 
 # Momo Settings
-MOMO_SUBSCRIPTION_KEY = "my_momo_subscription_key"
+'''
+'''
+MOMO_API_USER = "your_api_user_id"
+MOMO_API_KEY = "your_api_key"
+#MOMO_SUBSCRIPTION_KEY = "your_subscription_key"
+
+MOMO_PRIMARY_KEY = "473dcb5fdf2448cb9c35c992d7946ca3"
+MOMO_SUBSCRIPTION_KEY = "473dcb5fdf2448cb9c35c992d7946ca3"
 MOMO_AUTH_STRING = "base64_encoded(api_user: api_key)"
 
 
