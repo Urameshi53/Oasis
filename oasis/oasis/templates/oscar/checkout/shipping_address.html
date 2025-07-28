@@ -34,7 +34,7 @@
                                             {% endfor %}
                                         {% endblock %}
                                     </address>
-                                    <form action="{% url 'checkout:shipping-method' %}" method="post" id="select_shipping_address_{{ address.id }}" class="mb-0">
+                                    <form action="{% url 'checkout:shipping-address' %}" method="post" id="select_shipping_address_{{ address.id }}" class="mb-0">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="ship_to" />
                                         <input type="hidden" name="address_id" value="{{ address.id }}" />
@@ -42,6 +42,7 @@
                                             <button type="submit" class="btn btn-success btn-large ship-address" data-loading-text="{% trans 'Saving...' %}"><i class="fas fa-check-circle"></i> {% trans "Ship to your default shipping address" %}</button>
                                         {% else %}
                                             <button type="submit" class="btn btn-primary btn-large ship-address" data-loading-text="{% trans 'Saving...' %}">{% trans "Ship to this address" %}</button>
+                                            
                                         {% endif %}
 
                                         <div class="btn-group address-controls">

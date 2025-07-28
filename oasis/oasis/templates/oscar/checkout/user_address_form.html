@@ -17,6 +17,7 @@
 {% block checkout_title %}{% trans "Edit address" %}{% endblock %}
 
 {% block shipping_address %}
+    
     <div class="card card-body bg-light">
         <form id="update_user_address" method="post">
             {% csrf_token %}
@@ -28,28 +29,28 @@
                 </div>
             </div>
         </form>
+    </div>
 
-        <div>
+    <div>
             <button type="button" onclick="getLocation()">Use My Location</button>
-<input type="hidden" id="latitude" name="latitude">
-<input type="hidden" id="longitude" name="longitude">
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
 
-<script>
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      document.getElementById("latitude").value = position.coords.latitude;
-      document.getElementById("longitude").value = position.coords.longitude;
-    }, function(error) {
-      alert("Geolocation failed: " + error.message);
-    });
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-}
-</script>
+            <script>
+            function getLocation() {
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                  document.getElementById("latitude").value = position.coords.latitude;
+                  document.getElementById("longitude").value = position.coords.longitude;
+                }, function(error) {
+                  alert("Geolocation failed: " + error.message);
+                });
+              } else {
+                alert("Geolocation is not supported by this browser.");
+              }
+            }
+            </script>
 
         </div>
-    </div>
     
 {% endblock shipping_address %}

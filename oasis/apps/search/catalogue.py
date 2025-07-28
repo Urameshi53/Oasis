@@ -35,7 +35,7 @@ class CatalogueView(BaseSearchView):
 
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data(*args, **kwargs)
-        ctx["summary"] = _("All asdfproducts")
+        ctx["summary"] = _("All products")
         ctx["products"] = Product.objects.all()
         return ctx
 

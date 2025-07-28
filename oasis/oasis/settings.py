@@ -59,16 +59,20 @@ INSTALLED_APPS = [
 
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
-    'oscar.apps.checkout.apps.CheckoutConfig',
+    #'oscar.apps.checkout.apps.CheckoutConfig',
+    'apps.checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
-    'oscar.apps.shipping.apps.ShippingConfig',
-    'oscar.apps.catalogue.apps.CatalogueConfig',
+    #'oscar.apps.shipping.apps.ShippingConfig',
+    'apps.shipping.apps.ShippingConfig',
+    #'oscar.apps.catalogue.apps.CatalogueConfig',
+    'apps.catalogue.apps.CatalogueConfig',
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
-    'oscar.apps.partner.apps.PartnerConfig',
+    #'oscar.apps.partner.apps.PartnerConfig',
+    'apps.partner.apps.PartnerConfig',
     'oscar.apps.basket.apps.BasketConfig',
-    'oscar.apps.payment.apps.PaymentConfig',
-    #'oasis.payment.apps.PaymentConfig',
+    #'oscar.apps.payment.apps.PaymentConfig',
+    'apps.payment.apps.PaymentConfig',
     'oscar.apps.offer.apps.OfferConfig',
     'oscar.apps.order.apps.OrderConfig',
     'oscar.apps.customer.apps.CustomerConfig',
@@ -422,3 +426,8 @@ import base64
 
 s = "my_api_user: your_api_key"
 print(base64.b64encode(s.encode()).decode())
+
+
+# settings.py
+PAYSTACK_SECRET_KEY = "sk_live_cce8b8031db9486fa923cf3701bc4540893f9a3e"
+PAYSTACK_PUBLIC_KEY = "pk_live_1ee2a9c93d1f34b41a965b1c22c1a4d4e5415ce7"

@@ -1,5 +1,6 @@
 {% extends "oscar/checkout/checkout.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}
     {% trans "Payment details" %} | {{ block.super }}
@@ -18,10 +19,11 @@
 
 {% block payment_details %}
     {% block payment_details_content %}
-        <p>{% trans "Only payment through momo is allowed for now" %}</p>
-        <label for="momo_phone">MoMo Phone Number</label><br>
-        <input type="text" name="momo_phone" required />
-        <br>
+        <img src="{% static 'oasis/img/momo.png' %}" alt="image not found" class="img-thumbnail">         
+        <div class="mb-3">
+            <label for="phone" class="form-label">Momo phone number</label>
+            <input type="phone" class="form-control" id="phone">
+        </div>
         <br>
         <a id="view_preview" href="{% url 'checkout:preview' %}" class="btn btn-primary btn-lg">{% trans "Continue" %}</a>
         {% endblock payment_details_content %}

@@ -21,14 +21,21 @@ from django.conf import settings
 from django.conf.urls.static import static
 #from oasis.payment.views import MomoPaymentDetailsView
 
+from oasis.views import paystack_callback
+
+
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
+
+    path('paystack/callback/', paystack_callback, name='paystack-callback'),
 
     # The Django admin is not officially supported; expect breakage.
     # Nonetheless, it's often useful for debugging.
 
     path('admin/', admin.site.urls),
+    
+    path('payments/', include('payments.urls')),
 
     #path('checkout/payment-details/', MomoPaymentDetailsView.as_view(), name='payment-details'),
 
