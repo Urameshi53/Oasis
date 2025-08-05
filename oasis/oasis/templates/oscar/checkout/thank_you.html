@@ -37,10 +37,11 @@
                 <div class="card card-body bg-light">
                     <h3>{% trans "Address" %}</h3>
                     {% if order.shipping_address %}
-                        <address>
-                            {% for field in order.shipping_address.active_address_fields %}
-                                {{ field }}<br/>
-                            {% endfor %}
+                       <address>
+                            <span><strong>Name:</strong> {{ order.shipping_address.name }}</span>{% if not forloop.first %}<br/>{% endif %}
+                            <span><strong>Hostel:</strong> {{ order.shipping_address.hostel }}</span><br/>
+                            <span><strong>Room No:</strong> {{ order.shipping_address.room_number }}</span><br/>
+                            <span><strong>Location:</strong> {{ order.shipping_address.location }}</span><br/>
                         </address>
 
                         {% if order.shipping_address.phone_number %}

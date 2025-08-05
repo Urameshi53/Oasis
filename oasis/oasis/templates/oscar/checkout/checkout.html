@@ -36,9 +36,10 @@
                             </a>
                         {% endblock %}</h3>
                         <address>
-                            {% for field in shipping_address.active_address_fields %}
-                                {{ field }}<br/>
-                            {% endfor %}
+                            <span><strong>Name:</strong> {{ shipping_address.name }}</span>{% if not forloop.first %}<br/>{% endif %}
+                            <span><strong>Hostel:</strong> {{ shipping_address.hostel }}</span><br/>
+                            <span><strong>Room No:</strong> {{ shipping_address.room_number }}</span><br/>
+                            <span><strong>Location:</strong> {{ shipping_address.location }}</span><br/>
                         </address>
 
                         {% if shipping_address.phone_number %}

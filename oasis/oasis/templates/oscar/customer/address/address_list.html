@@ -20,9 +20,11 @@
                                 <span class="badge badge-info">{% trans 'Default billing address' %}</span>
                             {% endif %}
                             <address>
-                                {% for field in address.active_address_fields %}
-                                    {{ field }}<br/>
-                                {% endfor %}
+                               <span><strong>Name:</strong> {{ address.name }}</span><br/>
+                                <span><strong>Hostel:</strong> {{ address.hostel }}</span><br/>
+                                <span><strong>Room No:</strong> {{ address.room_number }}</span><br/>
+                                <span><strong>Location:</strong> {{ address.location }}</span><br/>
+                                <span><strong>Phone:</strong> {{ address.phone_number }}</span><br/>
                             </address>
                         </td>
                         <td>

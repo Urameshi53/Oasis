@@ -25,7 +25,7 @@ location = lambda x: os.path.join(
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
-EMAIL_SUBJECT_PREFIX = '[Oscar sandbox] '
+EMAIL_SUBJECT_PREFIX = '[Oscar sandbox]'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'oscar.apps.analytics.apps.AnalyticsConfig',
     #'oscar.apps.checkout.apps.CheckoutConfig',
     'apps.checkout.apps.CheckoutConfig',
-    'oscar.apps.address.apps.AddressConfig',
+    #'oscar.apps.address.apps.AddressConfig',
+    'apps.address.apps.AddressConfig',
     #'oscar.apps.shipping.apps.ShippingConfig',
     'apps.shipping.apps.ShippingConfig',
     #'oscar.apps.catalogue.apps.CatalogueConfig',
@@ -410,24 +411,7 @@ OSCAR_THUMBNAIL_PADDING_BORDER_SHADOW_CSS_INSET = 'inset 0 0 0 0 rgba(0,0,0,1)'
 # Oscar's default product image padding border shadow css outset
 OSCAR_THUMBNAIL_PADDING_BORDER_SHADOW_CSS_OUTSET = '0 0 0 0 rgba(0,0,0,1)'
 
-# Momo Settings
-'''
-'''
-MOMO_API_USER = "your_api_user_id"
-MOMO_API_KEY = "your_api_key"
-#MOMO_SUBSCRIPTION_KEY = "your_subscription_key"
 
-MOMO_PRIMARY_KEY = "473dcb5fdf2448cb9c35c992d7946ca3"
-MOMO_SUBSCRIPTION_KEY = "473dcb5fdf2448cb9c35c992d7946ca3"
-MOMO_AUTH_STRING = "base64_encoded(api_user: api_key)"
-
-
-import base64
-
-s = "my_api_user: your_api_key"
-print(base64.b64encode(s.encode()).decode())
-
-
-# settings.py
+# Paystack settings
 PAYSTACK_SECRET_KEY = "sk_live_cce8b8031db9486fa923cf3701bc4540893f9a3e"
 PAYSTACK_PUBLIC_KEY = "pk_live_1ee2a9c93d1f34b41a965b1c22c1a4d4e5415ce7"

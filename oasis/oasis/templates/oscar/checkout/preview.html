@@ -36,4 +36,27 @@
             </div>
         </div>
     </form>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+
+    <button type="button" onclick="payWithPaystack()">Pay Now</button>
+
+    <script>
+    function payWithPaystack() {
+        var handler = PaystackPop.setup({
+            key: '{{ PAYSTACK_PUBLIC_KEY }}',
+            email: '{{ user.email }}',
+            amount: {{ order_total.incl_tax|floatformat:2|add:"0"|floatformat:"0"|add:"00" }},
+            currency: "GHS",
+            callback: function(response) {
+                window.location.href = "?reference=" + response.reference;
+            },
+            onClose: function() {
+                alert('Payment cancelled');
+            }
+        });
+        handler.openIframe();
+    }
+    </script>
+
 {% endblock place_order %}

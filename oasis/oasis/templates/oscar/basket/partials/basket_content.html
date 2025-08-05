@@ -71,6 +71,7 @@
                                         {% if user.is_authenticated %}
                                             | <a href="#" data-id="{{ forloop.counter0 }}" data-behaviours="save">{% trans "Save for later" %}</a>
                                         {% endif %}
+                                            
                                         <div style="display:none">
                                             {{ form.save_for_later }}
                                             {{ form.DELETE }}
@@ -154,6 +155,7 @@
 
 
     {% block formactions %}
+        {% if user.is_authenticated %}
         <div class="form-group clearfix">
             <div class="row">
                 <div class="col-sm-4 offset-sm-8">
@@ -161,6 +163,9 @@
                 </div>
             </div>
         </div>
+        {% else %}
+            <a href="{% url 'customer:register' %}" class="btn btn-lg btn-primary btn-block">{% trans "Register to proceed" %}</a>
+        {% endif %}
     {% endblock formactions %}
 
 {% else %}
@@ -203,6 +208,7 @@
                                 <h3><a href="{{ form.instance.product.get_absolute_url }}">{{ form.instance.description }}</a></h3>
                                 <p class="availability {{ session.availability.code }}">{{ session.availability.message }}</p>
                                 <a href="#" data-id="{{ forloop.counter0 }}" data-behaviours="remove">{% trans "Remove" %}</a>
+                                
                                 <div style="display:none">
                                     {{ form.move_to_basket }}
                                     {{ form.DELETE }}
@@ -227,4 +233,44 @@
             </form>
         </div>
     {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const formset = document.querySelector('#basket_formset');
+
+            if (!formset) return;
+
+            // Handle 'Remove' links
+            document.querySelectorAll('[data-behaviours~="remove"]').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const basketItem = link.closest('.basket-items');
+                    const deleteInput = basketItem.querySelector('input[name$="-DELETE"]');
+                    if (deleteInput) {
+                        deleteInput.checked = true;
+                        formset.submit();
+                    }
+                });
+            });
+
+            
+
+            // Handle 'Save for later' links
+            document.querySelectorAll('[data-behaviours~="save"]').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const basketItem = link.closest('.basket-items');
+                    const saveInput = basketItem.querySelector('input[name$="-save_for_later"]');
+                    if (saveInput) {
+                        saveInput.value = 'true';
+                        formset.submit();
+                        {{ formset.save_for_later }}
+                    }
+                });
+            });
+        });
+    </script>
+
+    
+
 {% endblock %}

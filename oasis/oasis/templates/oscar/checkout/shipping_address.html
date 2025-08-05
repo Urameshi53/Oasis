@@ -29,9 +29,12 @@
                                 <div class="card card-body bg-light">
                                     <address>
                                         {% block select_address_fields %}
-                                            {% for field in address.active_address_fields %}
-                                                <span>{{ field }}</span>{% if not forloop.first %}<br/>{% endif %}
-                                            {% endfor %}
+                                                <span>Name: {{ address.name }}</span>{% if not forloop.first %}<br/>{% endif %}
+                                                <span><strong>Hostel:</strong> {{ address.hostel }}</span><br/>
+                                                <span><strong>Room No:</strong> {{ address.room_number }}</span><br/>
+                                                <span><strong>Location:</strong> {{ address.location }}</span><br/>
+                                                <span><strong>Phone:</strong> {{ address.phone_number }}</span><br/>
+
                                         {% endblock %}
                                     </address>
                                     <form action="{% url 'checkout:shipping-address' %}" method="post" id="select_shipping_address_{{ address.id }}" class="mb-0">

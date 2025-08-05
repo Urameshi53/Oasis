@@ -1,14 +1,11 @@
-from oscar.apps.payment.models import * 
-
-
-# payments/models.py
+from oscar.apps.payment.abstract_models import AbstractSource, AbstractTransaction
 from django.db import models
+import random
 
-class PaystackPayment(models.Model):
-    email = models.EmailField()
-    amount = models.PositiveIntegerField()
-    ref = models.CharField(max_length=100, unique=True)
-    verified = models.BooleanField(default=False)
+class Source(AbstractSource):
+    paystack_reference = models.CharField(max_length=100)
 
-    def __str__(self):
-        return f"{self.email} - {self.amount} - {self.verified}"
+class Transaction(AbstractTransaction):
+    pass
+
+from oscar.apps.payment.models import *  # noqaa

@@ -22,16 +22,16 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="row align-self-center">
         <div class="col-sm-6 register_form">
             <form id="register_form" method="post">
                 {% csrf_token %}
                 {% include "oscar/partials/form_fields.html"  %}
                 <button name="registration_submit" type="submit" value="Register" class="btn btn-primary btn-lg" data-loading-text="{%trans 'Registering...' %}">{% trans 'Register' %}</button>
-                {% if cancel_url %}
-                    {% trans "or" %} <a href="{{ cancel_url }}">{% trans "cancel" %}</a>.
-                {% endif %}
+                <a href="{% url 'customer:login' %}"> or login</a>
+
             </form>
+
         </div>
     </div>
 {% endblock content %}

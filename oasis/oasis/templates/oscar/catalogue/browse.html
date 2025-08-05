@@ -23,11 +23,17 @@
 {% endblock breadcrumbs %}
 
 {% block column_left %}
-    {% category_tree as tree_categories %}
+
+    {% category_tree depth=1 as tree_categories %}
     {% if tree_categories %}
-        <h4>{% trans "Show results for" %}</h4>
+        <h4>{% trans "Browse Store" %}</h4>
         <div class="side_categories card card-body bg-light">
             <ul class="nav nav-list flex-column">
+                <li class="mt-2">
+                    <a href="{{ homepage_url }}">
+                        {% trans "All products" %}
+                    </a>
+                </li>
                 {% for tree_category in tree_categories %}
                     <li class="mt-2">
                         <a href="{{ tree_category.url }}">
@@ -37,12 +43,13 @@
                                 {{ tree_category.name }}
                             {% endif %}
                         </a>
-
-                        {% if tree_category.has_children %}<ul>{% else %}</li>{% endif %}
-                        {% for n in tree_category.num_to_close %}
-                            </ul></li>
-                        {% endfor %}
+                    </li>
                 {% endfor %}
+                <li class="mt-2">
+                    <a href="#">
+                        {% trans "Hostels" %}
+                    </a>
+                </li>
             </ul>
         </div>
     {% endif %}
@@ -101,7 +108,7 @@
                 <ol class="row list-unstyled ml-0 pl-0">
                     {% block products %}
                       {% for product in products %}
-                          <li class="col-sm-6 col-md-4 col-lg-3">{% render_product product %}</li>
+                          <li class="col-6 col-md-4 col-lg-3">{% render_product product %}</li>
                       {% endfor %}
                     {% endblock %}
                 </ol>
