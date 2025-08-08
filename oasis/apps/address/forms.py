@@ -27,10 +27,26 @@ class UserAddressForm(PhoneNumberMixin, AbstractAddressForm):
             "location",
             "hostel",
             "room_number",
-            "phone_number",
+            "phone",
             "notes",
         ]
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.instance.user = user
+
+class ShippingAddressForm(PhoneNumberMixin, AbstractAddressForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+    class Meta:
+        model = get_model("order", "shippingaddress")
+        fields = [
+            "first_name",
+            "last_name",
+            "location",
+            "hostel",
+            "room_number",
+            "phone",
+            "notes",
+        ]

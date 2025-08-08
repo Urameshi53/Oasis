@@ -44,10 +44,10 @@
                             <span><strong>Location:</strong> {{ order.shipping_address.location }}</span><br/>
                         </address>
 
-                        {% if order.shipping_address.phone_number %}
+                        {% if order.shipping_address.phone %}
                             <h4>{% trans "Contact" %}</h4>
                             <p>
-                                {% trans "Phone" %}: {{ order.shipping_address.phone_number }}
+                                {% trans "Phone" %}: {{ order.shipping_address.phone }}
                                 {% if order.guest_email %}
                                     <br/>{% trans "Email" %}: {{ order.guest_email }}
                                 {% endif %}
@@ -77,23 +77,7 @@
                 </div>
                 <div class="card card-body bg-light">
                     <h3>{% trans "Payment" %}</h3>
-                    {% for source in order.sources.all %}
-                        <p>
-                        {% if source.reference %}
-                            {% blocktrans with amount=source.amount_allocated|currency:source.currency type=source.source_type.name reference=source.reference %}
-                                Allocation of {{ amount }} from type {{ type }} (reference: {{ reference }})
-                            {% endblocktrans %}
-                        {% else %}
-                            {% blocktrans with amount=source.amount_allocated|currency:source.currency type=source.source_type.name %}
-                                Allocation of {{ amount }} from type {{ type }}
-                            {% endblocktrans %}
-                        {% endif %}
-                        </p>
-                    {% empty %}
-                        <p>
-                        {% trans "No payment was required for this order." %}
-                        </p>
-                    {% endfor %}
+                    Mobile Money: {{ order.basket_total_incl_tax|currency:order.currency }}
 
                     {% if order.billing_address %}
                         <h4>{% trans "Billing address" %}</h4>

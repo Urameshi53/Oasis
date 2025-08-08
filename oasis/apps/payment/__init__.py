@@ -1,1 +1,1 @@
-default_app_config = 'oasis.payment.apps.PaymentConfig'
+default_app_config = 'apps.payment.apps.PaymentConfig'

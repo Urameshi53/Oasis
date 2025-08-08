@@ -1,1 +1,1 @@
-from oscar.apps.checkout.models import * 
+from oscar.apps.checkout.models import *

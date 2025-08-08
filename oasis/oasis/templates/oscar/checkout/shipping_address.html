@@ -33,8 +33,7 @@
                                                 <span><strong>Hostel:</strong> {{ address.hostel }}</span><br/>
                                                 <span><strong>Room No:</strong> {{ address.room_number }}</span><br/>
                                                 <span><strong>Location:</strong> {{ address.location }}</span><br/>
-                                                <span><strong>Phone:</strong> {{ address.phone_number }}</span><br/>
-
+                                                <span><strong>Phone:</strong> {{ address.phone }}</span><br/>
                                         {% endblock %}
                                     </address>
                                     <form action="{% url 'checkout:shipping-address' %}" method="post" id="select_shipping_address_{{ address.id }}" class="mb-0">

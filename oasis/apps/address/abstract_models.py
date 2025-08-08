@@ -223,43 +223,12 @@ class AbstractAddress(models.Model):
     first_name = models.CharField(_("First name"), max_length=255, blank=True)
     last_name = models.CharField(_("Last name"), max_length=255, blank=True)
 
-    HOSTEL_CHOICES = [
-        ('indece', 'Independence Hall'),
-        ('republic', 'Republic Hall'),
-        ('katanga'),
-        ('queens'),
-        ('unity'),
-        ('hall_7'),
-        ('impact_building'),
-        ('brunei_main', 'Brunei Main'),
-        ('baby_brunei', 'Babay Brunei'),
-        ('brunei_complex', 'Brunei Complex'),
-        (),
-        (),
-        (),
-
-    ]
-
     # We use quite a few lines of an address as they are often quite long and
     # it's easier to just hide the unnecessary ones than add extra ones.
-
-
-    
-    hostel = models.CharField(_("Hall/Hostel"), default='Indece', max_length=128,)
-    room_number = models.CharField(_("Room number"), default='001', max_length=10)
-    LOCATION_CHOICES = [
-        ('campus', 'Campus'),
-        ('tech_junction', 'Tech Junction'),
-        ('ayeduase', 'Ayeduase'),
-        ('kotei', 'Kotei'),
-        ('deduako', 'Deduako'),
-        ('new_site', 'New Site'),
-    ]
-    location = models.CharField(_("Location"), choices=LOCATION_CHOICES, max_length=128, default='campus')
-
     line1 = models.CharField(_("First line of address"), max_length=255)
     line2 = models.CharField(_("Second line of address"), max_length=255, blank=True)
     line3 = models.CharField(_("Third line of address"), max_length=255, blank=True)
+    line4 = models.CharField(_("City"), max_length=255, blank=True)
     state = models.CharField(_("State/County"), max_length=255, blank=True)
     postcode = UppercaseCharField(_("Post/Zip-code"), max_length=64, blank=True)
     country = models.ForeignKey(
@@ -274,9 +243,6 @@ class AbstractAddress(models.Model):
     search_fields = [
         "first_name",
         "last_name",
-        "hostel",
-        "location",
-        "room_number"
         "line1",
         "line2",
         "line3",
@@ -289,9 +255,6 @@ class AbstractAddress(models.Model):
     # Fields, used for `summary` property definition and hash generation.
     base_fields = hash_fields = [
         "salutation",
-        "hostel",
-        "location",
-        "room_number",
         "line1",
         "line2",
         "line3",
@@ -320,9 +283,6 @@ class AbstractAddress(models.Model):
         for field in [
             "first_name",
             "last_name",
-            "hostel",
-            "location",
-            "room_number",
             "line1",
             "line2",
             "line3",
