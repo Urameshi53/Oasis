@@ -1,0 +1,9 @@
+Django==5.2.4
+django-oscar
+django-environ
+django-widget-tweaks
+django-haystack
+django-treebeard
+sorl-thumbnail
+django-tables2
+whitenoise 

@@ -1,6 +1,12 @@
 {% load static %}
 
-<div class="col-sm-6 h1"><a href="{{ homepage_url }}">
-    {% block brand_title %}
-    <img src="{% static 'oscar/logo/logo.png' %}" alt="Oasis" height="50" width="auto">{% endblock %}</a><small>  {{ shop_tagline }}</small>
+<div class="col-sm-6 h1">
+    <a href="{{ homepage_url }}" class="navbar-brand">
+        {% block brand_title %}
+        <strong>Oasis</strong>
+        {% endblock %}
+    </a>
+    <div class="brand-tagline">
+        <small class="text-muted">Premium with less cost</small>
+    </div>
 </div>
