@@ -607,6 +607,295 @@ html {
     .btn-search {
         padding: 8px 15px;
     }
+    
+    /* Fix Oasis name spacing on mobile */
+    .unified-nav .navbar-brand {
+        padding-left: 15px !important;
+        margin-left: 0 !important;
+    }
+    
+    .brand-content {
+        padding-left: 10px !important;
+    }
+    
+    .brand-name {
+        margin-left: 5px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Extra small mobile fixes for brand spacing */
+    .unified-nav .navbar-brand {
+        padding-left: 10px !important;
+        margin-left: 0 !important;
+    }
+    
+    .brand-content {
+        padding-left: 5px !important;
+    }
+    
+    .brand-name {
+        font-size: 1.2rem !important;
+        margin-left: 3px !important;
+    }
+    
+    .brand-tagline {
+        font-size: 0.65rem !important;
+        margin-left: 3px !important;
+    }
+}
+
+/* Ensure proper spacing in product grid */
+@media (max-width: 768px) {
+    /* Force 2 columns for all mobile devices */
+    .row .col-6,
+    .row .col-sm-4,
+    .row .col-sm-6,
+    .row .col-md-3,
+    .row .col-md-4,
+    .row .col-lg-3 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        margin-bottom: 20px !important;
+        padding: 0 8px !important;
+    }
+    
+    /* Force row to use flexbox properly */
+    .row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        margin-left: -8px !important;
+        margin-right: -8px !important;
+    }
+    
+    /* Ensure list items don't interfere */
+    .row.list-unstyled li {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding: 0 8px !important;
+    }
+    
+    /* Adjust product cards for 2-column layout on all mobile */
+    article.product_pod {
+        min-height: 320px !important;
+        padding: 12px !important;
+        margin: 5px 3px !important;
+    }
+    
+    article.product_pod .image_container {
+        min-height: 100px !important;
+        max-height: 120px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    article.product_pod .image_container img {
+        max-height: 100px !important;
+    }
+    
+    article.product_pod h3 {
+        font-size: 0.85rem !important;
+        min-height: 2.4em !important;
+        max-height: 2.4em !important;
+        margin-bottom: 8px !important;
+        padding: 0 3px !important;
+        line-height: 1.3 !important;
+    }
+    
+    article.product_pod .price_color {
+        font-size: 0.95rem !important;
+        margin-bottom: 8px !important;
+        padding: 0 3px !important;
+    }
+    
+    article.product_pod .availability {
+        font-size: 0.75rem !important;
+        margin-bottom: 8px !important;
+        padding: 0 3px !important;
+    }
+    
+    article.product_pod .product_price {
+        padding-top: 8px !important;
+        margin-top: 5px !important;
+    }
+    
+    article.product_pod .btn {
+        font-size: 0.8rem !important;
+        padding: 6px 12px !important;
+        border-radius: 18px !important;
+    }
+    
+    article.product_pod .star-rating {
+        font-size: 0.75rem !important;
+        margin-bottom: 8px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Small mobile adjustments */
+    .row .col-6,
+    .row .col-sm-4,
+    .row .col-sm-6,
+    .row .col-md-3,
+    .row .col-md-4,
+    .row .col-lg-3 {
+        padding: 0 6px !important;
+    }
+    
+    .row {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+    }
+    
+    .row.list-unstyled li {
+        padding: 0 6px !important;
+    }
+    
+    article.product_pod {
+        min-height: 300px !important;
+        padding: 10px !important;
+    }
+    
+    article.product_pod h3 {
+        font-size: 0.8rem !important;
+        min-height: 2.3em !important;
+        max-height: 2.3em !important;
+    }
+    
+    article.product_pod .price_color {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* Extra aggressive fixes for very small devices (360px and below) */
+@media (max-width: 360px) {
+    /* Brand name spacing for very small screens */
+    .unified-nav .navbar-brand {
+        padding-left: 15px !important;
+        margin-left: 0 !important;
+        margin-right: 10px !important;
+    }
+    
+    .brand-content {
+        padding-left: 8px !important;
+        margin-left: 5px !important;
+    }
+    
+    .brand-name {
+        font-size: 1.1rem !important;
+        margin-left: 8px !important;
+        padding-left: 5px !important;
+    }
+    
+    .brand-tagline {
+        font-size: 0.6rem !important;
+        margin-left: 8px !important;
+        padding-left: 5px !important;
+    }
+    
+    /* Product card fixes for very small screens */
+    article.product_pod {
+        min-height: 280px !important;
+        padding: 8px !important;
+        margin: 5px 2px !important;
+    }
+    
+    article.product_pod .image_container {
+        min-height: 80px !important;
+        max-height: 100px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    article.product_pod .image_container img {
+        max-height: 80px !important;
+    }
+    
+    article.product_pod h3 {
+        font-size: 0.75rem !important;
+        min-height: 2.2em !important;
+        max-height: 2.2em !important;
+        margin-bottom: 6px !important;
+        padding: 0 2px !important;
+        line-height: 1.2 !important;
+    }
+    
+    article.product_pod .price_color {
+        font-size: 0.85rem !important;
+        margin-bottom: 6px !important;
+        padding: 0 2px !important;
+    }
+    
+    article.product_pod .availability {
+        font-size: 0.7rem !important;
+        margin-bottom: 6px !important;
+        padding: 0 2px !important;
+    }
+    
+    article.product_pod .product_price {
+        padding-top: 6px !important;
+        margin-top: 4px !important;
+    }
+    
+    article.product_pod .btn {
+        font-size: 0.75rem !important;
+        padding: 4px 8px !important;
+        border-radius: 15px !important;
+    }
+    
+    article.product_pod .star-rating {
+        font-size: 0.7rem !important;
+        margin-bottom: 6px !important;
+    }
+    
+    /* Navigation container spacing */
+    .unified-nav .container,
+    .unified-nav .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    /* Search bar spacing */
+    .navbar-search {
+        margin: 10px 5px !important;
+        padding: 0 5px !important;
+    }
+    
+    .search-input {
+        font-size: 0.8rem !important;
+        padding: 6px 12px !important;
+    }
+    
+    .btn-search {
+        padding: 6px 12px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* Column spacing for very small screens */
+    .row .col-6,
+    .row .col-sm-4,
+    .row .col-sm-6,
+    .row .col-md-3,
+    .row .col-md-4,
+    .row .col-lg-3 {
+        padding: 0 5px !important;
+    }
+    
+    .row {
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+    }
+    
+    .row.list-unstyled li {
+        padding: 0 5px !important;
+    }
+}
+
+/* Container padding for very small screens */
+@media (max-width: 360px) {
+    .container,
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
 }
 
 /* Custom scrollbar */
@@ -625,4 +914,176 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* Mobile Product Card Fixes */
+@media (max-width: 768px) {
+    /* Product pod mobile fixes - Higher specificity */
+    article.product_pod {
+        height: auto !important;
+        min-height: 350px !important;
+        max-height: none !important;
+        padding: 15px !important;
+        margin-bottom: 20px !important;
+        border: 1px solid #e9ecef !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease !important;
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    article.product_pod:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Image container mobile fixes - Higher specificity */
+    article.product_pod .image_container {
+        min-height: 120px !important;
+        max-height: 150px !important;
+        margin-bottom: 15px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+    
+    article.product_pod .image_container img {
+        max-height: 120px !important;
+        max-width: 100% !important;
+        object-fit: contain !important;
+        width: auto !important;
+        height: auto !important;
+    }
+    
+    /* Product title mobile fixes - Higher specificity */
+    article.product_pod h3 {
+        font-size: 0.9rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 12px !important;
+        min-height: 2.8em !important;
+        max-height: 2.8em !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        word-wrap: break-word !important;
+        flex-shrink: 0 !important;
+    }
+    
+    article.product_pod h3 a {
+        color: #333 !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    article.product_pod h3 a:hover {
+        color: #667eea !important;
+    }
+    
+    /* Star rating mobile fixes - Higher specificity */
+    article.product_pod .star-rating {
+        font-size: 0.8rem !important;
+        margin-bottom: 10px !important;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 2px !important;
+        flex-shrink: 0 !important;
+        min-height: 1.2em !important;
+    }
+    
+    article.product_pod .star-rating i {
+        color: #ffc107 !important;
+    }
+    
+    /* Price mobile fixes - Higher specificity */
+    article.product_pod .price_color {
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        color: #28a745 !important;
+        margin-bottom: 10px !important;
+        min-height: 1.5em !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+    
+    /* Availability mobile fixes - Higher specificity */
+    article.product_pod .availability {
+        font-size: 0.8rem !important;
+        margin-bottom: 12px !important;
+        min-height: 1.2em !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 5px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    article.product_pod .availability i {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Product price container mobile fixes - Higher specificity */
+    article.product_pod .product_price {
+        position: relative !important;
+        bottom: auto !important;
+        margin-top: auto !important;
+        padding-top: 12px !important;
+        border-top: 1px solid #f0f0f0 !important;
+        flex-shrink: 0 !important;
+        width: 100% !important;
+    }
+    
+    /* Add to basket form mobile fixes - Higher specificity */
+    article.product_pod form {
+        margin-top: 8px !important;
+        width: 100% !important;
+    }
+    
+    article.product_pod .btn {
+        font-size: 0.85rem !important;
+        padding: 8px 16px !important;
+        border-radius: 20px !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Extra small mobile fixes - Higher specificity */
+    article.product_pod {
+        min-height: 320px !important;
+        padding: 12px !important;
+    }
+    
+    article.product_pod .image_container {
+        min-height: 100px !important;
+        max-height: 120px !important;
+    }
+    
+    article.product_pod .image_container img {
+        max-height: 100px !important;
+    }
+    
+    article.product_pod h3 {
+        font-size: 0.85rem !important;
+        min-height: 2.6em !important;
+        max-height: 2.6em !important;
+    }
+    
+    article.product_pod .price_color {
+        font-size: 1rem !important;
+    }
+    
+    article.product_pod .availability {
+        font-size: 0.75rem !important;
+    }
 } 
