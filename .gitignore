@@ -1,0 +1,78 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+
+# Django
+local_settings.py
+*.sqlite3
+*.sqlite3-journal
+
+# Coverage and test artifacts
+.coverage
+.coverage.*
+hmlcov/
+htmlcov/
+.coverage-results/
+.pytest_cache/
+.tox/
+.nox/
+
+# Type checker / linters caches
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Node (if ever used)
+node_modules/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Collected static and media (runtime artifacts)
+# Generic
+staticfiles/
+static_root/
+media/
+public/
+
+# Project-specific collected directories
+# Do NOT ignore source static under oasis/oasis/static/; only ignore collected files under public/
+oasis/oasis/public/static/
+oasis/oasis/public/media/
+
+# Project database (local dev DB)
+oasis/db.sqlite3
+
+# Oscar/Haystack caches
+cache/
