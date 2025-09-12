@@ -1,6 +1,5 @@
 # pylint: disable=E1101
 from urllib.parse import quote
-
 from django.contrib import messages
 from django.http import Http404, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -36,7 +35,12 @@ class CatalogueView(BaseSearchView):
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data(*args, **kwargs)
         ctx["summary"] = _("All products")
-        ctx["products"] = Product.objects.all()
+        books_category = Category.objects.filter(name__iexact="Books").first()
+        products = Product.objects.exclude(
+                categories=books_category
+        ).order_by('?')        
+        print(products)
+        ctx["products"] = products
         return ctx
 
 

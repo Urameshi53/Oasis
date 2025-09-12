@@ -102,6 +102,12 @@ INSTALLED_APPS = [
     'treebeard',
     'sorl.thumbnail',   # Default thumbnail backend, can be replaced
     'django_tables2',
+
+    # Allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 SITE_ID = 1
@@ -118,6 +124,8 @@ MIDDLEWARE = [
 
     'oscar.apps.basket.middleware.BasketMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'oasis.urls'
@@ -193,7 +201,26 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+'''
+# Allauth settings
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+'''
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '789007336886-efm2802u73l1fjfk347f5m11ldbrcuij.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        }
+    }
+}
 
 HAYSTACK_CONNECTIONS = {
     'default': {

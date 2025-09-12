@@ -77,7 +77,8 @@
                 </div>
                 <div class="card card-body bg-light">
                     <h3>{% trans "Payment" %}</h3>
-                    Mobile Money: {{ order.basket_total_incl_tax|currency:order.currency }}
+                    {% trans "Mobile Money " %} <br>
+                    Number: {{ order.shipping_address.phone }} <br>
 
                     {% if order.billing_address %}
                         <h4>{% trans "Billing address" %}</h4>

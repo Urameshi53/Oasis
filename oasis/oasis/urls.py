@@ -36,6 +36,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     path('payments/', include('payments.urls')),
+    path('accounts/', include('allauth.urls')),
 
     #path('checkout/payment-details/', MomoPaymentDetailsView.as_view(), name='payment-details'),
 

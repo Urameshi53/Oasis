@@ -9,6 +9,8 @@
         <meta name="created" content="{% now 'jS M Y h:i' %}" />
         <meta name="description" content="{% block description %}{% endblock %}" />
         <meta name="viewport" content="{% block viewport %}width=device-width{% endblock %}" />
+        <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID">
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
 
         {% block favicon %}
             <link rel="shortcut icon" href="{% static 'oscar/favicon.ico' %}" />
@@ -31,6 +33,9 @@
     </head>
 
     <body id="{% block body_id %}default{% endblock %}" class="{% block body_class %}default{% endblock %}">
+        <div style="background-color: #000000; color: white; padding: 5px; text-align: center; font-size: 14px;">
+            📞 Call us: +233 54 123 4567
+        </div>
         {# Main content goes in this 'layout' block #}
         {% block layout %}{% endblock %}
 
