@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
+    'restaurant.apps.RestaurantConfig',
+    'rest_framework',
 
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',

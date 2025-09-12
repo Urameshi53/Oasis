@@ -1,0 +1,11 @@
+<h1>{{ restaurant.name }} Dashboard</h1>
+
+<h2>Recent Orders</h2>
+<ul>
+  {% for order in orders %}
+    <li>Order {{ order.id }} - {{ order.get_status_display }} - {{ order.total_price }}</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'restaurant:menu_items' %}">Manage Menu</a> |
+<a href="{% url 'restaurant:order_list' %}">View Orders</a>

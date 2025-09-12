@@ -19,6 +19,8 @@ from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+#from rest_framework.routers import DefaultRouter
+#from restaurant.views import RestaurantViewSet, OrderViewSet
 #from oasis.payment.views import MomoPaymentDetailsView
 
 from oasis.views import paystack_callback
@@ -34,7 +36,10 @@ urlpatterns = [
     # Nonetheless, it's often useful for debugging.
 
     path('admin/', admin.site.urls),
-    
+    path("api/restaurant/", include("restaurant.urls")),
+    path("restaurant/dashboard/", include("restaurant.dashboard_urls")),
+
+
     path('payments/', include('payments.urls')),
     path('accounts/', include('allauth.urls')),
 
