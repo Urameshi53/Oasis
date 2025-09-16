@@ -37,7 +37,8 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path("api/restaurant/", include("restaurant.urls")),
-    path("restaurant/dashboard/", include("restaurant.dashboard_urls")),
+    path('restaurant/', include("restaurant.urls")),
+    #path("kitchen/", include("kitchen.urls")),
 
 
     path('payments/', include('payments.urls')),

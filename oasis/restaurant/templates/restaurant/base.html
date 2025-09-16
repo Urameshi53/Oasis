@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Oasis Foods</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    {% load static %}
+    <!-- Favicons -->
+    <link href="{% static 'restaurant/assets/img/favicon.png' %}" rel="icon" />
+    <link
+      href="{% static 'restaurant/assets/img/apple-touch-icon.png' %}"
+      rel="apple-touch-icon"
+    />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Source+Serif+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link
+      href="{% static 'restaurant/assets/vendor/bootstrap/css/bootstrap.min.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'restaurant/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'restaurant/assets/vendor/aos/aos.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'restaurant/assets/vendor/swiper/swiper-bundle.min.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'restaurant/assets/vendor/glightbox/css/glightbox.min.css' %}"
+      rel="stylesheet"
+    />
+
+    <!-- Main CSS File -->
+    <link
+      href="{% static 'restaurant/assets/css/main.css' %}"
+      rel="stylesheet"
+    />
+
+    <!-- =======================================================
+  * Template Name: Platia
+  * Template URL: https://bootstrapmade.com/platia-bootstrap-restaurant-template/
+  * Updated: Aug 11 2025 with Bootstrap v5.3.7
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+  </head>
+
+  <body class="index-page">
+    <header id="header" class="header fixed-top">
+      <div class="topbar d-flex align-items-center dark-background">
+        <div
+          class="container d-flex justify-content-center justify-content-md-between"
+        >
+          <div class="contact-info d-flex align-items-center">
+            <i class="bi bi-envelope d-flex align-items-center"
+              ><a href="mailto:contact@example.com">contact@example.com</a></i
+            >
+            <i class="bi bi-phone d-flex align-items-center ms-4"
+              ><span>+1 5589 55488 55</span></i
+            >
+          </div>
+          <div class="social-links d-none d-md-flex align-items-center">
+            <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <!-- End Top Bar -->
+
+      <div class="branding d-flex align-items-cente">
+        <div
+          class="container position-relative d-flex align-items-center justify-content-between"
+        >
+          <a href="index.html" class="logo d-flex align-items-center">
+            <!-- Uncomment the line below if you also wish to use an image logo -->
+            <img src="{% static 'restaurant/assets/img/logo.webp' %}" alt="" />
+            <h1 class="sitename">Oasis Foods</h1>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Hero Section -->
+
+      <!-- /Hero Section -->
+
+      <!-- About Section -->
+
+      <!-- /About Section -->
+
+      <!-- Menu Section -->
+      <section id="menu" class="menu section">
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+          <h2>Restaurant</h2>
+          <p>
+            Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
+            consectetur velit
+          </p>
+        </div>
+        <!-- End Section Title -->
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+          <div
+            class="isotope-layout"
+            data-default-filter="*"
+            data-layout="masonry"
+            data-sort="original-order"
+          >
+            <div
+              class="menu-filters isotope-filters mb-5"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <ul>
+                <li data-filter="*" class="filter-active">All Dishes</li>
+                <li data-filter=".filter-starters">Appetizers</li>
+                <li data-filter=".filter-main">Entrees</li>
+                <li data-filter=".filter-dessert">Sweet Treats</li>
+                <li data-filter=".filter-drinks">Beverages</li>
+              </ul>
+            </div>
+
+            <div
+              class="menu-grid isotope-container row gy-5"
+              data-aos="fade-up"
+              data-aos-delay="300"
+            >
+              <div class="col-xl-4 col-lg-6 isotope-item filter-starters">
+                <div class="menu-card">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/starter-1.webp' %}"
+                      alt="Appetizer"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-vegetarian">V</span>
+                    </div>
+                    <div class="price-overlay">$12.50</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Prosciutto-Wrapped Asparagus</h4>
+                    <p>
+                      Vivamus tempor magna et tempus elementum. Sed consequat
+                      libero vel mauris cursus.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot active"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 isotope-item filter-starters">
+                <div class="menu-card">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/starter-3.webp' %}"
+                      alt="Appetizer"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-seafood">SF</span>
+                    </div>
+                    <div class="price-overlay">$14.95</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Seared Scallops with Cauliflower</h4>
+                    <p>
+                      Pellentesque habitant morbi tristique senectus et netus et
+                      malesuada fames ac.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot active"></span>
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 isotope-item filter-main">
+                <div class="menu-card featured">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/main-2.webp' %}"
+                      alt="Main Course"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-chef">Chef's Choice</span>
+                    </div>
+                    <div class="price-overlay">$28.00</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Herb-Crusted Rack of Lamb</h4>
+                    <p>
+                      Mauris auctor nulla et felis tempor, eu consectetur ante
+                      vulputate non.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot active"></span>
+                      <span class="spice-dot active"></span>
+                      <span class="spice-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 isotope-item filter-main">
+                <div class="menu-card">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/main-6.webp' %}"
+                      alt="Main Course"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-vegetarian">V</span>
+                      <span class="badge-gluten-free">GF</span>
+                    </div>
+                    <div class="price-overlay">$22.75</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Quinoa Stuffed Bell Peppers</h4>
+                    <p>
+                      Donec vel nunc non erat vehicula cursus. Integer pharetra
+                      mauris vel lorem.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot active"></span>
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 isotope-item filter-dessert">
+                <div class="menu-card">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/dessert-4.webp' %}"
+                      alt="Dessert"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-signature">Signature</span>
+                    </div>
+                    <div class="price-overlay">$11.25</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Salted Caramel Cheesecake</h4>
+                    <p>
+                      Cras fermentum odio eu feugiat luctus. Aliquam erat
+                      volutpat sed bibendum.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 isotope-item filter-dessert">
+                <div class="menu-card">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/dessert-9.webp' %}"
+                      alt="Dessert"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-vegan">VG</span>
+                    </div>
+                    <div class="price-overlay">$9.50</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Dark Chocolate Avocado Mousse</h4>
+                    <p>
+                      Vestibulum ante ipsum primis in faucibus orci luctus et
+                      ultrices posuere.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 isotope-item filter-drinks">
+                <div class="menu-card">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/drink-2.webp' %}"
+                      alt="Beverage"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-alcoholic">21+</span>
+                    </div>
+                    <div class="price-overlay">$15.00</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Elderflower Gin Fizz</h4>
+                    <p>
+                      Nulla facilisi morbi tempus iaculis urna id volutpat lacus
+                      laoreet non.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 isotope-item filter-drinks">
+                <div class="menu-card">
+                  <div class="menu-card-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/drink-6.webp' %}"
+                      alt="Beverage"
+                      class="img-fluid"
+                    />
+                    <div class="dietary-badges">
+                      <span class="badge-fresh">Fresh</span>
+                    </div>
+                    <div class="price-overlay">$8.75</div>
+                  </div>
+                  <div class="menu-card-content">
+                    <h4>Tropical Green Smoothie</h4>
+                    <p>
+                      Ut pharetra sit amet aliquam id diam maecenas ultricies mi
+                      eget mauris.
+                    </p>
+                    <div class="spice-level">
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                      <span class="spice-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="chef-recommendations"
+            data-aos="fade-up"
+            data-aos-delay="500"
+          >
+            <div class="section-header">
+              <h3>
+                <i class="bi bi-star-fill"></i> Today's Chef Recommendations
+              </h3>
+              <p>
+                Carefully curated dishes featuring the finest seasonal
+                ingredients
+              </p>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-lg-6">
+                <div class="recommendation-card">
+                  <div class="recommendation-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/main-9.webp' %}"
+                      alt="Chef Recommendation"
+                      class="img-fluid"
+                    />
+                    <div class="chef-badge">
+                      <i class="bi bi-award"></i>
+                      <span>Chef's Pick</span>
+                    </div>
+                  </div>
+                  <div class="recommendation-content">
+                    <div class="recommendation-header">
+                      <h4>Pan-Seared Duck Breast</h4>
+                      <div class="recommendation-price">$34.50</div>
+                    </div>
+                    <p>
+                      Etiam porta sem malesuada magna mollis euismod. Cras
+                      mattis consectetur purus sit amet fermentum.
+                    </p>
+                    <div class="recommendation-details">
+                      <div class="serving-info">
+                        <i class="bi bi-clock"></i>
+                        <span>25 min preparation</span>
+                      </div>
+                      <div class="dietary-info">
+                        <span class="mini-badge gluten-free">GF</span>
+                        <span class="mini-badge dairy-free">DF</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="recommendation-card">
+                  <div class="recommendation-image">
+                    <img
+                      src="{% static 'restaurant/assets/img/restaurant/main-8.webp' %}"
+                      alt="Chef Recommendation"
+                      class="img-fluid"
+                    />
+                    <div class="chef-badge">
+                      <i class="bi bi-award"></i>
+                      <span>Chef's Pick</span>
+                    </div>
+                  </div>
+                  <div class="recommendation-content">
+                    <div class="recommendation-header">
+                      <h4>Lobster Thermidor Risotto</h4>
+                      <div class="recommendation-price">$39.95</div>
+                    </div>
+                    <p>
+                      Fusce dapibus tellus ac cursus commodo tortor mauris
+                      condimentum nibh ut fermentum massa.
+                    </p>
+                    <div class="recommendation-details">
+                      <div class="serving-info">
+                        <i class="bi bi-clock"></i>
+                        <span>30 min preparation</span>
+                      </div>
+                      <div class="dietary-info">
+                        <span class="mini-badge seafood">SF</span>
+                        <span class="mini-badge premium">Premium</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="footer" class="footer dark-background">
+      <div class="container">
+        <div class="row gy-5">
+          <div class="col-lg-4">
+            <div class="footer-content">
+              <a href="index.html" class="logo d-flex align-items-center mb-4">
+                <span class="sitename">Platia</span>
+              </a>
+              <p class="mb-4">
+                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+                posuere cubilia curae. Donec velit neque auctor sit amet aliquam
+                vel ullamcorper sit amet ligula.
+              </p>
+
+              <div class="newsletter-form">
+                <h5>Stay Updated</h5>
+                <form
+                  action="forms/newsletter.php"
+                  method="post"
+                  class="php-email-form"
+                >
+                  <div class="input-group">
+                    <input
+                      type="email"
+                      name="email"
+                      class="form-control"
+                      placeholder="Enter your email"
+                      required=""
+                    />
+                    <button type="submit" class="btn-subscribe">
+                      <i class="bi bi-send"></i>
+                    </button>
+                  </div>
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">Thank you for subscribing!</div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-6">
+            <div class="footer-links">
+              <h4>Company</h4>
+              <ul>
+                <li>
+                  <a href="#"><i class="bi bi-chevron-right"></i> About</a>
+                </li>
+                <li>
+                  <a href="#"><i class="bi bi-chevron-right"></i> Careers</a>
+                </li>
+                <li>
+                  <a href="#"><i class="bi bi-chevron-right"></i> Press</a>
+                </li>
+                <li>
+                  <a href="#"><i class="bi bi-chevron-right"></i> Blog</a>
+                </li>
+                <li>
+                  <a href="#"><i class="bi bi-chevron-right"></i> Contact</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-6">
+            <div class="footer-links">
+              <h4>Solutions</h4>
+              <ul>
+                <li>
+                  <a href="#"
+                    ><i class="bi bi-chevron-right"></i> Digital Strategy</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><i class="bi bi-chevron-right"></i> Cloud Computing</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><i class="bi bi-chevron-right"></i> Data Analytics</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><i class="bi bi-chevron-right"></i> AI Solutions</a
+                  >
+                </li>
+                <li>
+                  <a href="#"
+                    ><i class="bi bi-chevron-right"></i> Cybersecurity</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="footer-contact">
+              <h4>Get in Touch</h4>
+              <div class="contact-item">
+                <div class="contact-icon">
+                  <i class="bi bi-geo-alt"></i>
+                </div>
+                <div class="contact-info">
+                  <p>
+                    2847 Maple Avenue<br />Los Angeles, CA 90210<br />United
+                    States
+                  </p>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <div class="contact-icon">
+                  <i class="bi bi-telephone"></i>
+                </div>
+                <div class="contact-info">
+                  <p>+1 (555) 987-6543</p>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <div class="contact-icon">
+                  <i class="bi bi-envelope"></i>
+                </div>
+                <div class="contact-info">
+                  <p>contact@example.com</p>
+                </div>
+              </div>
+
+              <div class="social-links">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-twitter-x"></i></a>
+                <a href="#"><i class="bi bi-linkedin"></i></a>
+                <a href="#"><i class="bi bi-youtube"></i></a>
+                <a href="#"><i class="bi bi-github"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-lg-6">
+              <div class="copyright">
+                <p>
+                  © <span>Copyright</span>
+                  <strong class="px-1 sitename">Platia</strong>
+                  <span>All Rights Reserved</span>
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
+              </div>
+              <div class="credits">
+                <!-- All the links in the footer should remain intact. -->
+                <!-- You can delete the links only if you've purchased the pro version. -->
+                <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+                Designed by
+                <a href="https://bootstrapmade.com/">BootstrapMade</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scroll Top -->
+    <a
+      href="#"
+      id="scroll-top"
+      class="scroll-top d-flex align-items-center justify-content-center"
+      ><i class="bi bi-arrow-up-short"></i
+    ></a>
+
+    <!-- Vendor JS Files -->
+    <script src="{% static 'restaurant/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'restaurant/assets/vendor/php-email-form/validate.js' %}"></script>
+    <script src="{% static 'restaurant/assets/vendor/aos/aos.js' %}"></script>
+    <script src="{% static 'restaurant/assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+    <script src="{% static 'restaurant/assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'restaurant/assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'restaurant/assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+
+    <!-- Main JS File -->
+    <script src="{% static 'restaurant/assets/js/main.js' %}"></script>
+  </body>
+</html>

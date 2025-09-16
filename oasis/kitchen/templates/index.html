@@ -3,7 +3,10 @@
 <h2>Recent Orders</h2>
 <ul>
   {% for order in orders %}
-    <li>Order {{ order.id }} - {{ order.get_status_display }} - {{ order.total_price }}</li>
+  <li>
+    Order {{ order.id }} - {{ order.get_status_display }} - {{ order.total_price
+    }}
+  </li>
   {% endfor %}
 </ul>
 
