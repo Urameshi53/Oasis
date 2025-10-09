@@ -10,7 +10,7 @@ router.register(r'restaurants', RestaurantViewSet, basename='restaurant')
 router.register(r'orders', OrderViewSet, basename='order')
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
+    path('', views.IndexView.as_view(), name='restaurant'),
     path('api/', include(router.urls)),
 
 ]
