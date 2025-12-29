@@ -3,6 +3,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from oscar.apps.order.models import Order
 import requests
+from oscar.apps.catalogue.models import Product
+from rest_framework import permissions, viewsets
+from .serializers import ProductSerializer
+
 
 @csrf_exempt
 def paystack_callback(request):
@@ -26,3 +30,27 @@ def paystack_callback(request):
         except Order.DoesNotExist:
             return HttpResponse("Order not found", status=404)
     return HttpResponse("Payment failed", status=400)
+
+
+'''
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from oscar.apps.catalogue.models import Product
+from .serializers import ProductSerializer
+
+
+@api_view(["GET"])
+def product_list(request):
+    products = Product.objects.filter(available=True)
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
+'''
+
+class ProductViewSet(viewsets.ModelViewSet):
+    '''
+    API endpoint that allows users to be viewed or edited.
+    '''
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+

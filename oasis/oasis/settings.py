@@ -23,7 +23,9 @@ location = lambda x: os.path.join(
 
 #DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+#ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', '10.132.45.42'])
+#ALLOWED_HOSTS = ["10.132.45.42", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ['*']
 
 EMAIL_SUBJECT_PREFIX = '[Oscar sandbox]'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -42,7 +44,6 @@ SECRET_KEY = 'django-insecure-twekob**1cvid#27o=9gf%*+()i)0na*cag_=t0@ubo#@yh+6-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -58,6 +59,8 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'restaurant.apps.RestaurantConfig',
     'rest_framework',
+    "rest_framework.authtoken",
+    'corsheaders',
 
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
@@ -99,11 +102,18 @@ INSTALLED_APPS = [
     'oscar.apps.dashboard.shipping.apps.ShippingDashboardConfig',
 
     # 3rd-party apps that oscar depends on
-    'widget_tweaks',
     'haystack',
     'treebeard',
     'sorl.thumbnail',   # Default thumbnail backend, can be replaced
     'django_tables2',
+    #'theme', 
+    'tailwind',
+    #'django_browser_reload',
+    
+    # Third party apps
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'widget_tweaks',
 
     # Allauth
     'allauth',
@@ -111,6 +121,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 ]
+
+TAILWIND_APP_NAME = 'theme'
+
+# Crispy Forms Configuration
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 SITE_ID = 1
 
@@ -124,11 +140,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'corsheaders.middleware.CorsMiddleware',
+
     'oscar.apps.basket.middleware.BasketMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 
     'allauth.account.middleware.AccountMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'oasis.urls'
 
@@ -158,6 +178,9 @@ TEMPLATES = [
                 'oscar.apps.communication.notifications.context_processors.notifications',
                 'oscar.apps.checkout.context_processors.checkout',
                 'oscar.core.context_processors.metadata',
+
+                # Custom context processor
+                'oasis.context_processors.modern_settings',
             ],
             'debug': DEBUG,
         }
@@ -206,6 +229,9 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 '''
 # Allauth settings
 LOGIN_REDIRECT_URL = '/'
@@ -216,6 +242,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
         'APP': {
             'client_id': '789007336886-efm2802u73l1fjfk347f5m11ldbrcuij.apps.googleusercontent.com',
             'secret': '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',

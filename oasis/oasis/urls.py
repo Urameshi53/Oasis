@@ -19,12 +19,14 @@ from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-#from rest_framework.routers import DefaultRouter
-#from restaurant.views import RestaurantViewSet, OrderViewSet
-#from oasis.payment.views import MomoPaymentDetailsView
+from rest_framework import routers
+from .views import *
+from rest_framework.authtoken.views import obtain_auth_token
 
 from oasis.views import paystack_callback
 
+router = routers.DefaultRouter()
+router.register(r'products', ProductViewSet)
 
 
 urlpatterns = [
@@ -32,30 +34,20 @@ urlpatterns = [
 
     path('paystack/callback/', paystack_callback, name='paystack-callback'),
 
-    # The Django admin is not officially supported; expect breakage.
-    # Nonetheless, it's often useful for debugging.
-
     path('admin/', admin.site.urls),
     path("api/restaurant/", include("restaurant.urls")),
     path('restaurant/', include("restaurant.urls")),
-    #path("kitchen/", include("kitchen.urls")),
-
+    path("api/catalogue/", include("apps.catalogue.urls")),
+    path('api/', include(router.urls)),
+    path("api/auth/login/", obtain_auth_token),
+    path('api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     path('payments/', include('payments.urls')),
     path('accounts/', include('allauth.urls')),
 
-    #path('checkout/payment-details/', MomoPaymentDetailsView.as_view(), name='payment-details'),
-
     path('', include(apps.get_app_config('oscar').urls[0])),
 ]
-'''
-from oasis.payment.views import MoMoPaymentDetailsView
 
-checkout_patterns = [
-    path('checkout/payment-details/', MoMoPaymentDetailsView.as_view(), name='payment-details'),
-    # other overrides
-]
-'''
 
 if settings.DEBUG:
 
