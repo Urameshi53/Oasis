@@ -1,61 +1,63 @@
 {% load i18n %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:'en-gb' }}" class="{% block html_class %}no-js{% endblock %}">
-    <head>
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>{% block title %}{{ shop_name }} - {{ shop_tagline }}{% endblock %}</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
 
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <meta name="created" content="{% now 'jS M Y h:i' %}" />
-        <meta name="description" content="{% block description %}{% endblock %}" />
-        <meta name="viewport" content="{% block viewport %}width=device-width{% endblock %}" />
-        <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID">
-        <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta name="robots" content="noindex, nofollow">
 
-        {% block favicon %}
-            <link rel="shortcut icon" href="{% static 'oscar/favicon.ico' %}" />
-        {% endblock %}
+  <!-- Favicons -->
+  <link href="{% static 'oscar/assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'oscar/assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
 
-        {# Block where global CSS will go. #}
-        {% block styles %}
-            
-        {% endblock %}
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
-        {# Additional CSS - specific to certain pages #}
-        {% block extrastyles %}{% endblock %}
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'oscar/vendors/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'oscar/vendors/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'oscar/vendors/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+  <link href="{% static 'oscar/vendors/aos/aos.css" rel="stylesheet' %}">
+  <link href="{% static 'oscar/vendors/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'oscar/vendors/drift-zoom/drift-basic.css' %}" rel="stylesheet">
 
-        {% block extrahead %}{% endblock %}
+  <!-- Main CSS File -->
+  <link href="{% static 'oscar/assets/css/main.css' %}" rel="stylesheet">
 
-        {% block tracking %}
-            {# Default to using Google analytics #}
-            {% include "oscar/partials/google_analytics.html" %}
-        {% endblock %}
-    </head>
+</head>
 
-    <body id="{% block body_id %}default{% endblock %}" class="{% block body_class %}default{% endblock %}">
-        <div style="background-color: #000000; color: white; padding: 5px; text-align: center; font-size: 14px;">
-            📞 Call us: +233 54 123 4567
-        </div>
-        {# Main content goes in this 'layout' block #}
-        {% block layout %}{% endblock %}
+<body class="index-page">
 
-        {# Scripts loaded from a CDN. #}
-        {% block cdn_scripts %}
-            <!-- jQuery -->
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-            <script>window.jQuery || document.write('<script src="{% static "oscar/js/jquery/jquery.min.js" %}"><\/script>')</script>
-        {% endblock %}
+  {% block layout %}{% endblock %}
 
-        {# Local scripts #}
-        {% block scripts %}
-        {% endblock %}
 
-        {# Additional JS scripts #}
-        {% block extrascripts %}{% endblock %}
 
-        {# Block for body onload functions #}
-      
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-        {# Page meta-data - this is populated by the 'metadata' template context processor #}
-    </body>
-</html>
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script data-cfasync="false" src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../{{ shop_name }}/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'oscar/vendors/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'oscar/vendors/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'oscar/vendors/aos/aos.js' %}"></script>
+  <script src="{% static 'oscar/vendors/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{% static 'oscar/vendors/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'oscar/vendors/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'oscar/vendors/drift-zoom/Drift.min.js' %}"></script>
+  <script src="{% static 'oscar/vendors/purecounter/purecounter_vanilla.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'oscar/assets/js/main.js' %}"></script>
+
+<script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" data-cf-beacon="{" version":"2024.11.0","token":"68c5ca450bae485a842ff76066d69420","server_timing":{"name":{"cfcachestatus":true,"cfedge":true,"cfextpri":true,"cfl4":true,"cforigin":true,"cfspeedbrain":true},"location_startswith":null}}"="" crossorigin="anonymous"></script>
+
+
+</body></html>

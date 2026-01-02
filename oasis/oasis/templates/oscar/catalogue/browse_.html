@@ -1,112 +1,127 @@
 {% extends "oscar/layout_2_col.html" %}
+
+{% load basket_tags %}
+{% load category_tags %}
+{% load product_tags %}
+{% load display_tags %}
 {% load i18n %}
-{% load image_tags %}
 {% load static %}
-{% load currency_filters %}
-{% load purchase_info_tags %}
+
+{% block title %}
+    {% if summary %}{{ summary }} |{% endif %} {{ block.super }}
+{% endblock %}
+
+{% block headertext %}{{ summary }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ summary }}</li>
+        </ol>
+    </nav>
+{% endblock breadcrumbs %}
+
+{% block column_left %}
+
+    {% category_tree depth=1 as tree_categories %}
+    {% if tree_categories %}
+        <h4>{% trans "Browse Store" %}</h4>
+        <div class="side_categories card card-body bg-light">
+            <ul class="nav nav-list flex-column">
+                <li class="mt-2">
+                    <a href="{{ homepage_url }}">
+                        {% trans "All products" %}
+                    </a>
+                </li>
+                {% for tree_category in tree_categories %}
+                    <li class="mt-2">
+                        <a href="{{ tree_category.url }}">
+                            {% if tree_category.pk == category.pk %}
+                                <strong>{{ tree_category.name }}</strong>
+                            {% else %}
+                                {{ tree_category.name }}
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+                <li class="mt-2">
+                    <a href="{% url 'restaurant' %}"> {% trans "Restaurant" %} </a>
+                        {% trans "" %}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+    {% if has_facets %}
+        <h4>{% trans "Refine by" %}</h4>
+        <div class="side_categories card card-body bg-light">
+            {% for field, data in facet_data.items %}
+                {% if data.results %}
+                    {% include 'oscar/search/partials/facet.html' with name=data.name items=data.results %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-<style>
-    body {
-        background: #f8f9fa;
-        font-family: 'Segoe UI', sans-serif;
-    }
-    .sticky-header {
-        position: sticky;
-        top: 0;
-        background: #fff;
-        padding: 10px;
-        z-index: 1000;
-        border-bottom: 1px solid #e9ecef;
-    }
-    .category-chip {
-        display: inline-block;
-        padding: 6px 14px;
-        background: #e9ecef;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        margin-right: 6px;
-        white-space: nowrap;
-    }
-    .category-chip.active {
-        background: #0d6efd;
-        color: #fff;
-    }
-    .product-card {
-        border-radius: 12px;
-        overflow: hidden;
-        background: #fff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        transition: transform 0.2s;
-    }
-    .product-card:hover {
-        transform: translateY(-3px);
-    }
-    .product-card img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-    }
-    .product-info {
-        padding: 10px;
-    }
-    .product-title {
-        font-size: 1rem;
-        font-weight: 500;
-        margin-bottom: 4px;
-    }
-    .price-btn {
-        background: #0d6efd;
-        color: #fff;
-        border: none;
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.85rem;
-    }
-</style>
 
-<!-- Sticky Search & Categories -->
-<div class="sticky-header">
-    <input type="text" class="form-control mb-2" placeholder="{% trans 'Search for meals, restaurants...' %}">
-    <div class="d-flex overflow-auto pb-1">
-        <div class="category-chip active">{% trans 'All' %}</div>
-        <div class="category-chip">{% trans 'Rice Dishes' %}</div>
-        <div class="category-chip">{% trans 'Pizza' %}</div>
-        <div class="category-chip">{% trans 'Drinks' %}</div>
-        <div class="category-chip">{% trans 'Grills' %}</div>
-    </div>
-</div>
 
-<!-- Product Grid -->
-<div class="container mt-3">
-    <div class="row g-3">
-        {% for product in products %}
-        <div class="col-6 col-md-4 col-lg-3">
-            <div class="product-card">
-                <a href="{{ product.get_absolute_url }}">
-                    {% with image=product.primary_image %}
-                        {% if image %}
-                            <img src="{{ image.original.url }}" alt="{{ product.title }}">
-                        {% else %}
-                            <img src="https://via.placeholder.com/400x300" alt="{{ product.title }}">
-                        {% endif %}
-                    {% endwith %}
-                </a>
-                <div class="product-info">
-                    <div class="product-title">{{ product.title }}</div>
-                    {% purchase_info_for_product request product as session %}
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>{{ session.price.incl_tax|currency }}</span>
-                        <form action="{% url 'basket:add' pk=product.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="price-btn">{% trans "Add" %}</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <form method="get">
+        {# Render other search params as hidden inputs #}
+        {% for value in selected_facets %}
+            <input type="hidden" name="selected_facets" value="{{ value }}" />
         {% endfor %}
-    </div>
-</div>
+        <input type="hidden" name="q" value="{{ search_form.q.value|default_if_none:'' }}" />
+
+        {% if paginator.count %}
+            {% if paginator.num_pages > 1 %}
+                {% blocktrans with start=page_obj.start_index end=page_obj.end_index count num_results=paginator.count %}
+                    <strong>{{ num_results }}</strong> result - showing <strong>{{ start }}</strong> to <strong>{{ end }}</strong>.
+                {% plural %}
+                    <strong>{{ num_results }}</strong> results - showing <strong>{{ start }}</strong> to <strong>{{ end }}</strong>.
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count num_results=paginator.count %}
+                    <strong>{{ num_results }}</strong> result.
+                {% plural %}
+                    <strong>{{ num_results }}</strong> results.
+                {% endblocktrans %}
+            {% endif %}
+            {% if form %}
+                <div class="float-right">
+                    {% include "oscar/partials/form_field.html" with field=form.sort_by style='horizontal' %}
+                </div>
+            {% endif %}
+        {% else %}
+            <!--<p>
+                {% trans "<strong>0</strong> results." %}
+            </p>-->
+        {% endif %}
+    </form>
+
+    {{ product_tags }}
+    {% if products %}
+        <section>
+            <div>
+                <ol class="row list-unstyled ml-0 pl-0">
+                    {% block products %}
+                      {% for product in products %}
+                          <li class="col-6 col-md-4 col-lg-3">{% render_product product %}</li>
+                      {% endfor %}
+                    {% endblock %}
+                </ol>
+                {% include "oscar/partials/pagination.html" %}
+            </div>
+        </section>
+    {% else %}
+        <p class="nonefound">{% trans "Zero products found." %}</p>
+    {% endif %}
+
+{% endblock content %}
+
+{% block onbodyload %}
+    {{ block.super }}
+    oscar.search.init();
 {% endblock %}

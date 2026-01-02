@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block styles %}
-    <link rel="stylesheet" type="text/css" href="{% static "oscar/css/styles.css" %}" />
+  <link href="{% static 'oscar/assets/css/main.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block layout %}
@@ -10,18 +10,6 @@
     {% include "oscar/partials/nav_accounts.html" %}
 
     {# Site logo/title, mini-basket, browse dropdown and searchbox #}
-    <header class="header container">
-        <div class="page_inner">
-            <div class="row justify-content-between">
-                {% include "oscar/partials/brand.html" %}
-                {# Mini-basket wrapped in a block so some templates can now display it #}
-                {% block mini_basket %}{% include "oscar/partials/mini_basket.html" %}{% endblock %}
-            </div>
-        </div>
-        {% block navigation %}
-            {% include "oscar/partials/nav_primary.html" %}
-        {% endblock %}
-    </header>
 
     {# Main content of page - other layout templates may override this block #}
     {% block content_wrapper %}
