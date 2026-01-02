@@ -1,5 +1,6 @@
 Oasis is an online Retail shop for the students of KNUST.
 
+<img width="250" height="100" alt="OASIv2" src="https://github.com/user-attachments/assets/aa3e2d3e-d01f-4cb8-b9c0-ec119f82f5e8" />
 
 <img width="486" height="319" alt="oasis_logo" src="https://github.com/user-attachments/assets/6cf2b41d-6bf2-4dc7-a289-2deddbdc469e" />
 <img width="1366" height="768" alt="Screenshot 2025-08-02 150537" src="https://github.com/user-attachments/assets/6fa8f8c2-c112-4754-b646-6b69ce096cb1" />
