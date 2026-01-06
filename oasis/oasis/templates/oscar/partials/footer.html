@@ -1,58 +1,11 @@
+{% load basket_tags %}
+{% load category_tags %}
+{% load product_tags %}
+{% load display_tags %}
+{% load i18n %}
+{% load static %}
+
 <footer id="footer" class="footer">
-     <!-- Info Cards Section -->
-    <section id="info-cards" class="info-cards section light-background">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row g-4 justify-content-center">
-          <!-- Info Card 1 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-truck"></i>
-              </div>
-              <h3>Free Shipping</h3>
-              <p>Nulla sit morbi vestibulum eros duis amet, consectetur vitae lacus. Ut quis tempor felis sed nunc viverra.</p>
-            </div>
-          </div><!-- End Info Card 1 -->
-
-          <!-- Info Card 2 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-piggy-bank"></i>
-              </div>
-              <h3>Money Back Guarantee</h3>
-              <p>Nullam gravida felis ac nunc tincidunt, sed malesuada justo pulvinar. Vestibulum nec diam vitae eros.</p>
-            </div>
-          </div><!-- End Info Card 2 -->
-
-          <!-- Info Card 3 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-percent"></i>
-              </div>
-              <h3>Discount Offers</h3>
-              <p>Nulla ipsum nisi vel adipiscing amet, dignissim consectetur ornare. Vestibulum quis posuere elit auctor.</p>
-            </div>
-          </div><!-- End Info Card 3 -->
-
-          <!-- Info Card 4 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-headset"></i>
-              </div>
-              <h3>24/7 Support</h3>
-              <p>Ipsum dolor amet sit consectetur adipiscing, nullam vitae euismod tempor nunc felis vestibulum ornare.</p>
-            </div>
-          </div><!-- End Info Card 4 -->
-        </div>
-
-      </div>
-
-    </section><!-- /Info Cards Section -->
 
     <div class="footer-main">
       <div class="container">
@@ -62,19 +15,23 @@
               <a href="index.html" class="logo">
                 <span class="sitename">{{ shop_name }}</span>
               </a>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in nibh vehicula, facilisis magna ut, consectetur lorem.</p>
+              <p>
+                Oasis is an online market place for student in KNUST, Kumasi. 
+                With us you can get quality products
+                at discount and affordable prices.
+              </p>
               <div class="footer-contact mt-4">
                 <div class="contact-item">
                   <i class="bi bi-geo-alt"></i>
-                  <span>123 Fashion Street, New York, NY 10001</span>
+                  <span>Kotei Road, Kumasi</span>
                 </div>
                 <div class="contact-item">
                   <i class="bi bi-telephone"></i>
-                  <span>+1 (555) 123-4567</span>
+                  <span> (+233) 548 932 933</span>
                 </div>
                 <div class="contact-item">
                   <i class="bi bi-envelope"></i>
-                  <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="79111c151516391c01181409151c571a1614">[email�protected]</a></span>
+                  <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="79111c151516391c01181409151c571a1614">oasisknust@gmail.com</a></span>
                 </div>
               </div>
             </div>
@@ -84,12 +41,10 @@
             <div class="footer-widget">
               <h4>Shop</h4>
               <ul class="footer-links">
-                <li><a href="category.html">New Arrivals</a></li>
-                <li><a href="category.html">Bestsellers</a></li>
-                <li><a href="category.html">Women's Clothing</a></li>
-                <li><a href="category.html">Men's Clothing</a></li>
-                <li><a href="category.html">Accessories</a></li>
-                <li><a href="category.html">Sale</a></li>
+                {% category_tree depth=1 as tree_categories %}
+                {% for tree_category in tree_categories %}
+                <li><a href="{{ tree_category.get_absolute_url }}">{{ tree_category.name }}</a></li>
+                {% endfor %}
               </ul>
             </div>
           </div>

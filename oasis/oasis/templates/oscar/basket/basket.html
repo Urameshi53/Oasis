@@ -6,12 +6,19 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <nav class="breadcrumbs">
+          <ol>
+           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
             <li class="breadcrumb-item active" aria-current="page">{% trans "Basket" %}</li>
         </ol>
-    </nav>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
 {% endblock %}
 
 {# Hide mini-basket so we don't have two baskets to keep in sync #}

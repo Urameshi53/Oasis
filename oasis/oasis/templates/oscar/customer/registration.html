@@ -1,37 +1,67 @@
 {% extends "oscar/layout.html" %}
-
 {% load i18n %}
 
 {% block title %}
-    {% trans 'Register' %} | {{ block.super }}
+    {% trans "Register" %} | {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{{ homepage_url }}">{% trans 'Home' %}</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">{% trans 'Register' %}</li>
-        </ol>
-    </nav>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ homepage_url }}">{% trans "Home" %}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            {% trans "Create account" %}
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
-{% block headertext %}
-    {% trans "Register" %}
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
-    <div class="row align-self-center">
-        <div class="col-sm-6 register_form">
-            <form id="register_form" method="post">
-                {% csrf_token %}
-                {% include "oscar/partials/form_fields.html"  %}
-                <button name="registration_submit" type="submit" value="Register" class="btn btn-primary btn-lg" data-loading-text="{%trans 'Registering...' %}">{% trans 'Register' %}</button>
-                <a href="{% url 'customer:login' %}"> or login</a>
+<div class="row justify-content-center my-5">
+    <div class="col-md-6 col-lg-5">
 
-            </form>
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
 
+                <h2 class="text-center mb-4">
+                    {% trans "Create your account" %}
+                </h2>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form id="register_form" method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% include "oscar/partials/form_fields.html" with form=form %}
+
+                    <button type="submit"
+                            name="registration_submit"
+                            class="btn btn-primary btn-lg w-100 mt-3"
+                            data-loading-text="{% trans 'Registering…' %}">
+                        {% trans "Create account" %}
+                    </button>
+                </form>
+
+                {% if cancel_url %}
+                    <p class="text-center mt-3 mb-0">
+                        {% trans "Already have an account?" %}
+                        <a href="{{ cancel_url }}">
+                            {% trans "Log in" %}
+                        </a>
+                    </p>
+                {% endif %}
+
+            </div>
         </div>
+
     </div>
-{% endblock content %}
+</div>
+{% endblock %}

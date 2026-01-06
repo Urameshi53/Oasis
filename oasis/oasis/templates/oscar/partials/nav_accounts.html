@@ -1,6 +1,9 @@
 {% load i18n %}
 {% load static %}
+{% load currency_filters %}
+
 <header id="header" class="header position-relative">
+
     <!-- Top Bar -->
     <div class="top-bar py-2">
       <div class="container-fluid container-xl">
@@ -64,130 +67,128 @@
       </div>
     </div>
 
-    <!-- Main Header -->
+    <!-- ================= MAIN HEADER ================= -->
     <div class="main-header">
-      <div class="container-fluid container-xl">
-        <div class="d-flex py-3 align-items-center justify-content-between">
+        <div class="container-fluid container-xl">
+            <div class="d-flex py-3 align-items-center justify-content-between">
 
-          <!-- Logo -->
-          <a href="{% url 'home' %}" class="logo d-flex align-items-center">
-            <!-- Uncomment the line below if you also wish to use an image logo -->
-            <!-- <img src="assets/img/logo.webp" alt=""> -->
-            <h1 class="sitename">{{ shop_name }}</h1>
-          </a>
+                <!-- LOGO -->
+                <img src="{% static 'oscar/logo/logo.png' %}" alt="Oasis" height="50" width="auto">
+                <!--
+                <a href="{{ homepage_url }}" class="logo d-flex align-items-center">
+                    <h1 class="sitename">{{ shop_name }}</h1>
+                </a>-->
 
-          <!-- Search -->
-          <form class="search-form desktop-search-form" method="GET" action="{% url 'search:search' %}">
-            <div class="input-group">
-                <input class="form-control mr-sm-2" name="q" id="id_q" placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}">
-                <button class="btn" type="submit">
-                    <i class="bi bi-search"></i>
-                </button>
+                <!-- SEARCH (Oscar Search) -->
+                <form method="get"
+                      action="{% url 'search:search' %}"
+                      class="search-form desktop-search-form">
+                    <div class="input-group">
+                        <input class="form-control"
+                               type="search"
+                               name="q"
+                               value="{{ request.GET.q }}"
+                               placeholder="{% trans 'Search products…' %}">
+                        <button class="btn" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- HEADER ACTIONS -->
+                <div class="header-actions d-flex align-items-center">
+
+                    <!-- ACCOUNT -->
+                    <div class="dropdown">
+                        <button class="header-action-btn" data-bs-toggle="dropdown">
+                            <i class="bi bi-person"></i>
+                        </button>
+
+                        <div class="dropdown-menu dropdown-menu-end">
+                            {% if user.is_authenticated %}
+                                <div class="dropdown-header">
+                                    <strong>{% trans "Hello" %}, {{ user.username }}</strong>
+                                </div>
+
+                                {% if user.is_staff or perms.partner.dashboard_access %}
+                                   
+                                        <a href="{% url 'dashboard:index' %}" class="dropdown-item">
+                                            <i class="fas fa-list-ul mr-2"></i>
+                                            {% trans "Dashboard" %}
+                                        </a>
+                                 
+                                {% endif %}
+
+                                <a class="dropdown-item" href="{% url 'customer:profile-view' %}">
+                                    <i class="bi bi-person-circle me-2"></i>{% trans "My profile" %}
+                                </a>
+
+                                <a class="dropdown-item" href="{% url 'customer:order-list' %}">
+                                    <i class="bi bi-bag-check me-2"></i>{% trans "My orders" %}
+                                </a>
+
+                                <a class="dropdown-item" href="{% url 'customer:wishlists-list' %}">
+                                    <i class="bi bi-heart me-2"></i>{% trans "My wishlist" %}
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+
+                                <a class="dropdown-item text-danger" href="{% url 'customer:logout' %}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>{% trans "Sign out" %}
+                                </a>
+                            {% else %}
+                                <a class="btn btn-primary w-100 mb-2" href="{% url 'customer:login' %}">
+                                    {% trans "Sign in" %}
+                                </a>
+                                <a class="btn btn-outline-primary w-100" href="{% url 'customer:register' %}">
+                                    {% trans "Register" %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        <!-- WISHLIST -->
+                        <a href="{% url 'customer:wishlists-list' %}"
+                           class="header-action-btn d-none d-md-block">
+                            <i class="bi bi-heart"></i>
+                        </a>
+                    {% endif %}
+
+                    <!-- BASKET -->
+                    <a href="{% url 'basket:summary' %}" class="header-action-btn">
+                        <i class="bi bi-cart3"></i>
+                        {% if request.basket.num_items %}
+                            <span class="badge">{{ request.basket.num_items }}</span>
+                        {% endif %}
+                    </a>
+
+                    <!-- MOBILE NAV -->
+                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                </div>
             </div>
-        </form>
-
-          <!-- Actions -->
-          <div class="header-actions d-flex align-items-center justify-content-end">
-
-            <!-- Mobile Search Toggle -->
-            <button class="header-action-btn mobile-search-toggle d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
-              <i class="bi bi-search"></i>
-            </button>
-
-            {% if user.is_authenticated %}
-            <!-- Account -->
-            <div class="dropdown account-dropdown">
-              <button class="header-action-btn" data-bs-toggle="dropdown">
-                <i class="bi bi-person"></i>
-              </button>
-              <div class="dropdown-menu">
-                <div class="dropdown-header">
-                  <h6>Welcome to <span class="sitename">{{ shop_name }}</span></h6>
-                  <p class="mb-0">Access account & manage orders</p>
-                </div>
-                <div class="dropdown-body">
-                  <a class="dropdown-item d-flex align-items-center" href="account.html">
-                    <i class="bi bi-person-circle me-2"></i>
-                    <span>My Profile</span>
-                  </a>
-                  <a class="dropdown-item d-flex align-items-center" href="account.html">
-                    <i class="bi bi-bag-check me-2"></i>
-                    <span>My Orders</span>
-                  </a>
-                  <a class="dropdown-item d-flex align-items-center" href="account.html">
-                    <i class="bi bi-heart me-2"></i>
-                    <span>My Wishlist</span>
-                  </a>
-                  <a class="dropdown-item d-flex align-items-center" href="account.html">
-                    <i class="bi bi-gear me-2"></i>
-                    <span>Settings</span>
-                  </a>
-                </div>
-                {% else %}
-                <div class="dropdown-footer">
-                  <a href="{% url 'customer:login' %}" class="btn btn-primary w-100 mb-2">Sign In</a>
-                  <a href="{% url 'customer:register' %}" class="btn btn-outline-primary w-100">Register</a>
-                </div>
-                {% endif %}
-              </div>
-            </div>
-
-            {% if user.is_authenticated %}
-            
-            <!-- Wishlist -->
-            <a href="account.html" class="header-action-btn d-none d-md-block">
-              <i class="bi bi-heart"></i>
-              <span class="badge">0</span>
-            </a>
-
-            <!-- Cart -->
-            <a href="cart.html" class="header-action-btn">
-              <i class="bi bi-cart3"></i>
-              <span class="badge">3</span>
-            </a>
-            {% endif %}
-
-            <!-- Mobile Navigation Toggle -->
-            <i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
-
-          </div>
         </div>
-      </div>
     </div>
 
-    <!-- Navigation -->
+    <!-- ================= NAVIGATION ================= -->
     <div class="header-nav">
-      <div class="container-fluid container-xl">
-        <div class="position-relative">
-          <nav id="navmenu" class="navmenu d-flex justify-content-center">
-            <ul>
-              <li><a href="{% url 'home' %}" class="active">Home</a></li>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Category</a></li>
-              <li><a href="#">Product Details</a></li>
-              <li><a href="#">Cart</a></li>
-              <li><a href="#">Checkout</a></li>
-              
-              <li><a href="#">Contact</a></li>
-
-            </ul>
-          </nav>
+        <div class="container-fluid container-xl">
+            <nav class="navmenu d-flex justify-content-center">
+                <ul>
+                    <li><a href="{{ homepage_url }}" class="active">{% trans "Home" %}</a></li>
+                    <li><a href="#">{% trans "About" %}</a></li>
+                    <li><a href="{% url 'catalogue:index' %}">{% trans "Shop" %}</a></li>
+                    <li><a href="{% url 'basket:summary' %}">{% trans "Cart" %}</a></li>
+                    <li><a href="{% url 'checkout:index' %}">{% trans "Checkout" %}</a></li>
+                    <li><a href="#">{% trans "Contact" %}</a></li>
+                </ul>
+            </nav>
         </div>
-      </div>
     </div>
 
-    <!-- Mobile Search Form -->
-    <div class="collapse" id="mobileSearch">
-      <div class="container">
-        <form class="search-form">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search for products">
-            <button class="btn" type="submit">
-              <i class="bi bi-search"></i>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+</header>
 
-  </header>
+
+{% block scripts %}
+    <script src="{% static 'oscar/js/bootstrap.bundle.min.js' %}"></script>
+{% endblock %}

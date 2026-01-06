@@ -1,5 +1,6 @@
 {% extends "oscar/layout.html" %}
 
+{% load static %}
 {% load history_tags %}
 {% load currency_filters %}
 {% load reviews_tags %}
@@ -7,6 +8,12 @@
 {% load display_tags %}
 {% load i18n %}
 {% load purchase_info_tags %}
+
+
+{% block styles %}
+  <link href="{% static 'oscar/assets/css/main.css' %}" rel="stylesheet">
+{% endblock %}
+
 
 {% block title %}
     {{ product.get_meta_title }} | {{ block.super }}
@@ -17,9 +24,13 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
+
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <nav class="breadcrumbs">
+          <ol>
+           <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
             {% with category=product.get_categories.first %}
                 {% for c in category.get_ancestors_and_self %}
                     <li class="breadcrumb-item"><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>
@@ -35,8 +46,11 @@
                         </li>
                     {% endif %}
             {% endwith %}
-        </ol>
-    </nav>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+    
 {% endblock %}
 
 {% block header %}
@@ -202,7 +216,8 @@
         {% endif %}
     {% endwith %}
 
-    {% recently_viewed_products current_product=product %}
+
+
 
 </article><!-- End of product page -->
 {% endblock content %}

@@ -12,10 +12,12 @@
     {# Site logo/title, mini-basket, browse dropdown and searchbox #}
 
     {# Main content of page - other layout templates may override this block #}
-    {% block content_wrapper %}
+    {% block content_wrapper %}                
+    {% block breadcrumbs %}{% endblock %}
+    <p></p>
+
         <div class="container page">
             <div class="page_inner">
-                {% block breadcrumbs %}{% endblock %}
                 {% block header %}
                     <div class="page-header">
                         <h1>{% block headertext %}{% endblock %}</h1>

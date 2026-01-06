@@ -43,7 +43,7 @@ urlpatterns = [
     path('api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     path('payments/', include('payments.urls')),
-    path('accounts/', include('allauth.urls')),
+    #path('accounts/', include('allauth.urls')),
 
     path('', include(apps.get_app_config('oscar').urls[0])),
 ]
