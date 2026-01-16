@@ -64,9 +64,13 @@
                     <h3 class="product-title">
                       <a href="{{ product.get_absolute_url }}">{{ product.get_title }}</a>
                     </h3>
-                    {% if product.primary_stockrecord %}
+                    {% if product.stockrecords.all %}
                       <div class="product-price">
-                        <span class="current-price">GHS {{ product.primary_stockrecord.price }}</span>
+                        <span class="current-price">GHS {{ product.stockrecords.all.0.price }}</span>
+                      </div>
+                    {% else %}
+                      <div class="product-price">
+                        <span class="current-price">Price not available</span>
                       </div>
                     {% endif %}
                     <button class="btn btn-add-to-cart w-100">
