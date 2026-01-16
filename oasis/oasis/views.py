@@ -74,3 +74,22 @@ class ContactView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Contact Us'
         return context
+
+
+def search_products(request):
+    query = request.GET.get('q', '')
+    products = []
+    
+    if query:
+        # Search products by title or description
+        products = Product.objects.filter(
+            title__icontains=query
+        )
+    
+    context = {
+        'search_query': query,
+        'products': products,
+        'page_title': f'Search Results for "{query}"'
+    }
+    
+    return render(request, 'oscar/search/search.html', context)

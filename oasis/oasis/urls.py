@@ -47,6 +47,7 @@ urlpatterns = [
     # Page routes
     path('about/', AboutView.as_view(), name='about'),
     path('contact/', ContactView.as_view(), name='contact'),
+    path('search/', search_products, name='search'),
 
     path('', include(apps.get_app_config('oscar').urls[0])),
 ]
