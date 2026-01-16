@@ -1,0 +1,76 @@
+{% extends "oscar/layout.html" %}
+{% load static %}
+
+{% block title %}About Us - Oasis{% endblock %}
+
+{% block content %}
+<main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">About</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'catalogue:index' %}">Home</a></li>
+            <li class="current">About</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- About 2 Section -->
+    <section id="about-2" class="about-2 section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <span class="section-badge"><i class="bi bi-info-circle"></i> About Us</span>
+        <div class="row">
+          <div class="col-lg-6">
+            <h2 class="about-title">Welcome to Oasis</h2>
+            <p class="about-description">Oasis is an online retail platform dedicated to providing students and the community with quality products at affordable prices.</p>
+          </div>
+          <div class="col-lg-6">
+            <p class="about-text">We believe in delivering exceptional shopping experiences with a wide variety of products ranging from fashion, electronics, home goods, and more.</p>
+            <p class="about-text">Our mission is to make online shopping convenient, secure, and enjoyable for everyone.</p>
+          </div>
+        </div>
+
+        <div class="row features-boxes gy-4 mt-3">
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-box">
+              <div class="icon-box">
+                <i class="bi bi-bullseye"></i>
+              </div>
+              <h3><a href="#" class="stretched-link">Quality Products</a></h3>
+              <p>We curate our product selection to ensure the highest quality standards for our customers.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-box">
+              <div class="icon-box">
+                <i class="bi bi-person-check"></i>
+              </div>
+              <h3><a href="#" class="stretched-link">Customer Service</a></h3>
+              <p>Our dedicated support team is available 24/7 to assist you with any questions or concerns.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="feature-box">
+              <div class="icon-box">
+                <i class="bi bi-clipboard-data"></i>
+              </div>
+              <h3><a href="#" class="stretched-link">Fast Delivery</a></h3>
+              <p>We ensure quick and reliable delivery of all orders directly to your doorstep.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About 2 Section -->
+
+</main>
+{% endblock %}

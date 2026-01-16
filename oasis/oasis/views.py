@@ -1,6 +1,8 @@
 # yourapp/views.py
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render
+from django.views.generic import TemplateView
 from oscar.apps.order.models import Order
 import requests
 from oscar.apps.catalogue.models import Product
@@ -54,3 +56,21 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
 
+
+# Simple views for static pages
+class AboutView(TemplateView):
+    template_name = 'oscar/pages/about.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'About Us'
+        return context
+
+
+class ContactView(TemplateView):
+    template_name = 'oscar/pages/contact.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Contact Us'
+        return context
