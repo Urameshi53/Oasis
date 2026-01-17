@@ -9,12 +9,8 @@
 {% load purchase_info_tags %}
 {% load image_tags %}
 
-{% block styles %}
 
-  <link href="{% static 'oscar/assets/css/main.css' %}" rel="stylesheet">
-{% endblock %}
-
-
+{{ product_tags }}
 {% with products_sliced=products|slice:":6" %}
     {% if products_sliced %}
         <div class="sub-header">
@@ -99,5 +95,5 @@
 {% endwith %}
 
 {% block scripts %}
-  <script src="{% static 'oscar/assets/js/main.js' %}"></script>
+  <script src="{% static 'oscar/vendors/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 {% endblock %}

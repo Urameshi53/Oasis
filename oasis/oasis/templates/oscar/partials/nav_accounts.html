@@ -67,6 +67,10 @@
       </div>
     </div>
 
+    <!-- MOBILE SEARCH -->
+
+
+
     <!-- ================= MAIN HEADER ================= -->
     <div class="main-header">
         <div class="container-fluid container-xl">
@@ -168,6 +172,23 @@
                 </div>
             </div>
         </div>
+    </div>
+
+        <div class="container-fluid d-lg-none py-2">
+        <form method="get"
+            action="{% url 'search:search' %}"
+            class="mobile-search-form">
+            <div class="input-group">
+                <input class="form-control"
+                    type="search"
+                    name="q"
+                    value="{{ request.GET.q }}"
+                    placeholder="{% trans 'Search products…' %}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
     </div>
 
     <!-- ================= NAVIGATION ================= -->

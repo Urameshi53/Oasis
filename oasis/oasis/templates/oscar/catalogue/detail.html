@@ -18,6 +18,10 @@
     {{ product.get_meta_description }}
 {% endblock %}
 
+{% block styles %}
+  <link href="{% static 'oscar/assets/css/main.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumbs %}
 
     <!-- Page Title -->

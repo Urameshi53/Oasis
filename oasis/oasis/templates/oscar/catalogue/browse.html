@@ -147,12 +147,17 @@
                             <span class="badge bg-accent">New</span>
                           </div>-->
                           <div class="product-actions">
+                            
                             <button class="btn-wishlist" type="button" aria-label="Add to wishlist">
                               <i class="bi bi-heart"></i>
                             </button>
-                            <button class="btn-quickview" type="button" aria-label="Quick view">
-                              <i class="bi bi-eye"></i>
-                            </button>
+
+                            <a href="{{ product.get_absolute_url }}">
+                              <button class="btn-quickview" type="button" aria-label="Quick view">
+                                <i class="bi bi-eye"></i>
+                              </button> 
+                            </a>
+
                           </div>
                         </div>
                         <div class="product-info">
