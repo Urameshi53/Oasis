@@ -353,7 +353,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 OSCAR_SHOP_NAME = "Oasis"
 OSCAR_SHOP_TAGLINE = "Premium with less cost"
 
-OSCAR_RECENTLY_VIEWED_PRODUCTS = 20
+OSCAR_RECENTLY_VIEWED_PRODUCTS = 5
 OSCAR_ALLOW_ANON_CHECKOUT = True
 
 # Oscar's default currency
