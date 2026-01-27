@@ -8,65 +8,44 @@
 {% purchase_info_for_product request product as session %}
     
 {% block product %}
+<div class="col-6 col-md-4 col-lg-3">
+  <div class="product-card">
+    {% block product_image %}
+    <div class="product-image">
+      {% with image=product.primary_image %}
+        {% oscar_thumbnail image.original "x400" upscale=False as thumb %}
+        <a href="{{ product.get_absolute_url }}">
+          <img src="{{ thumb.url }}" alt="{{ product.get_title }}" class="main-image">
+          <img src="{{ thumb.url }}" alt="{{ product.get_title }}" class="hover-image">
+        </a>
+      {% endwith %}
+      <div class="product-overlay"></div>
+      <div class="product-actions">
+        <button class="action-btn" type="button" aria-label="Add to wishlist">
+          <i class="bi bi-heart"></i>
+        </button>
+        <button class="action-btn" type="button" aria-label="Quick view">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+    </div>
+    {% endblock %}
+    
+    <div class="product-details">
+      {% block product_title %}
+      <h3 class="product-title">
+        <a href="{{ product.get_absolute_url }}">{{ product.get_title|truncatewords:6 }}</a>
+      </h3>
+      {% endblock %}
 
-<!-- Product 1 -->
-          <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-            <div class="product-card">
-                {% block product_image %}
-              <div class="product-image">
-                {% with image=product.primary_image %}
-                    {% oscar_thumbnail image.original "x155" upscale=False as thumb %}
-                        <a href="{{ product.get_absolute_url }}">
-                            <img src="{{ thumb.url }}" alt="{{ product.get_title }}"class="img-fluid default-image" alt="Product" loading="lazy">
-                            <img src="{{ thumb.url }}" class="img-fluid hover-image" alt="Product hover" loading="lazy">
-                        </a>
-                
-                {% endwith %}
-                {% endblock %}
-                <!--<img src="assets/img/product/product-1.webp" class="img-fluid default-image" alt="Product" loading="lazy">
-                <img src="assets/img/product/product-1-variant.webp" class="img-fluid hover-image" alt="Product hover" loading="lazy">
-                <div class="product-tags">
-                  <span class="badge bg-accent">New</span>
-                </div>-->
-                <div class="product-actions">
-                  <button class="btn-wishlist" type="button" aria-label="Add to wishlist">
-                    <i class="bi bi-heart"></i>
-                  </button>
-                  <button class="btn-quickview" type="button" aria-label="Quick view">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="product-info">
-                {% block product_title %}
-                <h3 class="product-title"><a href="{{ product.get_absolute_url }}">{{ product.get_title|truncatewords:4 }}</a></h3>
-                {% endblock %}
-
-                {% block product_price %}
-                <div class="product-price">
-                  {% include "oscar/catalogue/partials/stock_record.html" %}
-                
-                </div>
-                {% endblock %}
-
-                {% block product_review %}
-                {% iffeature "reviews" %}
-                <div class="product-rating {{ product.rating|as_stars }}">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                  <span class="rating-count">(42)</span>
-                </div>
-                {% endiffeature %}
-                {% endblock %}
-                <button class="btn btn-add-to-cart">
-                  <i class="bi bi-bag-plus me-2"></i>Add to Cart
-                </button>
-              </div>
-            </div>
-          </div><!-- End Product 1 -->
-
-
+      {% block product_price %}
+      <div class="product-meta">
+        <div class="product-price">
+          {% include "oscar/catalogue/partials/stock_record.html" %}
+        </div>
+      </div>
+      {% endblock %}
+    </div>
+  </div>
+</div>
 {% endblock %}

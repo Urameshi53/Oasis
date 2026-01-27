@@ -42,56 +42,73 @@
 {% endblock %}
 
 {% block content %}
-{{ test }}
-    <form method="get">
-        {# Render other search params as hidden inputs #}
-        {% for value in selected_facets %}
-            <input type="hidden" name="selected_facets" value="{{ value }}" />
-        {% endfor %}
-        <input type="hidden" name="q" value="{{ search_form.q.value }}" />
+    <div class="search-results-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <h2 class="h4 mb-2 fw-bold">Search Results for "{{ query }}"</h2>
+                {% if paginator.count %}
+                    <p class="text-muted mb-0">
+                        {% if paginator.num_pages > 1 %}
+                            {% blocktrans count num_results=paginator.count %}
+                                Found <strong>{{ num_results }}</strong> product
+                            {% plural %}
+                                Found <strong>{{ num_results }}</strong> product(s)
+                            {% endblocktrans %}
+                        {% else %}
+                            {% blocktrans count num_results=paginator.count %}
+                                Found <strong>{{ num_results }}</strong> product
+                            {% plural %}
+                                Found <strong>{{ num_results }}</strong> product(s)
+                            {% endblocktrans %}
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+            {% if paginator.count %}
+                <div>
+                    <form method="get" class="d-inline">
+                        {% for value in selected_facets %}
+                            <input type="hidden" name="selected_facets" value="{{ value }}" />
+                        {% endfor %}
+                        <input type="hidden" name="q" value="{{ search_form.q.value }}" />
+                        {% include "oscar/partials/form_field.html" with field=search_form.sort_by %}
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
-        {% if paginator.count %}
-            {% if paginator.num_pages > 1 %}
-                {% blocktrans with start=page.start_index end=page.end_index num_results=paginator.count %}
-                    Found <strong>{{ num_results }}</strong> results, showing <strong>{{ start }}</strong> to <strong>{{ end }}</strong>.
-                {% endblocktrans %}
-            {% else %}
-                {% blocktrans count num_results=paginator.count %}
-                    Found <strong>{{ num_results }}</strong> result.
-                {% plural %}
-                    Found <strong>{{ num_results }}</strong> results.
+    {% if not paginator.count %}
+        <div class="alert alert-info">
+            {% trans "Found <strong>0</strong> results." %}
+            {% if suggestion %}
+                {% url 'search:search' as search_url %}
+                {% blocktrans %}
+                    Did you mean <a href="{{ search_url }}?q={{ suggestion }}" class="alert-link">"{{ suggestion }}"</a>?
                 {% endblocktrans %}
             {% endif %}
-            <div class="float-right">
-                {% include "oscar/partials/form_field.html" with field=search_form.sort_by %}
-            </div>
-        {% else %}
-            <p>
-                {% trans "Found <strong>0</strong> results." %}
-                {% if suggestion %}
-                    {% url 'search:search' as search_url %}
-                    {% blocktrans %}
-                        Did you mean <a href="{{ search_url }}?q={{ suggestion }}">"{{ suggestion }}"</a>?
-                    {% endblocktrans %}
-                {% endif %}
-            </p>
-        {% endif %}
-    </form>
+        </div>
+    {% endif %}
 
     {% if page.object_list %}
-        <section>
-            <div>
-                <ol class="row list-unstyled ml-0 pl-0">
+        <section class="search-products-section">
+            <div class="search-product-list">
+                <div class="row g-4">
                     {% for result in page.object_list %}
-                          <li class="col-6 col-md-4 col-lg-3">{% render_product result.object %}</li>
+                        {% render_product result.object %}
                     {% endfor %}
-                </ol>
-                {% include "oscar/partials/pagination.html" with page_obj=page %}
+                </div>
             </div>
+            {% if paginator.num_pages > 1 %}
+                <div class="mt-5">
+                    {% include "oscar/partials/pagination.html" with page_obj=page %}
+                </div>
+            {% endif %}
         </section>
     {% endif %}
 
 {% endblock %}
+
 
 {% block onbodyload %}
     {{ block.super }}
