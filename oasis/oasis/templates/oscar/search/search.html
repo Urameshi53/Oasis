@@ -1,5 +1,7 @@
 {% extends "oscar/layout.html" %}
 {% load static %}
+{% load i18n %}
+{% load product_tags %}
 
 {% block title %}Search Results - Oasis{% endblock %}
 
@@ -20,7 +22,7 @@
     </div><!-- End Page Title -->
 
     <!-- Search Results Section -->
-    <section class="search-results search-product-list section">
+    <section class="search-results best-sellers section">
       <div class="container">
         <div class="row mb-4">
           <div class="col-12">
@@ -36,55 +38,7 @@
         {% if products %}
           <div class="row gy-4">
             {% for product in products %}
-              <!-- Product Card -->
-              <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
-                <div class="product-card">
-                  <div class="product-image">
-                    {% with image=product.primary_image %}
-                      {% if image %}
-                        <a href="{{ product.get_absolute_url }}">
-                          <img src="{{ image.original.url }}" alt="{{ product.get_title }}" class="img-fluid">
-                        </a>
-                      {% else %}
-                        <div class="placeholder-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                          <i class="bi bi-image"></i>
-                        </div>
-                      {% endif %}
-                    {% endwith %}
-                    <div class="product-overlay"></div>
-                    <div class="product-actions">
-                      <button class="action-btn" type="button" aria-label="Add to wishlist">
-                        <i class="bi bi-heart"></i>
-                      </button>
-                      <button class="action-btn" type="button" aria-label="Quick view">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="product-details">
-                    <h3 class="product-title">
-                      <a href="{{ product.get_absolute_url }}">{{ product.get_title }}</a>
-                    </h3>
-                    {% if product.stockrecords.all %}
-                      <div class="product-price">
-                        <span class="current-price">GHS {{ product.stockrecords.all.0.price }}</span>
-                      </div>
-                    {% else %}
-                      <div class="product-price">
-                        <span class="current-price">Price not available</span>
-                      </div>
-                    {% endif %}
-                    <form method="post" action="{% url 'basket:add' product.id %}" class="add-to-basket-form">
-                      {% csrf_token %}
-                      <input type="hidden" name="quantity" value="1">
-                      <input type="hidden" name="next" value="{{ request.path }}">
-                      <button type="submit" class="btn btn-add-to-cart w-100">
-                        <i class="bi bi-bag-plus me-2"></i>Add to Cart
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div><!-- End Product Card -->
+              {% include "oscar/catalogue/partials/product.html" %}
             {% endfor %}
           </div>
         {% endif %}
