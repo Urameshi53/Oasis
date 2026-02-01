@@ -111,7 +111,7 @@
                         <div class="dropdown-menu dropdown-menu-end">
                             {% if user.is_authenticated %}
                                 <div class="dropdown-header">
-                                    <strong>{% trans "Hello" %}, {{ user.username }}</strong>
+                                    <strong>{% trans "Hello" %}, {{ request.user.username }}</strong>
                                 </div>
 
                                 {% if user.is_staff or perms.partner.dashboard_access %}
