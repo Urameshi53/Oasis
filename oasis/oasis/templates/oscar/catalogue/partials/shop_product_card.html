@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load image_tags %}
+{% load currency_filters %}
+{% load purchase_info_tags %}
+{% load vendor_tags %}
+
+{% purchase_info_for_product request product as session %}
+{% seller_for_product product as seller %}
+
+<div class="shop-card">
+    <a class="shop-card__img" href="{{ product.get_absolute_url }}">
+        {% with image=product.primary_image %}
+            {% if image %}
+                {% oscar_thumbnail image.original "300x300" upscale=False as thumb %}
+                <img src="{{ thumb.url }}" alt="{{ product.get_title }}" loading="lazy">
+            {% else %}
+                <span class="ph"><i class="bi bi-image"></i></span>
+            {% endif %}
+        {% endwith %}
+        <button class="shop-card__fav" type="button" aria-label="{% trans 'Add to wishlist' %}">
+            <i class="bi bi-heart"></i>
+        </button>
+    </a>
+
+    <div class="shop-card__body">
+        <h3 class="shop-card__title">
+            <a href="{{ product.get_absolute_url }}">{{ product.get_title }}</a>
+        </h3>
+
+        {% if seller %}
+            <div class="shop-soldby">
+                {% trans "by" %} <a href="{% url 'vendor:store' code=seller.code %}">{{ seller.display_name }}</a>
+            </div>
+        {% endif %}
+
+        <div class="shop-card__price">
+            {% if session.price.exists %}
+                {% if session.price.excl_tax == 0 %}
+                    {% trans "Free" %}
+                {% elif session.price.is_tax_known %}
+                    {{ session.price.incl_tax|currency:session.price.currency }}
+                {% else %}
+                    {{ session.price.excl_tax|currency:session.price.currency }}
+                {% endif %}
+            {% else %}
+                <span class="muted">{% trans "Unavailable" %}</span>
+            {% endif %}
+        </div>
+
+        {% if session.availability.is_available_to_buy and session.price.exists %}
+            <form action="{% url 'basket:add' pk=product.pk %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="shop-btn">
+                    <i class="bi bi-bag-plus"></i> {% trans "Add to cart" %}
+                </button>
+            </form>
+        {% else %}
+            <a href="{{ product.get_absolute_url }}" class="shop-btn shop-btn--ghost">
+                {% trans "View" %}
+            </a>
+        {% endif %}
+    </div>
+</div>

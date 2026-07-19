@@ -41,7 +41,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path("api/auth/login/", obtain_auth_token),
     path('api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
+    path('vendor/', include('vendor.urls')),
+    path('rider/', include('rider.urls')),
     path('payments/', include('payments.urls')),
     
     # Page routes
@@ -49,7 +50,17 @@ urlpatterns = [
     path('contact/', ContactView.as_view(), name='contact'),
     path('search/', search_products, name='search'),
 
+    # Google social login (allauth). Oscar owns /accounts/ for email/password,
+    # so we only add the social endpoints. The Google provider routes
+    # (/accounts/google/login/ + callback) don't collide with Oscar and go first.
+    path('accounts/', include('allauth.socialaccount.providers.google.urls')),
+
     path('', include(apps.get_app_config('oscar').urls[0])),
+
+    # Remaining allauth social routes (signup/cancelled/error) go AFTER Oscar so
+    # Oscar's own /accounts/ pages take priority; these only serve paths Oscar
+    # doesn't define.
+    path('accounts/', include('allauth.socialaccount.urls')),
 ]
 
 

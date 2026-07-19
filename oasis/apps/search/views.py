@@ -1,8 +1,7 @@
 # pylint: disable=E1101
 from urllib.parse import quote
-from django.contrib import messages
 from django.http import Http404, HttpResponsePermanentRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
 
 from oscar.core.loading import get_class, get_model
@@ -13,10 +12,16 @@ BaseSearchView = get_class("search.views.base", "BaseSearchView")
 Category = get_model("catalogue", "Category")
 Product = get_model("catalogue", "Product")
 
+from .product_filters import filter_context
+
 
 class CatalogueView(BaseSearchView):
     """
-    Browse all products in the catalogue
+    Browse all products in the catalogue.
+
+    Products are filtered/sorted/paginated by our own ORM-based filter system
+    (``apps.search.product_filters``), so we bypass haystack's search + pager
+    entirely and render the template directly.
     """
 
     form_class = BrowseCategoryForm
@@ -25,23 +30,11 @@ class CatalogueView(BaseSearchView):
     enforce_paths = True
 
     def get(self, request, *args, **kwargs):
-        try:
-            return super().get(request, *args, **kwargs)
-        except Http404:
-            # Redirect to page one.
-            messages.error(request, _("The given page number was invalid."))
-            return redirect("catalogue:index")
-
-    def get_context_data(self, *args, **kwargs):
-        ctx = super().get_context_data(*args, **kwargs)
-        ctx["summary"] = _("All products")
         books_category = Category.objects.filter(name__iexact="Books").first()
-        products = Product.objects.exclude(
-                categories=books_category
-        ).order_by('?')        
-        print(products)
-        ctx["products"] = products
-        return ctx
+        base = Product.objects.browsable().exclude(categories=books_category)
+        context = filter_context(request, base)
+        context["summary"] = _("All products")
+        return render(request, self.template_name, context)
 
 
 class ProductCategoryView(BaseSearchView):
@@ -66,11 +59,10 @@ class ProductCategoryView(BaseSearchView):
         if potential_redirect is not None:
             return potential_redirect
 
-        try:
-            return super().get(request, *args, **kwargs)
-        except Http404:
-            messages.error(request, _("The given page number was invalid."))
-            return redirect(self.category.get_absolute_url())
+        base = Product.objects.browsable().filter(categories=self.category)
+        context = filter_context(request, base)
+        context["category"] = self.category
+        return render(request, self.template_name, context)
 
     def is_viewable(self, category, request):
         return category.is_public or request.user.is_staff
@@ -85,14 +77,3 @@ class ProductCategoryView(BaseSearchView):
 
     def get_category(self):
         return get_object_or_404(Category, pk=self.kwargs["pk"])
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["category"] = self.category
-        context["products"] = Product.objects.filter(categories=self.category)
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["categories"] = self.category.get_descendants_and_self()
-        return kwargs

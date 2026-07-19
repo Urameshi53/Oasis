@@ -1,0 +1,43 @@
+{% load i18n %}
+{# Modern product filter bar. Preserves the search query (q) when present so
+   filters combine with search. Used by catalogue, category and search pages. #}
+<form method="get" class="shop-filterbar" action="{{ request.path }}">
+    {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+    <div class="shop-filterbar__row">
+        <div class="fb-field">
+            <label for="fb-sort">{% trans "Sort by" %}</label>
+            <select id="fb-sort" name="sort" onchange="this.form.submit()">
+                <option value="">{% trans "Featured" %}</option>
+                {% for value, label in sort_options %}
+                    <option value="{{ value }}" {% if current.sort == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="fb-field">
+            <label for="fb-min">{% trans "Min price" %}</label>
+            <input id="fb-min" type="number" name="min_price" min="0" step="1" value="{{ current.min_price }}" placeholder="0">
+        </div>
+        <div class="fb-field">
+            <label for="fb-max">{% trans "Max price" %}</label>
+            <input id="fb-max" type="number" name="max_price" min="0" step="1" value="{{ current.max_price }}" placeholder="∞">
+        </div>
+        <div class="fb-field">
+            <label for="fb-vendor">{% trans "Store" %}</label>
+            <select id="fb-vendor" name="vendor">
+                <option value="">{% trans "All stores" %}</option>
+                {% for v in filter_vendors %}
+                    <option value="{{ v.code }}" {% if current.vendor == v.code %}selected{% endif %}>{{ v.display_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="fb-field fb-check">
+            <label><input type="checkbox" name="in_stock" value="1" {% if current.in_stock %}checked{% endif %}> {% trans "In stock only" %}</label>
+        </div>
+        <div class="fb-actions">
+            <button type="submit" class="shop-btn" style="width:auto;"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
+            {% if has_active_filters %}
+                <a href="{% if search_query %}?q={{ search_query|urlencode }}{% else %}{{ request.path }}{% endif %}" class="shop-btn shop-btn--ghost" style="width:auto;">{% trans "Clear" %}</a>
+            {% endif %}
+        </div>
+    </div>
+</form>

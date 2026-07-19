@@ -1,249 +1,73 @@
 {% extends "oscar/layout.html" %}
 
-{% load basket_tags %}
 {% load category_tags %}
-{% load product_tags %}
-{% load display_tags %}
 {% load i18n %}
 {% load static %}
-
-{% load reviews_tags %}
-{% load purchase_info_tags %}
-{% load image_tags %}
-{% purchase_info_for_product request product as session %}
 
 {% block title %}
     {% if summary %}{{ summary }} |{% endif %} {{ block.super }}
 {% endblock %}
 
+{% block header %}{% endblock %}
 
 {% block content %}
-<main class="main">
+{% include "oscar/partials/shop_styles.html" %}
 
-    <!-- Category Cards Section --
-    <section id="category-cards" class="category-cards section">
-         <!-- Section Title --
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Featured Products</h2>
-      </div><!-- End Section Title --
+<div class="shop-wrap">
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+    {% block shop_head %}
+    <div class="shop-head">
+        <h1>{% trans "Shop all products" %}</h1>
+        <p>{% trans "Everything you need for campus life — at student-friendly prices." %}</p>
+    </div>
+    {% endblock %}
 
-        <div class="category-slider swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "autoplay": {
-                "delay": 5000,
-                "disableOnInteraction": false
-              },
-              "grabCursor": true,
-              "speed": 600,
-              "slidesPerView": "auto",
-              "spaceBetween": 20,
-              "navigation": {
-                "nextEl": ".swiper-button-next",
-                "prevEl": ".swiper-button-prev"
-              },
-              "breakpoints": {
-                "320": {
-                  "slidesPerView": 2,
-                  "spaceBetween": 15
-                },
-                "576": {
-                  "slidesPerView": 3,
-                  "spaceBetween": 15
-                },
-                "768": {
-                  "slidesPerView": 4,
-                  "spaceBetween": 20
-                },
-                "992": {
-                  "slidesPerView": 5,
-                  "spaceBetween": 20
-                },
-                "1200": {
-                  "slidesPerView": 6,
-                  "spaceBetween": 20
-                }
-              }
-            }
-          </script>
-          <div class="swiper-wrapper">
-            {% category_tree depth=1 as tree_categories %}
+    {% block shop_categories %}
+        {% category_tree depth=1 as tree_categories %}
+        {% if tree_categories %}
+        <ul class="shop-chips">
+            <li>
+                <a class="shop-chip {% if not category %}is-active{% endif %}" href="{% url 'catalogue:index' %}">
+                    {% trans "All" %}
+                </a>
+            </li>
+            {% for c in tree_categories %}
+                <li>
+                    <a class="shop-chip {% if category and category.pk == c.pk %}is-active{% endif %}" href="{{ c.get_absolute_url }}">
+                        {{ c.name }} <span class="n">{{ c.num_products }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endblock %}
 
-                {% if tree_categories %}
-                {% for tree_category in tree_categories %}
-                        
-                  <!-- Category Card --
-                  <div class="swiper-slide">
-                      <div class="category-card" data-aos="fade-up" data-aos-delay="100">
-                          
-                          <!-- Category Image --
-                          <div class="category-image">
-                              <img src="{{ tree_category.image }}" alt="{{ tree_category.image.get_absolute_url }}" class="img-fluid" />
-                          </div>
+    {% block shop_filters %}
+        {% include "oscar/catalogue/partials/filter_bar.html" %}
+    {% endblock %}
 
-                          <!-- Category Name --
-                          <h3 class="category-title">
-                              <a href="{{ tree_category.get_absolute_url }}">{{ tree_category.name }}</a>
-                          </h3>
-
-                          <!-- Product Count --
-                          <p class="category-count">{{ tree_category.num_products }} Products</p>
-
-                          <!-- Full-card clickable link --
-                          <a href="{{ tree_category.get_absolute_url }}" class="stretched-link"></a>
-                      </div>
-                  </div>
-
-                {% endfor %}
-                    
-            {% endif %}
+    {% block shop_products %}
+    {% if total_count is not None %}
+        <p class="shop-count">
+            {% blocktrans count counter=total_count %}{{ counter }} product{% plural %}{{ counter }} products{% endblocktrans %}
+        </p>
+    {% endif %}
+    {% if products %}
+        <div class="shop-grid">
+            {% for product in products %}
+                {% include "oscar/catalogue/partials/shop_product_card.html" %}
+            {% endfor %}
         </div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-
-      </div>
-
-    </section><!-- /Category Cards Section -->
-
-    <!-- Best Sellers Section -->
-    <section id="best-sellers" class="best-sellers section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>All Products</h2>
-        <p>Find any product for your daily needs</p>
-      </div><!-- End Section Title -->
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4">
-            {{ product_tags }}
-            {% if products %}
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-              <div class="row gy-4">
-                {% for product in products %}
-                  <!-- Product Card -->
-                  <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
-                    <div class="product-card">
-                      <div class="product-image">
-                        {% with image=product.primary_image %}
-                          {% if image %}
-                            <a href="{{ product.get_absolute_url }}">
-                              <img src="{{ image.original.url }}" alt="{{ product.get_title }}" class="img-fluid">
-                            </a>
-                          {% else %}
-                            <div class="placeholder-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                              <i class="bi bi-image"></i>
-                            </div>
-                          {% endif %}
-                        {% endwith %}
-                        <div class="product-actions">
-                          <button class="btn-wishlist" type="button" aria-label="Add to wishlist">
-                            <i class="bi bi-heart"></i>
-                          </button>
-                          <button class="btn-quickview" type="button" aria-label="Quick view">
-                            <i class="bi bi-eye"></i>
-                          </button>
-                        </div>
-                      </div>
-                      <div class="product-info">
-                        <h3 class="product-title">
-                          <a href="{{ product.get_absolute_url }}">{{ product.get_title }}</a>
-                        </h3>
-                        {% if product.stockrecords.all %}
-                          <div class="product-price">
-                            <span class="current-price">GHS {{ product.stockrecords.all.0.price }}</span>
-                          </div>
-                        {% else %}
-                          <div class="product-price">
-                            <span class="current-price">Price not available</span>
-                          </div>
-                        {% endif %}
-                        <form method="post" action="{% url 'basket:add' product.id %}" class="add-to-basket-form">
-                          {% csrf_token %}
-                          <input type="hidden" name="quantity" value="1">
-                          <input type="hidden" name="next" value="{{ request.path }}">
-                          <button type="submit" class="btn btn-add-to-cart w-100">
-                            <i class="bi bi-bag-plus me-2"></i>Add to Cart
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  </div><!-- End Product Card -->
-                {% endfor %}             
-              </div>
-
-            </div>             
-            {% else %}
-                <p class="nonefound">{% trans "Zero products found." %}</p>
-            {% endif %}
+        {% include "oscar/partials/shop_pagination.html" %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-bag-x" style="font-size:2.5rem;opacity:.4;"></i>
+            <p class="mt-2 mb-0">{% trans "No products found." %}</p>
         </div>
-      </div>
-    </section><!-- /Best Sellers Section -->
+    {% endif %}
+    {% endblock %}
 
-
-  </main>
-
-  <!-- Info Cards Section -->
-    <section id="info-cards" class="info-cards section light-background">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row g-4 justify-content-center">
-          <!-- Info Card 1 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-truck"></i>
-              </div>
-              <h3>Free Shipping</h3>
-              <p>Nulla sit morbi vestibulum eros duis amet, consectetur vitae lacus. Ut quis tempor felis sed nunc viverra.</p>
-            </div>
-          </div><!-- End Info Card 1 -->
-
-          <!-- Info Card 2 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-piggy-bank"></i>
-              </div>
-              <h3>Money Back Guarantee</h3>
-              <p>Nullam gravida felis ac nunc tincidunt, sed malesuada justo pulvinar. Vestibulum nec diam vitae eros.</p>
-            </div>
-          </div><!-- End Info Card 2 -->
-
-          <!-- Info Card 3 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-percent"></i>
-              </div>
-              <h3>Discount Offers</h3>
-              <p>Nulla ipsum nisi vel adipiscing amet, dignissim consectetur ornare. Vestibulum quis posuere elit auctor.</p>
-            </div>
-          </div><!-- End Info Card 3 -->
-
-          <!-- Info Card 4 -->
-          <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
-            <div class="info-card text-center">
-              <div class="icon-box">
-                <i class="bi bi-headset"></i>
-              </div>
-              <h3>24/7 Support</h3>
-              <p>Ipsum dolor amet sit consectetur adipiscing, nullam vitae euismod tempor nunc felis vestibulum ornare.</p>
-            </div>
-          </div><!-- End Info Card 4 -->
-        </div>
-
-      </div>
-
-    </section><!-- /Info Cards Section -->
-    
-
+</div>
 {% endblock content %}
 
 {% block onbodyload %}

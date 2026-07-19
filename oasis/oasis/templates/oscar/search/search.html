@@ -1,90 +1,67 @@
 {% extends "oscar/layout.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}Search Results - Oasis{% endblock %}
+{% block title %}
+    {% if search_query %}{% blocktrans %}Search: {{ search_query }}{% endblocktrans %}{% else %}{% trans "Search" %}{% endif %} | {{ block.super }}
+{% endblock %}
+
+{% block header %}{% endblock %}
 
 {% block content %}
-<main class="main">
+{% include "oscar/partials/shop_styles.html" %}
 
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Search Results</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'catalogue:index' %}">Home</a></li>
-            <li class="current">Search</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+<div class="shop-wrap">
 
-    <!-- Search Results Section -->
-    <section class="search-results section">
-      <div class="container">
-        <div class="row mb-4">
-          <div class="col-12">
-            <h2>Search Results for "<strong>{{ search_query }}</strong>"</h2>
-            {% if products %}
-              <p class="text-muted">Found {{ products.count }} product(s)</p>
-            {% else %}
-              <p class="text-muted">No products found matching your search.</p>
-            {% endif %}
-          </div>
-        </div>
-
-        {% if products %}
-          <div class="row gy-4">
-            {% for product in products %}
-              <!-- Product Card -->
-              <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
-                <div class="product-card">
-                  <div class="product-image">
-                    {% with image=product.primary_image %}
-                      {% if image %}
-                        <a href="{{ product.get_absolute_url }}">
-                          <img src="{{ image.original.url }}" alt="{{ product.get_title }}" class="img-fluid">
-                        </a>
-                      {% else %}
-                        <div class="placeholder-image bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                          <i class="bi bi-image"></i>
-                        </div>
-                      {% endif %}
-                    {% endwith %}
-                    <div class="product-actions">
-                      <button class="btn-wishlist" type="button" aria-label="Add to wishlist">
-                        <i class="bi bi-heart"></i>
-                      </button>
-                      <button class="btn-quickview" type="button" aria-label="Quick view">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="product-info">
-                    <h3 class="product-title">
-                      <a href="{{ product.get_absolute_url }}">{{ product.get_title }}</a>
-                    </h3>
-                    {% if product.stockrecords.all %}
-                      <div class="product-price">
-                        <span class="current-price">GHS {{ product.stockrecords.all.0.price }}</span>
-                      </div>
-                    {% else %}
-                      <div class="product-price">
-                        <span class="current-price">Price not available</span>
-                      </div>
-                    {% endif %}
-                    <button class="btn btn-add-to-cart w-100">
-                      <i class="bi bi-bag-plus me-2"></i>Add to Cart
-                    </button>
-                  </div>
-                </div>
-              </div><!-- End Product Card -->
-            {% endfor %}
-          </div>
+    <div class="shop-head">
+        <h1>{% trans "Search" %}</h1>
+        {% if search_query %}
+            <p>
+                {% blocktrans count counter=total_count with query=search_query %}
+                    {{ counter }} result for “{{ query }}”
+                {% plural %}
+                    {{ counter }} results for “{{ query }}”
+                {% endblocktrans %}
+            </p>
+        {% else %}
+            <p>{% trans "Find products across the whole store." %}</p>
         {% endif %}
+    </div>
 
-      </div>
-    </section><!-- End Search Results Section -->
+    {# ---- Search bar ---- #}
+    <form action="{% url 'search' %}" method="get" class="mb-4" role="search">
+        <div class="shop-search">
+            <i class="bi bi-search"></i>
+            <input type="text" name="q" value="{{ search_query }}"
+                   class="shop-search__input" placeholder="{% trans 'Search for products…' %}"
+                   autofocus aria-label="{% trans 'Search' %}">
+            <button type="submit" class="shop-btn shop-search__btn">{% trans "Search" %}</button>
+        </div>
+    </form>
 
-</main>
+    {# ---- Results ---- #}
+    {% if search_query %}
+        {% if products %}
+            {% include "oscar/catalogue/partials/filter_bar.html" %}
+            <div class="shop-grid">
+                {% for product in products %}
+                    {% include "oscar/catalogue/partials/shop_product_card.html" %}
+                {% endfor %}
+            </div>
+            {% include "oscar/partials/shop_pagination.html" %}
+        {% else %}
+            <div class="shop-panel text-center py-5">
+                <i class="bi bi-search" style="font-size:2.5rem;opacity:.35;"></i>
+                <h2 class="h5 mt-3">{% trans "No products found" %}</h2>
+                <p class="text-muted mb-3">
+                    {% blocktrans %}We couldn’t find anything matching “{{ search_query }}”. Try a different keyword.{% endblocktrans %}
+                </p>
+                <a href="{% url 'catalogue:index' %}" class="shop-btn shop-btn--ghost" style="max-width:220px;margin:0 auto;">
+                    {% trans "Browse all products" %}
+                </a>
+            </div>
+        {% endif %}
+    {% endif %}
+
+</div>
 {% endblock %}

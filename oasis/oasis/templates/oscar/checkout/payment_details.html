@@ -19,12 +19,17 @@
 
 {% block payment_details %}
     {% block payment_details_content %}
-        <img src="{% static 'oasis/img/momo.png' %}" alt="image not found" class="img-thumbnail">         
-        <div class="mb-3">
-            <label for="phone" class="form-label">Momo phone number</label>
-            <input type="phone" class="form-control" id="phone">
+        <div class="shop-panel" style="max-width:480px;">
+            <h2 class="h6 mb-3"><i class="bi bi-phone me-1"></i>{% trans "Pay with Mobile Money" %}</h2>
+            <img src="{% static 'oasis/img/momo.png' %}" alt="{% trans 'Mobile Money' %}"
+                 style="height:56px;width:auto;margin-bottom:1rem;">
+            <div class="mb-3">
+                <label for="phone" class="form-label">{% trans "MoMo phone number" %}</label>
+                <input type="tel" class="form-control" id="phone" placeholder="0XX XXX XXXX">
+            </div>
+            <a id="view_preview" href="{% url 'checkout:preview' %}" class="shop-btn shop-btn--lg">
+                {% trans "Continue" %} <i class="bi bi-arrow-right"></i>
+            </a>
         </div>
-        <br>
-        <a id="view_preview" href="{% url 'checkout:preview' %}" class="btn btn-primary btn-lg">{% trans "Continue" %}</a>
-        {% endblock payment_details_content %}
+    {% endblock payment_details_content %}
 {% endblock payment_details %}

@@ -1,8 +1,9 @@
 {% extends "oscar/layout.html" %}
 {% load i18n %}
+{% load socialaccount %}
 
 {% block title %}
-    {% trans "Log in" %} | {{ block.super }}
+    {% trans "Sign in" %} | {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -12,7 +13,7 @@
             <a href="{{ homepage_url }}">{% trans "Home" %}</a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">
-            {% trans "Login" %}
+            {% trans "Sign in" %}
         </li>
     </ol>
 </nav>
@@ -21,54 +22,58 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-5">
-    <div class="col-md-6 col-lg-5">
+{% include "oscar/partials/auth_styles.html" %}
 
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
+<div class="auth-wrap my-5">
+    <div class="auth-card shadow-lg">
 
-                <h2 class="text-center mb-4">
-                    {% trans "Welcome back" %}
-                </h2>
-
-                {% if login_form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {{ login_form.non_field_errors }}
-                    </div>
-                {% endif %}
-
-                <form id="login_form"
-                      method="post"
-                      action="{{ request.get_full_path }}"
-                      novalidate>
-
-                    {% csrf_token %}
-                    {% include "oscar/partials/form_fields.html" with form=login_form %}
-
-                    <div class="d-flex justify-content-between align-items-center my-3">
-                        <a href="{% url 'password-reset' %}" class="small">
-                            {% trans "Forgot your password?" %}
-                        </a>
-                    </div>
-
-                    <button type="submit"
-                            name="login_submit"
-                            class="btn btn-primary btn-lg w-100"
-                            data-loading-text="{% trans 'Logging in…' %}">
-                        {% trans "Log in" %}
-                    </button>
-                </form>
-
-                <hr class="my-4">
-
-                <p class="text-center mb-0">
-                    {% trans "Don’t have an account?" %}
-                    <a href="{% url 'customer:register' %}">
-                        {% trans "Create one" %}
-                    </a>
+        {# --- Brand panel --- #}
+        <div class="auth-brand">
+            <div>
+                <h2 class="auth-brand-title">{% trans "Welcome back" %}</h2>
+                <p class="auth-brand-text">
+                    {% trans "Sign in to track orders, save your favourites and check out faster." %}
                 </p>
-
             </div>
+            <p class="auth-brand-foot mb-0">
+                {% trans "New to" %} <span class="sitename">Oasis</span>?
+                <a href="{% url 'customer:register' %}">{% trans "Create an account" %}</a>
+            </p>
+        </div>
+
+        {# --- Form panel --- #}
+        <div class="auth-form">
+            <h1 class="auth-heading">{% trans "Sign in" %}</h1>
+
+            <a href="{% provider_login_url 'google' %}" class="btn btn-google w-100 mb-3">
+                <i class="bi bi-google me-2"></i> {% trans "Continue with Google" %}
+            </a>
+
+            <div class="auth-divider"><span>{% trans "or" %}</span></div>
+
+            {% if login_form.non_field_errors %}
+                <div class="alert alert-danger">{{ login_form.non_field_errors }}</div>
+            {% endif %}
+
+            <form id="login_form" method="post" action="{{ request.get_full_path }}" novalidate>
+                {% csrf_token %}
+                {% include "oscar/partials/form_fields.html" with form=login_form %}
+
+                <div class="d-flex justify-content-end my-3">
+                    <a href="{% url 'password-reset' %}" class="small">{% trans "Forgot your password?" %}</a>
+                </div>
+
+                <button type="submit" name="login_submit"
+                        class="btn btn-primary btn-lg w-100"
+                        data-loading-text="{% trans 'Signing in…' %}">
+                    {% trans "Sign in" %}
+                </button>
+            </form>
+
+            <p class="text-center mt-4 mb-0 auth-alt">
+                {% trans "Don’t have an account?" %}
+                <a href="{% url 'customer:register' %}">{% trans "Create one" %}</a>
+            </p>
         </div>
 
     </div>

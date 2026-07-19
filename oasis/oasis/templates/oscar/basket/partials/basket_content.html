@@ -4,191 +4,160 @@
 {% load purchase_info_tags %}
 {% load widget_tweaks %}
 
-{% if basket_warnings %}
-    <h5>{% trans "Important messages about items in your basket" %}</h5>
-    {% for warning in basket_warnings %}
-        <div class="alert alert-warning">{{ warning }}</div>
-    {% endfor %}
-{% endif %}
+{% include "oscar/partials/shop_styles.html" %}
 
-{% if upsell_messages %}
-    <div class="card card-body">
-        <h3>{% trans "You could be missing out on offers!" %}</h3>
-        {% for upsell in upsell_messages %}
-            {% blocktrans with message=upsell.message url=upsell.offer.get_absolute_url offer_name=upsell.offer.name %}
-                <div class="warning">{{ message }} to qualify for the <a href="{{ url }}">{{ offer_name }}</a> special offer</div>
-            {% endblocktrans %}
-        {% endfor %}
+<div class="shop-wrap">
+
+    <div class="shop-head">
+        <h1>{% trans "Your basket" %}</h1>
+        {% if not basket.is_empty %}
+            <p>{% blocktrans count num=basket.num_items %}{{ num }} item in your basket{% plural %}{{ num }} items in your basket{% endblocktrans %}</p>
+        {% endif %}
     </div>
-{% endif %}
 
-<!-- Cart Section -->
-    <section id="cart" class="cart section">
+    {% if basket_warnings %}
+        {% for warning in basket_warnings %}
+            <div class="alert alert-warning">{{ warning }}</div>
+        {% endfor %}
+    {% endif %}
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+    {% if upsell_messages %}
+        {% for upsell in upsell_messages %}
+            <div class="alert alert-info">
+                {% blocktrans with message=upsell.message url=upsell.offer.get_absolute_url offer_name=upsell.offer.name %}
+                    {{ message }} to qualify for the <a href="{{ url }}">{{ offer_name }}</a> offer.
+                {% endblocktrans %}
+            </div>
+        {% endfor %}
+    {% endif %}
 
-        <div class="row g-4">
-          <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
-            <div class="cart-items">
-              <div class="cart-header d-none d-lg-block">
-                <div class="row align-items-center gy-4">
-                  <div class="col-lg-6">
-                    <h5>Product</h5>
-                  </div>
-                  <div class="col-lg-2 text-center">
-                    <h5>Price</h5>
-                  </div>
-                  <div class="col-lg-2 text-center">
-                    <h5>Quantity</h5>
-                  </div>
-                  <div class="col-lg-2 text-center">
-                    <h5>Total</h5>
-                  </div>
-                </div>
-              </div>
+    {% if basket.is_empty %}
+        <div class="shop-panel text-center py-5">
+            <i class="bi bi-basket3" style="font-size:3rem;opacity:.35;"></i>
+            <h2 class="h5 mt-3">{% trans "Your basket is empty" %}</h2>
+            <p class="text-muted">{% trans "Looks like you haven’t added anything yet." %}</p>
+            <a href="{% url 'catalogue:index' %}" class="shop-btn shop-btn--lg" style="max-width:240px;margin:0 auto;">
+                <i class="bi bi-bag"></i> {% trans "Start shopping" %}
+            </a>
+        </div>
+    {% else %}
+    <div class="shop-cols">
 
-              {% csrf_token %}
+        {# ---- Line items ---- #}
+        <form method="post" id="basket_formset">
+            {% csrf_token %}
             {{ formset.management_form }}
 
-            {% for form in formset %}
-                {% with line=form.instance product=form.instance.product %}
-                    {% purchase_info_for_line request line as session %}
-              <!-- Cart Item 1 -->
-              <div class="cart-item" data-aos="fade-up" data-aos-delay="100">
-                <div class="row align-items-center gy-4">
-                  <div class="col-lg-6 col-12 mb-3 mb-lg-0">
-                    <div class="product-info d-flex align-items-center">
-                         {{ form.id }}
-                                {% with image=product.primary_image %}
-                                    {% oscar_thumbnail image.original "100x100" upscale=False as thumb %}
-                      <div class="product-image">
-                        <a href="{{ product.get_absolute_url }}">
-                            <img class="img-fluid" src="{{ thumb.url }}" alt="{{ product.get_title }}" loading="lazy"/>
-                        </a>
-                        <!--<img src="assets/img/product/product-2.webp" alt="Product" class="img-fluid" loading="lazy">-->
-                      </div>
-                      {% endwith %}
-                      <div class="product-details">
-                        <h6 class="product-title">{{ product.title }}</h6>
-                        <div class="product-meta">
-                          <span class="product-color">Color: Black</span>
-                          <span class="product-size">Size: M</span>
+            <div class="shop-panel">
+                {% for form in formset %}
+                    {% with line=form.instance product=form.instance.product %}
+                        {% purchase_info_for_line request line as session %}
+                        <div class="shop-line">
+                            <div style="display:none">
+                                {{ form.id }}
+                                {{ form.save_for_later }}
+                                {{ form.DELETE }}
+                            </div>
+
+                            {% with image=product.primary_image %}
+                                {% oscar_thumbnail image.original "100x100" upscale=False as thumb %}
+                                <a href="{{ product.get_absolute_url }}">
+                                    <img class="shop-line__img" src="{{ thumb.url }}" alt="{{ product.get_title }}" loading="lazy">
+                                </a>
+                            {% endwith %}
+
+                            <div class="flex-grow-1">
+                                <h3 class="shop-line__title h6">
+                                    <a href="{{ product.get_absolute_url }}">{{ product.get_title }}</a>
+                                </h3>
+                                <div class="shop-line__meta">
+                                    {{ session.price.incl_tax|currency:session.price.currency }} {% trans "each" %}
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3 mt-2 flex-wrap">
+                                    <div style="width:90px;">
+                                        {% render_field form.quantity class+="form-control form-control-sm" aria-label="Quantity" %}
+                                    </div>
+                                    <button type="button" class="shop-line__remove btn btn-sm btn-link text-danger p-0"
+                                            onclick="var d=document.getElementById('{{ form.DELETE.id_for_label }}'); d.checked=true; d.form.submit();">
+                                        <i class="bi bi-trash"></i> {% trans "Remove" %}
+                                    </button>
+                                </div>
+                                {% for field_errors in form.errors.values %}
+                                    {% for error in field_errors %}
+                                        <div class="text-danger small mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+
+                            <div class="text-end fw-bold" style="min-width:90px;">
+                                {% if line.is_tax_known %}
+                                    {{ line.line_price_incl_tax|currency:basket.currency }}
+                                {% else %}
+                                    {{ line.line_price_excl_tax|currency:basket.currency }}
+                                {% endif %}
+                            </div>
                         </div>
-                        <button class="remove-item" type="button">
-                          <i class="bi bi-trash"></i> Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {% purchase_info_for_product request form.instance.product as saved %}
-                  <div class="col-12 col-lg-2 text-center">
-                    <div class="price-tag">
-                      <span class="current-price">{{ saved.price.incl_tax|currency:saved.price.currency }}</span>
-                    </div>
-                  </div>
-                  <div class="col-12 col-lg-2 text-center">
-                    <div class="quantity-selector">
-                      <button class="quantity-btn decrease">
-                        <i class="bi bi-dash"></i>
-                      </button>
-                      <input type="number" class="quantity-input" value="1" min="1" max="10">
-                      <button class="quantity-btn increase">
-                        <i class="bi bi-plus"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="col-12 col-lg-2 text-center mt-3 mt-lg-0">
-                    <div class="item-total">
-                      <span>{{ saved.price.incl_tax|currency:saved.price.currency }}</span>
-                    </div>
-                  </div>
+                    {% endwith %}
+                {% endfor %}
+
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'catalogue:index' %}" class="shop-btn shop-btn--ghost" style="width:auto;">
+                        <i class="bi bi-arrow-left"></i> {% trans "Continue shopping" %}
+                    </a>
+                    <button type="submit" class="shop-btn shop-btn--ghost" style="width:auto;" data-loading-text="{% trans 'Updating…' %}">
+                        <i class="bi bi-arrow-clockwise"></i> {% trans "Update basket" %}
+                    </button>
                 </div>
-              </div><!-- End Cart Item -->
-              {% endwith %}
+            </div>
+        </form>
+
+        {# ---- Summary ---- #}
+        <div class="shop-panel shop-summary">
+            <h2>{% trans "Order summary" %}</h2>
+
+            <div class="shop-summary__row">
+                <span>{% trans "Subtotal" %}</span>
+                <span>
+                    {% if basket.is_tax_known %}
+                        {{ basket.total_incl_tax|currency:basket.currency }}
+                    {% else %}
+                        {{ basket.total_excl_tax|currency:basket.currency }}
+                    {% endif %}
+                </span>
+            </div>
+
+            {% for discount in basket.offer_discounts %}
+                <div class="shop-summary__row" style="color:#1a7f37;">
+                    <span>{{ discount.name }}</span>
+                    <span>-{{ discount.discount|currency:basket.currency }}</span>
+                </div>
             {% endfor %}
-              
 
-              
-
-              <div class="cart-actions">
-                <div class="row g-3">
-                  <div class="col-lg-6 col-md-6">
-                    <div class="coupon-form">
-                      <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Coupon code">
-                        <button class="btn btn-accent" type="button">Apply</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-6 col-md-6 text-md-end">
-                    <button class="btn btn-outline-accent me-2">
-                      <i class="bi bi-arrow-clockwise"></i> Update
-                    </button>
-                    <button class="btn btn-outline-danger">
-                      <i class="bi bi-trash"></i> Clear
-                    </button>
-                  </div>
-                </div>
-              </div>
-
+            <div class="shop-summary__row">
+                <span>{% trans "Shipping" %}</span>
+                <span class="text-muted">{% trans "At checkout" %}</span>
             </div>
-                
 
-          </div>
-
-          
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-            <div class="cart-summary">
-              <h4 class="summary-title">Order Summary</h4>
-
-              <div class="summary-item">
-                <span class="summary-label">Subtotal</span>
-                <span class="summary-value">{{ basket.total_excl_tax|currency:basket.currency }}</span>
-              </div>
-
-              <div class="summary-item">
-                <span class="summary-label">Shipping</span>
-                <span class="summary-value">{{ shipping_charge.excl_tax|currency:basket.currency }}</span>
-              </div>
-
-              <div class="summary-item discount">
-                <span class="summary-label">Discount</span>
-                <span class="summary-value">-GHs 0.00</span>
-              </div>
-
-              {% block baskettotals %}
-              <div class="summary-total">
-                <span class="summary-label">Total</span>
-                <span class="summary-value">{{ order_total.incl_tax|currency:basket.currency }}</span>
-              </div>
-              {% endblock baskettotals %}
-
-              <div class="checkout-button">
-                <a href="{% url 'checkout:index' %}" class="btn btn-accent w-100">
-                  Proceed to Checkout <i class="bi bi-arrow-right"></i>
-                </a>
-              </div>
-
-              <div class="continue-shopping">
-                <a href="{% url 'home' %}" class="btn btn-link w-100">
-                  <i class="bi bi-arrow-left"></i> Continue Shopping
-                </a>
-              </div>
-
-              <div class="payment-methods">
-                <p class="payment-title">We Accept</p>
-                <div class="payment-icons">
-                  <i class="bi bi-credit-card-2-front"></i>
-                  <i class="bi bi-paypal"></i>
-                  <i class="bi bi-wallet2"></i>
-                  <i class="bi bi-apple"></i>
-                  <i class="bi bi-google"></i>
-                </div>
-              </div>
+            {% block baskettotals %}
+            <div class="shop-summary__row total">
+                <span>{% trans "Total" %}</span>
+                <span>
+                    {% if order_total.is_tax_known %}
+                        {{ order_total.incl_tax|currency:basket.currency }}
+                    {% else %}
+                        {{ order_total.excl_tax|currency:basket.currency }}
+                    {% endif %}
+                </span>
             </div>
-          </div>
+            {% endblock baskettotals %}
+
+            <a href="{% url 'checkout:index' %}" class="shop-btn shop-btn--lg mt-3">
+                {% trans "Proceed to checkout" %} <i class="bi bi-arrow-right"></i>
+            </a>
         </div>
 
-      </div>
+    </div>
+    {% endif %}
 
-    </section><!-- /Cart Section -->
+</div>

@@ -1,0 +1,84 @@
+{% extends 'oscar/dashboard/layout.html' %}
+{% load i18n %}
+
+{% block body_class %}{{ block.super }} shop-settings{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Shop settings" %}</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block headertext %}{% trans "Shop settings" %}{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row">
+        <div class="col-md-8">
+
+            {% if partner %}
+                <p>
+                    <a href="{% url 'vendor:store' code=partner.code %}" class="btn btn-outline-primary" target="_blank">
+                        <i class="fas fa-store"></i> {% trans "View my store" %}
+                    </a>
+                </p>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                {# ---- Shop name ---- #}
+                <div class="form-group mb-3">
+                    <label for="{{ shop_form.name.id_for_label }}">{{ shop_form.name.label }}</label>
+                    {{ shop_form.name }}
+                    <small class="form-text text-muted">
+                        {% trans "The name customers see as the seller of your products." %}
+                    </small>
+                    {% for error in shop_form.name.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <hr>
+                <h3 class="h6 text-muted">{% trans "Storefront branding" %}</h3>
+
+                {% for field in profile_form %}
+                    <div class="form-group mb-3">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <hr>
+                <h3 class="h6 text-muted">{% trans "Payout details" %}</h3>
+                <p class="text-muted small">{% trans "Where your share of each sale is settled." %}</p>
+
+                {% for field in payout_form %}
+                    <div class="form-group mb-3">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> {% trans "Save changes" %}
+                </button>
+                <a href="{% url 'dashboard:index' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

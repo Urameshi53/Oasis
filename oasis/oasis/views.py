@@ -1,36 +1,43 @@
 # yourapp/views.py
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.generic import TemplateView
+from django.core.paginator import Paginator
+from django.db.models import Q
 from oscar.apps.order.models import Order
 import requests
 from oscar.apps.catalogue.models import Product
 from rest_framework import permissions, viewsets
 from .serializers import ProductSerializer
+from apps.payment.paystack import verify_payment
 
 
 @csrf_exempt
 def paystack_callback(request):
+    """
+    Paystack redirects the buyer here after payment. We verify the transaction
+    and, on success, mark the order paid and send the buyer to the thank-you
+    page. The per-vendor split is applied by Paystack at charge time; the local
+    VendorSale ledger was already created when the order was placed.
+    """
     reference = request.GET.get('reference')
     if not reference:
         return HttpResponse("No reference", status=400)
 
-    headers = {
-        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
-    }
+    result = verify_payment(reference)
 
-    url = f"https://api.paystack.co/transaction/verify/{reference}"
-    response = requests.get(url, headers=headers)
-    result = response.json()
-
-    if result['status'] and result['data']['status'] == 'success':
+    if result.get('status') and result['data']['status'] == 'success':
         try:
             order = Order.objects.get(number=reference)
-            order.set_status('Paid')
-            return HttpResponse("Payment verified")
         except Order.DoesNotExist:
             return HttpResponse("Order not found", status=404)
+        try:
+            order.set_status('Paid')
+        except Exception:
+            pass  # status pipeline may not define 'Paid'; payment still verified
+        return redirect(reverse('checkout:thank-you'))
     return HttpResponse("Payment failed", status=400)
 
 
@@ -77,19 +84,25 @@ class ContactView(TemplateView):
 
 
 def search_products(request):
-    query = request.GET.get('q', '')
-    products = []
-    
-    if query:
-        # Search products by title or description
-        products = Product.objects.filter(
-            title__icontains=query
-        )
-    
+    from apps.search.product_filters import filter_context
+
+    query = request.GET.get('q', '').strip()
+
     context = {
         'search_query': query,
-        'products': products,
-        'page_title': f'Search Results for "{query}"'
+        'page_title': f'Search results for "{query}"',
     }
-    
+
+    if query:
+        # Search public, browsable products by title, description or UPC, then
+        # apply the shared price/vendor/stock/sort filters + pagination.
+        results = Product.objects.browsable().filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(upc__icontains=query)
+        )
+        context.update(filter_context(request, results))
+    else:
+        context['total_count'] = 0
+
     return render(request, 'oscar/search/search.html', context)

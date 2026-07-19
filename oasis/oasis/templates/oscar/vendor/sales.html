@@ -1,0 +1,66 @@
+{% extends 'oscar/dashboard/layout.html' %}
+{% load currency_filters %}
+{% load i18n %}
+
+{% block body_class %}{{ block.super }} sales{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Sales & payouts" %}</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block headertext %}{% trans "Sales & payouts" %}{% endblock %}
+
+{% block dashboard_content %}
+
+    <div class="row mb-3">
+        <div class="col-md-3 col-6"><div class="card card-body"><small class="text-muted">{% trans "Total earned" %}</small><strong>{{ earnings.total|currency }}</strong></div></div>
+        <div class="col-md-3 col-6"><div class="card card-body"><small class="text-muted">{% trans "Pending payout" %}</small><strong>{{ earnings.pending|currency }}</strong></div></div>
+        <div class="col-md-3 col-6"><div class="card card-body"><small class="text-muted">{% trans "Paid out" %}</small><strong>{{ earnings.paid|currency }}</strong></div></div>
+        <div class="col-md-3 col-6"><div class="card card-body"><small class="text-muted">{% trans "Orders" %}</small><strong>{{ earnings.orders }}</strong></div></div>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>{% trans "Order" %}</th>
+                <th>{% trans "Date" %}</th>
+                <th class="text-right">{% trans "Gross" %}</th>
+                <th class="text-right">{% trans "Commission" %}</th>
+                <th class="text-right">{% trans "Your payout" %}</th>
+                <th>{% trans "Status" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales %}
+                <tr>
+                    <td><a href="{% url 'dashboard:order-detail' number=sale.order.number %}">{{ sale.order.number }}</a></td>
+                    <td>{{ sale.created_at|date:"d M Y" }}</td>
+                    <td class="text-right">{{ sale.gross|currency:sale.currency }}</td>
+                    <td class="text-right">{{ sale.commission|currency:sale.currency }} <small class="text-muted">({{ sale.commission_rate }}%)</small></td>
+                    <td class="text-right"><strong>{{ sale.net|currency:sale.currency }}</strong></td>
+                    <td>
+                        {% if sale.status == 'paid' %}
+                            <span class="badge badge-success">{% trans "Paid out" %}</span>
+                        {% elif sale.status == 'cancelled' %}
+                            <span class="badge badge-secondary">{% trans "Cancelled" %}</span>
+                        {% else %}
+                            <span class="badge badge-warning">{% trans "Pending" %}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6" class="text-center py-4">{% trans "No sales yet." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% include "oscar/dashboard/partials/pagination.html" %}
+
+    <p class="text-muted"><small>{% trans "Payouts are settled to the account in your" %} <a href="{% url 'vendor:shop-settings' %}">{% trans "payout settings" %}</a>.</small></p>
+
+{% endblock %}

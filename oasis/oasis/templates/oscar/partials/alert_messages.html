@@ -1,40 +1,115 @@
 {% load string_filters %}
 
 {% comment %}
-Use message tags to control these alerts.  Available tags include:
+Modern toast notifications. Message tags still control behaviour:
 - safe: allow HTML in the message
-- block: for longer messages - this adds extra padding
 - noicon: don't show an icon
-- error/success/info - these change the connotation of the alert
+- error/success/info/warning: change the connotation (colour + icon)
+Toasts slide in top-right and auto-dismiss after 5 seconds (or on click of ×).
 {% endcomment %}
 
-<div id="messages">
+<style>
+    #oasis-toasts {
+        position: fixed; top: 1rem; right: 1rem; z-index: 1080;
+        display: flex; flex-direction: column; gap: .6rem;
+        width: min(360px, calc(100vw - 2rem)); pointer-events: none;
+    }
+    .oasis-toast {
+        pointer-events: auto; position: relative; overflow: hidden;
+        display: flex; align-items: flex-start; gap: .7rem;
+        background: #fff; color: #1f2733;
+        border: 1px solid rgba(16,24,40,.08);
+        border-left: 4px solid var(--toast-accent, #0a4db8);
+        border-radius: 12px; padding: .85rem 2.2rem .85rem .9rem;
+        box-shadow: 0 10px 30px rgba(16,24,40,.16);
+        transform: translateX(120%); opacity: 0;
+        transition: transform .35s cubic-bezier(.21,1.02,.73,1), opacity .35s ease;
+    }
+    .oasis-toast.show { transform: translateX(0); opacity: 1; }
+    .oasis-toast.hide { transform: translateX(120%); opacity: 0; }
+    .oasis-toast .toast-icon { font-size: 1.25rem; line-height: 1.4; color: var(--toast-accent, #0a4db8); }
+    .oasis-toast .toast-body { flex: 1; font-size: .93rem; line-height: 1.4; }
+    .oasis-toast .toast-close {
+        position: absolute; top: .5rem; right: .6rem;
+        border: none; background: transparent; color: #98a2b3;
+        font-size: 1.1rem; line-height: 1; cursor: pointer; padding: 0;
+    }
+    .oasis-toast .toast-close:hover { color: #475467; }
+    .oasis-toast .toast-timer {
+        position: absolute; left: 0; bottom: 0; height: 3px;
+        width: 100%; transform-origin: left;
+        background: var(--toast-accent, #0a4db8); opacity: .35;
+        animation: oasis-toast-timer 5s linear forwards;
+    }
+    @keyframes oasis-toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+    .oasis-toast.success { --toast-accent: #12b76a; }
+    .oasis-toast.info    { --toast-accent: #0a4db8; }
+    .oasis-toast.warning { --toast-accent: #f79009; }
+    .oasis-toast.danger  { --toast-accent: #f04438; }
+
+    @media (prefers-color-scheme: dark) {
+        .oasis-toast { background: #2a2f3a; color: #eef1f6; border-color: rgba(255,255,255,.08); }
+        .oasis-toast .toast-close { color: #8b93a3; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .oasis-toast { transition: opacity .2s ease; transform: none; }
+        .oasis-toast.hide { transform: none; }
+        .oasis-toast .toast-timer { animation: none; }
+    }
+</style>
+
+<div id="oasis-toasts" aria-live="polite" aria-atomic="true">
 {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-dismissible {% for tag in message.tags|split %}alert-{% if tag == 'error' %}danger{% else %}{{ tag }}{% endif %} {% endfor %} fade show">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
-            <div class="alertinner {% if 'noicon' not in message.tags %}wicon{% endif %}">
-                {% if 'noicon' not in message.tags %}
-                    {# Include an icon by default #}
-                    {% if 'success' in message.tags %}
-                        <i class="fas fa-check-circle"></i>
-                    {% elif 'info' in message.tags %}
-                        <i class="fas fa-info-circle"></i>
-                    {% elif 'warning' in message.tags %}
-                        <i class="fas fa-exclamation-triangle"></i>
-                    {% elif 'danger' in message.tags or 'error' in message.tags %}
-                        <i class="fas fa-exclamation-circle"></i>
-                    {% endif %}
-                {% endif %}
-
-                {# Allow HTML to be embedded in messages #}
-                {% if 'safe' in message.tags %}
-                    {{ message|safe }}
-                {% else %}
-                    {{ message }}
-                {% endif %}
+        <div class="oasis-toast {% for tag in message.tags|split %}{% if tag == 'error' %}danger{% elif tag == 'success' or tag == 'info' or tag == 'warning' or tag == 'danger' %}{{ tag }}{% endif %}{% endfor %}" role="alert">
+            {% if 'noicon' not in message.tags %}
+                <span class="toast-icon">
+                    {% if 'success' in message.tags %}<i class="bi bi-check-circle-fill"></i>
+                    {% elif 'warning' in message.tags %}<i class="bi bi-exclamation-triangle-fill"></i>
+                    {% elif 'error' in message.tags or 'danger' in message.tags %}<i class="bi bi-x-circle-fill"></i>
+                    {% else %}<i class="bi bi-info-circle-fill"></i>{% endif %}
+                </span>
+            {% endif %}
+            <div class="toast-body">
+                {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
             </div>
+            <button type="button" class="toast-close" aria-label="Close">&times;</button>
+            <span class="toast-timer"></span>
         </div>
     {% endfor %}
 {% endif %}
 </div>
+
+<script>
+(function () {
+    var AUTO_DISMISS = 5000;
+    function dismiss(toast) {
+        if (!toast || toast.classList.contains('hide')) return;
+        toast.classList.add('hide');
+        toast.classList.remove('show');
+        setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 400);
+    }
+    var toasts = document.querySelectorAll('#oasis-toasts .oasis-toast');
+    toasts.forEach(function (toast) {
+        // slide in
+        requestAnimationFrame(function () { toast.classList.add('show'); });
+        // auto-dismiss after 5s
+        var timer = setTimeout(function () { dismiss(toast); }, AUTO_DISMISS);
+        // manual close
+        var btn = toast.querySelector('.toast-close');
+        if (btn) btn.addEventListener('click', function () { clearTimeout(timer); dismiss(toast); });
+        // pause countdown on hover
+        toast.addEventListener('mouseenter', function () {
+            clearTimeout(timer);
+            var bar = toast.querySelector('.toast-timer');
+            if (bar) bar.style.animationPlayState = 'paused';
+        });
+        toast.addEventListener('mouseleave', function () {
+            timer = setTimeout(function () { dismiss(toast); }, AUTO_DISMISS);
+            var bar = toast.querySelector('.toast-timer');
+            if (bar) bar.style.animationPlayState = 'running';
+        });
+    });
+})();
+</script>

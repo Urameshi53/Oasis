@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     'restaurant.apps.RestaurantConfig',
+    'vendor.apps.VendorConfig',
+    'rider.apps.RiderConfig',
     'rest_framework',
     "rest_framework.authtoken",
     'corsheaders',
@@ -232,13 +234,16 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-'''
-# Allauth settings
-LOGIN_REDIRECT_URL = '/'
+# Allauth social-login settings.
+# Oscar's customer app handles email/password login & registration, so allauth
+# is only used here for social (Google) sign-in.
 ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-'''
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+# Create the local account automatically from the Google profile (no extra form).
+SOCIALACCOUNT_AUTO_SIGNUP = True
+# Let the "Sign in with Google" button work as a plain link (GET) instead of
+# rendering allauth's intermediate confirmation page.
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -471,5 +476,17 @@ OSCAR_THUMBNAIL_PADDING_BORDER_SHADOW_CSS_OUTSET = '0 0 0 0 rgba(0,0,0,1)'
 
 
 # Paystack settings
-#PAYSTACK_SECRET_KEY = "sk_live_cce8b8031db9486fa923cf3701bc4540893f9a3e"
-#PAYSTACK_PUBLIC_KEY = "pk_live_1ee2a9c93d1f34b41a965b1c22c1a4d4e5415ce7"
+# NOTE: never commit live keys. Load from the environment; configure TEST keys
+# (sk_test_… / pk_test_…) for development. The old live keys were removed —
+# rotate them in the Paystack dashboard as they were previously committed.
+PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "")
+PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY", "")
+PAYSTACK_BASE_URL = "https://api.paystack.co"
+PAYSTACK_INITIALIZE_URL = f"{PAYSTACK_BASE_URL}/transaction/initialize"
+PAYSTACK_VERIFY_URL = f"{PAYSTACK_BASE_URL}/transaction/verify/"
+
+# Marketplace: default platform commission (percent) taken from each vendor sale.
+PLATFORM_COMMISSION_RATE = 10
+
+# Flat fee (in store currency) a rider earns per completed delivery.
+RIDER_DELIVERY_FEE = 10

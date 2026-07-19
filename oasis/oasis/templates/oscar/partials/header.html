@@ -92,27 +92,49 @@
                 </div>
                 <div class="dropdown-body">
                   {% if request.user.is_authenticated %}
-                    <a class="dropdown-item d-flex align-items-center" href="#">
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:profile-view' %}">
                       <i class="bi bi-person-circle me-2"></i>
                       <span>My Profile</span>
                     </a>
-                    <a class="dropdown-item d-flex align-items-center" href="#">
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:order-list' %}">
                       <i class="bi bi-bag-check me-2"></i>
                       <span>My Orders</span>
                     </a>
-                    <a class="dropdown-item d-flex align-items-center" href="#">
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:wishlists-list' %}">
                       <i class="bi bi-heart me-2"></i>
                       <span>My Wishlist</span>
                     </a>
+                    {% if request.user.partners.exists %}
+                      <a class="dropdown-item d-flex align-items-center" href="/dashboard/">
+                        <i class="bi bi-shop me-2"></i>
+                        <span>Seller Dashboard</span>
+                      </a>
+                    {% else %}
+                      <a class="dropdown-item d-flex align-items-center" href="{% url 'vendor:become-seller' %}">
+                        <i class="bi bi-shop me-2"></i>
+                        <span>Become a Seller</span>
+                      </a>
+                    {% endif %}
+                    {% if request.user.rider_profile %}
+                      <a class="dropdown-item d-flex align-items-center" href="{% url 'rider:dashboard' %}">
+                        <i class="bi bi-scooter me-2"></i>
+                        <span>Rider Dashboard</span>
+                      </a>
+                    {% else %}
+                      <a class="dropdown-item d-flex align-items-center" href="{% url 'rider:become-rider' %}">
+                        <i class="bi bi-scooter me-2"></i>
+                        <span>Become a Rider</span>
+                      </a>
+                    {% endif %}
                   {% endif %}
                 </div>
                 <div class="dropdown-footer">
                   {% if request.user.is_authenticated %}
-                    <a href="#" class="btn btn-primary w-100 mb-2">My Account</a>
-                    <a href="/accounts/logout/" class="btn btn-outline-primary w-100">Logout</a>
+                    <a href="{% url 'customer:summary' %}" class="btn btn-primary w-100 mb-2">My Account</a>
+                    <a href="{% url 'customer:logout' %}" class="btn btn-outline-primary w-100">Logout</a>
                   {% else %}
-                    <a href="/accounts/login/" class="btn btn-primary w-100 mb-2">Sign In</a>
-                    <a href="/accounts/signup/" class="btn btn-outline-primary w-100">Register</a>
+                    <a href="{% url 'customer:login' %}" class="btn btn-primary w-100 mb-2">Sign In</a>
+                    <a href="{% url 'customer:register' %}" class="btn btn-outline-primary w-100">Register</a>
                   {% endif %}
                 </div>
               </div>
@@ -138,6 +160,20 @@
       </div>
     </div>
 
+    <!-- Mobile Search (collapsible) -->
+    <div class="collapse d-xl-none" id="mobileSearch">
+      <div class="container-fluid container-xl py-2">
+        <form class="search-form" action="{% url 'search' %}" method="get" role="search">
+          <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search for products" aria-label="Search">
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Navigation -->
     <div class="header-nav">
       <div class="container-fluid container-xl">
@@ -147,6 +183,7 @@
               <li><a href="{% url 'catalogue:index' %}" class="active">Home</a></li>
               <li><a href="{% url 'about' %}">About</a></li>
               <li><a href="{% url 'catalogue:index' %}">Shop</a></li>
+              <li><a href="{% url 'vendor:store-list' %}">Stores</a></li>
               <li><a href="{% url 'basket:summary' %}">Cart</a></li>
               <li><a href="{% url 'checkout:index' %}">Checkout</a></li>
               <li><a href="{% url 'contact' %}">Contact</a></li>

@@ -1,8 +1,9 @@
 {% extends "oscar/layout.html" %}
 {% load i18n %}
+{% load socialaccount %}
 
 {% block title %}
-    {% trans "Register" %} | {{ block.super }}
+    {% trans "Create account" %} | {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -21,45 +22,54 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-5">
-    <div class="col-md-6 col-lg-5">
+{% include "oscar/partials/auth_styles.html" %}
 
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
+<div class="auth-wrap my-5">
+    <div class="auth-card shadow-lg">
 
-                <h2 class="text-center mb-4">
-                    {% trans "Create your account" %}
-                </h2>
-
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
-
-                <form id="register_form" method="post" novalidate>
-                    {% csrf_token %}
-
-                    {% include "oscar/partials/form_fields.html" with form=form %}
-
-                    <button type="submit"
-                            name="registration_submit"
-                            class="btn btn-primary btn-lg w-100 mt-3"
-                            data-loading-text="{% trans 'Registering…' %}">
-                        {% trans "Create account" %}
-                    </button>
-                </form>
-
-                {% if cancel_url %}
-                    <p class="text-center mt-3 mb-0">
-                        {% trans "Already have an account?" %}
-                        <a href="{{ cancel_url }}">
-                            {% trans "Log in" %}
-                        </a>
-                    </p>
-                {% endif %}
-
+        {# --- Brand panel --- #}
+        <div class="auth-brand">
+            <div>
+                <h2 class="auth-brand-title">{% trans "Join Oasis" %}</h2>
+                <p class="auth-brand-text">
+                    {% trans "Create an account to shop faster, track your orders and build your wishlist." %}
+                </p>
             </div>
+            <p class="auth-brand-foot mb-0">
+                {% trans "Already have an account?" %}
+                <a href="{% url 'customer:login' %}">{% trans "Sign in" %}</a>
+            </p>
+        </div>
+
+        {# --- Form panel --- #}
+        <div class="auth-form">
+            <h1 class="auth-heading">{% trans "Create your account" %}</h1>
+
+            <a href="{% provider_login_url 'google' %}" class="btn btn-google w-100 mb-3">
+                <i class="bi bi-google me-2"></i> {% trans "Sign up with Google" %}
+            </a>
+
+            <div class="auth-divider"><span>{% trans "or" %}</span></div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <form id="register_form" method="post" novalidate>
+                {% csrf_token %}
+                {% include "oscar/partials/form_fields.html" with form=form %}
+
+                <button type="submit" name="registration_submit"
+                        class="btn btn-primary btn-lg w-100 mt-3"
+                        data-loading-text="{% trans 'Creating account…' %}">
+                    {% trans "Create account" %}
+                </button>
+            </form>
+
+            <p class="text-center mt-4 mb-0 auth-alt">
+                {% trans "Already have an account?" %}
+                <a href="{% if cancel_url %}{{ cancel_url }}{% else %}{% url 'customer:login' %}{% endif %}">{% trans "Sign in" %}</a>
+            </p>
         </div>
 
     </div>

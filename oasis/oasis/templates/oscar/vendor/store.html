@@ -1,0 +1,69 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ partner.display_name }} | {{ block.super }}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="container pt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'vendor:store-list' %}">{% trans "Stores" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ partner.display_name }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+
+<div class="shop-wrap">
+
+    {# ---- Store hero ---- #}
+    <div class="shop-store-hero">
+        {% if profile and profile.banner %}
+            <img class="banner" src="{{ profile.banner.url }}" alt="{{ partner.display_name }}">
+        {% endif %}
+        <div class="shop-store-bar">
+            <div class="shop-store-logo">
+                {% if profile and profile.logo %}
+                    <img src="{{ profile.logo.url }}" alt="{{ partner.display_name }}">
+                {% else %}
+                    {{ partner.display_name|first|upper }}
+                {% endif %}
+            </div>
+            <div class="shop-store-meta">
+                <h1>{{ partner.display_name }}</h1>
+                {% if profile and profile.tagline %}
+                    <p class="tagline">{{ profile.tagline }}</p>
+                {% endif %}
+                <span class="count">
+                    {% blocktrans count counter=product_count %}{{ counter }} product{% plural %}{{ counter }} products{% endblocktrans %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    {% if profile and profile.description %}
+        <p class="shop-store-desc">{{ profile.description|linebreaks }}</p>
+    {% endif %}
+
+    {# ---- Products ---- #}
+    {% if products %}
+        <div class="shop-grid">
+            {% for product in products %}
+                {% include "oscar/catalogue/partials/shop_product_card.html" %}
+            {% endfor %}
+        </div>
+        {% include "oscar/partials/shop_pagination.html" %}
+    {% else %}
+        <div class="shop-panel text-center py-5">
+            <i class="bi bi-shop" style="font-size:2.5rem;opacity:.35;"></i>
+            <p class="mt-2 mb-0">{% trans "This store has no products yet." %}</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

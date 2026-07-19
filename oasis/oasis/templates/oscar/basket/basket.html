@@ -6,27 +6,19 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <nav class="breadcrumbs">
-          <ol>
-           <ol class="breadcrumb">
+    <nav aria-label="breadcrumb" class="container pt-3">
+        <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
             <li class="breadcrumb-item active" aria-current="page">{% trans "Basket" %}</li>
         </ol>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+    </nav>
 {% endblock %}
 
 {# Hide mini-basket so we don't have two baskets to keep in sync #}
 {% block mini_basket %}{% endblock %}
 
-{% block headertext %}
-    {% trans "Basket" %}
-{% endblock %}
+{# Heading is rendered inside basket_content.html #}
+{% block header %}{% endblock %}
 
 {% block content %}
     {# Use a partial template so that AJAX can be used to re-render basket #}

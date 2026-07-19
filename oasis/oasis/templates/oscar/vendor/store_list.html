@@ -1,0 +1,58 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Stores" %} | {{ block.super }}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="container pt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans "Stores" %}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+
+<div class="shop-wrap">
+
+    <div class="shop-head">
+        <h1>{% trans "Shop by store" %}</h1>
+        <p>{% trans "Browse the independent sellers on Oasis." %}</p>
+    </div>
+
+    {% if partners %}
+        <div class="shop-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+            {% for partner in partners %}
+                <a class="shop-store-card" href="{% url 'vendor:store' code=partner.code %}">
+                    <span class="avatar">
+                        {% with profile=partner.vendor_profile %}
+                            {% if profile.logo %}
+                                <img src="{{ profile.logo.url }}" alt="{{ partner.display_name }}">
+                            {% else %}
+                                {{ partner.display_name|first|upper }}
+                            {% endif %}
+                        {% endwith %}
+                    </span>
+                    <span>
+                        <span class="name">{{ partner.display_name }}</span><br>
+                        <span class="sub">
+                            {% blocktrans count counter=partner.num_products %}{{ counter }} product{% plural %}{{ counter }} products{% endblocktrans %}
+                        </span>
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+        {% include "oscar/partials/shop_pagination.html" %}
+    {% else %}
+        <div class="shop-panel text-center py-5">
+            <i class="bi bi-shop" style="font-size:2.5rem;opacity:.35;"></i>
+            <p class="mt-2 mb-0">{% trans "No stores yet." %}</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
