@@ -148,6 +148,9 @@ MIDDLEWARE = [
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 
     'allauth.account.middleware.AccountMiddleware',
+
+    # Gate the whole site behind login (new visitors must sign in / register).
+    'oasis.middleware.LoginRequiredMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -231,7 +234,22 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
+
+# Site-wide login wall: everything except these path prefixes requires auth.
+# Keep the auth flows, admin, payment callback, API and assets open so there's
+# no redirect loop or lock-out.
+LOGIN_EXEMPT_URLS = [
+    r'^accounts/',        # login, register, logout, password reset, Google social
+    r'^admin/',           # Django admin (has its own login)
+    r'^password-reset',   # Oscar password-reset views
+    r'^i18n/',            # language switcher
+    r'^paystack/',        # payment gateway callback (external)
+    r'^api/',             # DRF endpoints (own auth)
+    r'^static/',
+    r'^media/',
+]
 LOGOUT_REDIRECT_URL = '/'
 
 # Allauth social-login settings.
