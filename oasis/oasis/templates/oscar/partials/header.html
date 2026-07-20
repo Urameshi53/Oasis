@@ -80,6 +80,78 @@
               <i class="bi bi-search"></i>
             </button>
 
+            <!-- Notifications -->
+            {% if request.user.is_authenticated %}
+            <div class="dropdown notif-dropdown">
+              <button class="header-action-btn position-relative" data-bs-toggle="dropdown" aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+                <span id="notif-badge" class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" style="font-size:.6rem;{% if not notif_unread_count %}display:none;{% endif %}">{{ notif_unread_count }}</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end" style="min-width:300px;">
+                <div class="dropdown-header"><strong>Notifications</strong></div>
+                <div id="notif-list">
+                {% for n in notif_recent %}
+                  <a class="dropdown-item d-flex align-items-start gap-2 {% if not n.is_read %}fw-semibold{% endif %}" style="white-space:normal;"
+                     href="{% url 'notifications:open' n.pk %}">
+                    <i class="bi bi-{{ n.icon|default:'bell' }} mt-1"></i>
+                    <span>
+                      <span class="d-block small">{{ n.message }}</span>
+                      <span class="text-muted" style="font-size:.72rem;">{{ n.created_at|timesince }} ago</span>
+                    </span>
+                  </a>
+                {% empty %}
+                  <span class="dropdown-item text-muted small">You're all caught up.</span>
+                {% endfor %}
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-center small" href="{% url 'notifications:list' %}">See all notifications</a>
+              </div>
+            </div>
+
+            <script>
+            (function () {
+                var FEED = "{% url 'notifications:feed' %}";
+                var POLL_MS = 25000;
+                var seen = null;  // ids already known; null until first poll seeds it
+                function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+                function render(data){
+                    var badge = document.getElementById('notif-badge');
+                    if (badge){
+                        if (data.unread > 0){ badge.textContent = data.unread; badge.style.display=''; }
+                        else { badge.style.display='none'; }
+                    }
+                    var list = document.getElementById('notif-list');
+                    if (list){
+                        if (!data.items.length){ list.innerHTML = '<span class="dropdown-item text-muted small">You’re all caught up.</span>'; }
+                        else {
+                            list.innerHTML = data.items.map(function(n){
+                                return '<a class="dropdown-item d-flex align-items-start gap-2 '+(n.is_read?'':'fw-semibold')+'" style="white-space:normal;" href="'+n.url+'">'+
+                                    '<i class="bi bi-'+n.icon+' mt-1"></i><span><span class="d-block small">'+esc(n.message)+'</span>'+
+                                    '<span class="text-muted" style="font-size:.72rem;">'+esc(n.ago)+'</span></span></a>';
+                            }).join('');
+                        }
+                    }
+                }
+                function poll(){
+                    fetch(FEED, {headers:{'X-Requested-With':'XMLHttpRequest'}, credentials:'same-origin'})
+                        .then(function(r){ return r.ok ? r.json() : null; })
+                        .then(function(data){
+                            if (!data) return;
+                            if (seen === null){ seen = {}; data.items.forEach(function(n){ seen[n.id]=1; }); }
+                            else {
+                                data.items.forEach(function(n){
+                                    if (!seen[n.id]){ seen[n.id]=1; if (!n.is_read && window.oasisToast) window.oasisToast(n.message, n.level, n.icon); }
+                                });
+                            }
+                            render(data);
+                        }).catch(function(){});
+                }
+                document.addEventListener('visibilitychange', function(){ if (!document.hidden) poll(); });
+                setInterval(function(){ if (!document.hidden) poll(); }, POLL_MS);
+            })();
+            </script>
+            {% endif %}
+
             <!-- Account -->
             <div class="dropdown account-dropdown">
               <button class="header-action-btn" data-bs-toggle="dropdown">

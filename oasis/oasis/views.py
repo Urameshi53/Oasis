@@ -12,6 +12,14 @@ from oscar.apps.catalogue.models import Product
 from rest_framework import permissions, viewsets
 from .serializers import ProductSerializer
 from apps.payment.paystack import verify_payment
+from oscar.apps.customer.views import AccountRegistrationView
+from .forms import RegistrationForm
+
+
+class RegisterView(AccountRegistrationView):
+    """Registration that also collects the customer's first and last name."""
+
+    form_class = RegistrationForm
 
 
 @csrf_exempt

@@ -1,5 +1,16 @@
 from django.conf import settings
 
+
+def payout_schedule(request):
+    """Expose the next payout run time to sellers/riders (10am next working day)."""
+    user = getattr(request, "user", None)
+    if user is None or not user.is_authenticated:
+        return {}
+    from .payouts import next_payout_datetime
+
+    return {"next_payout_at": next_payout_datetime()}
+
+
 def modern_settings(request):
     return {
         'site_name': getattr(settings, 'OSCAR_SHOP_NAME', 'Modern Store'),

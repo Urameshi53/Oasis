@@ -74,6 +74,9 @@
                 </table>
                 <p class="text-muted"><small>{% trans "Earnings are your share of each sale after the platform commission. Set your payout details in" %} <a href="{% url 'vendor:shop-settings' %}">{% trans "Shop settings" %}</a>.</small></p>
             </div>
+            <div class="col-md-8">
+                {% include "oscar/partials/payout_notice.html" %}
+            </div>
         </div>
     </div>
 

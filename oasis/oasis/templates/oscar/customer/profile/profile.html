@@ -1,35 +1,116 @@
 {% extends "oscar/customer/baseaccountpage.html" %}
-
 {% load i18n %}
 
 {% block tabcontent %}
-    <table class="table table-striped table-bordered">
-        <tbody>
-            <tr>
-                <th>{% trans 'Name' %}</th>
-                <td>{{ user.get_full_name|default:'-' }}</td>
-            </tr>
-            <tr>
-                <th>{% trans 'Email address' %}</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            {% block profile_fields %}
-                {% for field in profile_fields %}
-                    <tr>
-                        <th>{{ field.name }}</th>
-                        <td>{{ field.value|default:"-" }}</td>
-                    </tr>
-                {% endfor %}
-            {% endblock %}
-            <tr>
-                <th>{% trans 'Date registered' %}</th>
-                <td>{{ user.date_joined }}</td>
-            </tr>
-        </tbody>
-    </table>
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .profile-head { display:flex; align-items:center; gap:1.1rem; flex-wrap:wrap; }
+    .profile-avatar {
+        width:72px; height:72px; border-radius:50%; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.9rem; font-weight:800; color:#fff;
+        background:linear-gradient(135deg, var(--accent-color,#0d6efd) 0%, #6610f2 100%);
+    }
+    .profile-name { font-weight:800; font-size:1.3rem; color:var(--heading-color); margin:0; }
+    .profile-email { color:var(--shop-muted); margin:0; }
+    .role-pills { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.5rem; }
+    .role-pill { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .7rem; border-radius:999px; font-size:.8rem; font-weight:700; }
+    .role-pill.customer { background:color-mix(in srgb, var(--accent-color,#0d6efd), transparent 86%); color:var(--accent-color); }
+    .role-pill.seller   { background:#d1e7dd; color:#0f5132; }
+    .role-pill.rider    { background:#fff3cd; color:#8a6d00; }
+    .role-card { display:flex; align-items:center; gap:.85rem; padding:1rem; text-decoration:none; }
+    .role-card .ico { width:44px; height:44px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+    .role-card .ico.seller { background:#d1e7dd; color:#0f5132; }
+    .role-card .ico.rider  { background:#fff3cd; color:#8a6d00; }
+    .role-card .ico.orders { background:color-mix(in srgb, var(--accent-color,#0d6efd), transparent 86%); color:var(--accent-color); }
+    .role-card .t { font-weight:700; color:var(--heading-color); }
+    .role-card .s { color:var(--shop-muted); font-size:.85rem; }
+</style>
 
-    <a href="{% url 'customer:change-password' %}" class="btn btn-primary">{% trans 'Change password' %}</a>
-    <a href="{% url 'customer:profile-update' %}" class="btn btn-primary">{% trans 'Edit profile' %}</a>
-    <a id="delete_profile" href="{% url 'customer:profile-delete' %}" class="btn btn-danger">{% trans 'Delete profile' %}</a>
+{% with store=request.user.partners.first rider=request.user.rider_profile %}
 
+    {# ---- Identity + roles ---- #}
+    <div class="shop-panel mb-3">
+        <div class="profile-head">
+            <div class="profile-avatar">{{ user.get_full_name|default:user.email|first|upper }}</div>
+            <div class="flex-grow-1">
+                <h2 class="profile-name">{{ user.get_full_name|default:user.email }}</h2>
+                <p class="profile-email"><i class="bi bi-envelope"></i> {{ user.email }}</p>
+                <div class="role-pills">
+                    <span class="role-pill customer"><i class="bi bi-person-fill"></i> {% trans "Customer" %}</span>
+                    {% if store %}<span class="role-pill seller"><i class="bi bi-shop"></i> {% trans "Store owner" %}</span>{% endif %}
+                    {% if rider %}<span class="role-pill rider"><i class="bi bi-scooter"></i> {% trans "Rider" %}</span>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Role quick links ---- #}
+    <div class="row g-2 mb-3">
+        {% if store %}
+            <div class="col-md-6">
+                <a class="shop-panel role-card" href="{% url 'dashboard:index' %}">
+                    <span class="ico seller"><i class="bi bi-shop"></i></span>
+                    <span>
+                        <span class="t d-block">{% trans "Your store" %}: {{ store.display_name }}</span>
+                        <span class="s">{% trans "Manage products & orders" %} &rarr;</span>
+                    </span>
+                </a>
+            </div>
+        {% endif %}
+        {% if rider %}
+            <div class="col-md-6">
+                <a class="shop-panel role-card" href="{% url 'rider:dashboard' %}">
+                    <span class="ico rider"><i class="bi bi-scooter"></i></span>
+                    <span>
+                        <span class="t d-block">{% trans "Rider dashboard" %}</span>
+                        <span class="s">{% if rider.is_available %}{% trans "Online" %}{% else %}{% trans "Offline" %}{% endif %} &middot; {{ rider.get_vehicle_type_display }} &rarr;</span>
+                    </span>
+                </a>
+            </div>
+        {% endif %}
+        <div class="col-md-6">
+            <a class="shop-panel role-card" href="{% url 'customer:order-list' %}">
+                <span class="ico orders"><i class="bi bi-bag-check"></i></span>
+                <span>
+                    <span class="t d-block">{% trans "My orders" %}</span>
+                    <span class="s">{% trans "Track your purchases" %} &rarr;</span>
+                </span>
+            </a>
+        </div>
+    </div>
+
+    {# ---- Become a … (only what they're not yet) ---- #}
+    {% if not store or not rider %}
+        <div class="shop-panel mb-3 d-flex flex-wrap gap-2 align-items-center">
+            <span class="text-muted me-2">{% trans "Do more on Oasis:" %}</span>
+            {% if not store %}<a href="{% url 'vendor:become-seller' %}" class="shop-btn shop-btn--ghost" style="width:auto;"><i class="bi bi-shop"></i> {% trans "Become a seller" %}</a>{% endif %}
+            {% if not rider %}<a href="{% url 'rider:become-rider' %}" class="shop-btn shop-btn--ghost" style="width:auto;"><i class="bi bi-scooter"></i> {% trans "Become a rider" %}</a>{% endif %}
+        </div>
+    {% endif %}
+
+    {# ---- Details ---- #}
+    <div class="shop-panel mb-3">
+        <table class="table mb-0">
+            <tbody>
+                <tr><th style="width:40%;">{% trans 'First name' %}</th><td>{{ user.first_name|default:'-' }}</td></tr>
+                <tr><th>{% trans 'Last name' %}</th><td>{{ user.last_name|default:'-' }}</td></tr>
+                <tr><th>{% trans 'Email address' %}</th><td>{{ user.email }}</td></tr>
+                {% block profile_fields %}
+                    {% for field in profile_fields %}
+                        <tr><th>{{ field.name }}</th><td>{{ field.value|default:"-" }}</td></tr>
+                    {% endfor %}
+                {% endblock %}
+                <tr><th>{% trans 'Member since' %}</th><td>{{ user.date_joined|date:"d M Y" }}</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'customer:profile-update' %}" class="shop-btn" style="width:auto;"><i class="bi bi-pencil"></i> {% trans 'Edit profile' %}</a>
+        <a href="{% url 'customer:change-password' %}" class="shop-btn shop-btn--ghost" style="width:auto;">{% trans 'Change password' %}</a>
+        <a id="delete_profile" href="{% url 'customer:profile-delete' %}" class="shop-btn shop-btn--ghost text-danger" style="width:auto;">{% trans 'Delete profile' %}</a>
+    </div>
+
+{% endwith %}
 {% endblock %}

@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'restaurant.apps.RestaurantConfig',
     'vendor.apps.VendorConfig',
     'rider.apps.RiderConfig',
+    'notifications.apps.NotificationsConfig',
+    'insights.apps.InsightsConfig',
     'rest_framework',
     "rest_framework.authtoken",
     'corsheaders',
@@ -186,6 +188,8 @@ TEMPLATES = [
 
                 # Custom context processor
                 'oasis.context_processors.modern_settings',
+                'oasis.context_processors.payout_schedule',
+                'notifications.context_processors.notifications',
             ],
             'debug': DEBUG,
         }

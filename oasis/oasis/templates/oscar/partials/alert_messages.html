@@ -90,16 +90,11 @@ Toasts slide in top-right and auto-dismiss after 5 seconds (or on click of ×).
         toast.classList.remove('show');
         setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 400);
     }
-    var toasts = document.querySelectorAll('#oasis-toasts .oasis-toast');
-    toasts.forEach(function (toast) {
-        // slide in
+    function wire(toast) {
         requestAnimationFrame(function () { toast.classList.add('show'); });
-        // auto-dismiss after 5s
         var timer = setTimeout(function () { dismiss(toast); }, AUTO_DISMISS);
-        // manual close
         var btn = toast.querySelector('.toast-close');
         if (btn) btn.addEventListener('click', function () { clearTimeout(timer); dismiss(toast); });
-        // pause countdown on hover
         toast.addEventListener('mouseenter', function () {
             clearTimeout(timer);
             var bar = toast.querySelector('.toast-timer');
@@ -110,6 +105,33 @@ Toasts slide in top-right and auto-dismiss after 5 seconds (or on click of ×).
             var bar = toast.querySelector('.toast-timer');
             if (bar) bar.style.animationPlayState = 'running';
         });
-    });
+    }
+
+    // Wire server-rendered toasts.
+    document.querySelectorAll('#oasis-toasts .oasis-toast').forEach(wire);
+
+    // Build + show a toast from JS (used by live notification polling).
+    window.oasisToast = function (message, level, icon) {
+        var container = document.getElementById('oasis-toasts');
+        if (!container) return;
+        var levels = { info: 'info', success: 'success', warning: 'warning', danger: 'danger' };
+        var t = document.createElement('div');
+        t.className = 'oasis-toast ' + (levels[level] || 'info');
+        t.setAttribute('role', 'alert');
+        var span = document.createElement('span');
+        span.className = 'toast-icon';
+        span.innerHTML = '<i class="bi bi-' + (icon || 'bell') + '"></i>';
+        var body = document.createElement('div');
+        body.className = 'toast-body';
+        body.textContent = message;
+        var close = document.createElement('button');
+        close.type = 'button'; close.className = 'toast-close'; close.setAttribute('aria-label', 'Close');
+        close.innerHTML = '&times;';
+        var bar = document.createElement('span');
+        bar.className = 'toast-timer';
+        t.appendChild(span); t.appendChild(body); t.appendChild(close); t.appendChild(bar);
+        container.appendChild(t);
+        wire(t);
+    };
 })();
 </script>

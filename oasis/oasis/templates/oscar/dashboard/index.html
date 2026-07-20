@@ -18,6 +18,14 @@
 
 {% block dashboard_content %}
 
+{% if request.user.is_staff %}
+    <div class="content-block mb-3">
+        <a href="{% url 'insights:customer-analytics' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-chart-line"></i> {% trans "Customer behaviour analytics" %}
+        </a>
+    </div>
+{% endif %}
+
 <div class="table-header">
     <i class="fas fa-signal"></i> {% trans "Your Store Statistics" %}
 </div>

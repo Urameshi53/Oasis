@@ -43,12 +43,17 @@ urlpatterns = [
     path('api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('vendor/', include('vendor.urls')),
     path('rider/', include('rider.urls')),
+    path('notifications/', include('notifications.urls')),
+    path('analytics/', include('insights.urls')),
     path('payments/', include('payments.urls')),
     
     # Page routes
     path('about/', AboutView.as_view(), name='about'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('search/', search_products, name='search'),
+
+    # Registration that also collects first/last name (shadows Oscar's register).
+    path('accounts/register/', RegisterView.as_view(), name='register'),
 
     # Google social login (allauth). Oscar owns /accounts/ for email/password,
     # so we only add the social endpoints. The Google provider routes

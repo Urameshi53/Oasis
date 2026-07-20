@@ -1,0 +1,57 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Notifications" %} | {{ block.super }}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .notif { display:flex; gap:.85rem; align-items:flex-start; padding:.9rem 1rem; border-bottom:1px solid var(--shop-border); text-decoration:none; color:var(--default-color); }
+    .notif:last-child { border-bottom:0; }
+    .notif:hover { background:color-mix(in srgb, var(--accent-color,#0d6efd), transparent 95%); }
+    .notif.unread { background:color-mix(in srgb, var(--accent-color,#0d6efd), transparent 92%); }
+    .notif__icon { width:38px; height:38px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, var(--accent-color,#0d6efd), transparent 85%); color:var(--accent-color); }
+    .notif.success .notif__icon { background:#d1e7dd; color:#0f5132; }
+    .notif.warning .notif__icon { background:#fff3cd; color:#8a6d00; }
+    .notif__msg { font-weight:500; }
+    .notif__time { color:var(--shop-muted); font-size:.8rem; }
+    .notif__dot { width:8px; height:8px; border-radius:50%; background:var(--accent-color); margin-top:.5rem; flex-shrink:0; }
+</style>
+
+<div class="shop-wrap" style="max-width:720px;">
+    <div class="shop-head d-flex justify-content-between align-items-center">
+        <h1>{% trans "Notifications" %}</h1>
+        {% if notifications %}
+            <form method="post" action="{% url 'notifications:read-all' %}">
+                {% csrf_token %}
+                <button class="shop-btn shop-btn--ghost" style="width:auto;">
+                    <i class="bi bi-check2-all"></i> {% trans "Mark all read" %}
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+    <div class="shop-panel" style="padding:0;">
+        {% for n in notifications %}
+            <a class="notif {{ n.level }} {% if not n.is_read %}unread{% endif %}"
+               href="{% if n.url %}{% url 'notifications:open' n.pk %}{% else %}#{% endif %}">
+                <span class="notif__icon"><i class="bi bi-{{ n.icon|default:'bell' }}"></i></span>
+                <span class="flex-grow-1">
+                    <span class="notif__msg d-block">{{ n.message }}</span>
+                    <span class="notif__time">{{ n.created_at|timesince }} {% trans "ago" %}</span>
+                </span>
+                {% if not n.is_read %}<span class="notif__dot"></span>{% endif %}
+            </a>
+        {% empty %}
+            <div class="text-center py-5">
+                <i class="bi bi-bell-slash" style="font-size:2.5rem;opacity:.35;"></i>
+                <p class="mt-2 mb-0 text-muted">{% trans "No notifications yet." %}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include "oscar/partials/shop_pagination.html" %}
+</div>
+{% endblock %}

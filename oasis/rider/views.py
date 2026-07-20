@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import NoReverseMatch, reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
@@ -12,6 +12,19 @@ from .models import Delivery, RiderProfile
 
 def _rider_profile(user):
     return getattr(user, "rider_profile", None)
+
+
+def _notify_customer(order, message, icon="truck", level="info"):
+    """Let the order's customer know how their delivery is going."""
+    if not order.user_id:
+        return
+    from notifications.utils import notify
+
+    try:
+        url = reverse("customer:order", kwargs={"order_number": order.number})
+    except NoReverseMatch:
+        url = ""
+    notify(order.user, message, url=url, icon=icon, level=level)
 
 
 class RiderRequiredMixin(LoginRequiredMixin):
@@ -79,6 +92,11 @@ class ClaimDeliveryView(RiderRequiredMixin, View):
             if delivery.is_available:
                 delivery.claim(profile)
                 messages.success(request, f"You claimed order {delivery.order.number}.")
+                _notify_customer(
+                    delivery.order,
+                    f"A rider is on the way to collect your order {delivery.order.number}.",
+                    icon="person-arms-up",
+                )
             else:
                 messages.error(request, "Sorry, that delivery was already taken.")
         return redirect("rider:dashboard")
@@ -92,9 +110,20 @@ class UpdateDeliveryView(RiderRequiredMixin, View):
         if action == "pick_up" and delivery.status == Delivery.CLAIMED:
             delivery.mark_picked_up()
             messages.success(request, f"Order {delivery.order.number} picked up.")
+            _notify_customer(
+                delivery.order,
+                f"Your order {delivery.order.number} is on the way! 🛵",
+                icon="truck",
+            )
         elif action == "deliver" and delivery.status == Delivery.PICKED_UP:
             delivery.mark_delivered()
             messages.success(request, f"Order {delivery.order.number} delivered. Nice work!")
+            _notify_customer(
+                delivery.order,
+                f"Your order {delivery.order.number} has been delivered ✅",
+                icon="check-circle",
+                level="success",
+            )
         else:
             messages.error(request, "That update isn't valid for this delivery.")
         return redirect("rider:dashboard")

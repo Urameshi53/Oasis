@@ -1,0 +1,154 @@
+{% extends 'oscar/dashboard/layout.html' %}
+{% load i18n %}
+{% load currency_filters %}
+
+{% block body_class %}{{ block.super }} insights{% endblock %}
+
+{% block title %}{% trans "Customer analytics" %} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Customer analytics" %}</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block headertext %}{% trans "Customer behaviour analytics" %}{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    .kpi { border:1px solid #e6e6e6; border-radius:12px; padding:.9rem 1rem; height:100%; }
+    .kpi .v { font-size:1.5rem; font-weight:800; line-height:1.1; }
+    .kpi .l { color:#6c757d; font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; }
+    .funnel-row { margin-bottom:.75rem; }
+    .funnel-bar { background:#eef1f6; border-radius:8px; height:26px; overflow:hidden; }
+    .funnel-bar span { display:block; height:100%; background:linear-gradient(90deg,#0a4db8,#6610f2); }
+    .mini { color:#6c757d; font-size:.85rem; }
+    .chip { display:inline-block; padding:.25rem .7rem; border-radius:999px; background:#eef1f6; margin:.15rem; font-size:.85rem; }
+    .chip b { color:#0a4db8; }
+</style>
+
+<p class="mini">{% trans "Visible to site admins only." %}</p>
+
+{# ---- KPIs ---- #}
+<div class="row g-2 mb-4">
+    <div class="col-6 col-md-3"><div class="kpi"><div class="l">{% trans "Customers" %}</div><div class="v">{{ total_customers }}</div><div class="mini">{{ new_customers_30d }} {% trans "new in 30d" %}</div></div></div>
+    <div class="col-6 col-md-3"><div class="kpi"><div class="l">{% trans "Buyers" %}</div><div class="v">{{ buyers }}</div><div class="mini">{{ repeat_customers }} {% trans "repeat" %} ({{ repeat_rate }}%)</div></div></div>
+    <div class="col-6 col-md-3"><div class="kpi"><div class="l">{% trans "Orders" %}</div><div class="v">{{ total_orders }}</div><div class="mini">{{ orders_30d }} {% trans "in 30d" %}</div></div></div>
+    <div class="col-6 col-md-3"><div class="kpi"><div class="l">{% trans "Revenue" %}</div><div class="v">{{ total_revenue|currency }}</div><div class="mini">{% trans "AOV" %} {{ avg_order_value|currency }}</div></div></div>
+</div>
+
+{# ---- Funnel ---- #}
+<div class="table-header"><i class="fas fa-filter"></i> {% trans "Behaviour funnel" %}</div>
+<div class="card card-body mb-4">
+    {% for step in funnel %}
+        <div class="funnel-row">
+            <div class="d-flex justify-content-between">
+                <strong>{{ step.label }}</strong>
+                <span>{{ step.value }} <span class="mini">({{ step.pct }}%)</span></span>
+            </div>
+            <div class="funnel-bar"><span style="width:{{ step.pct }}%;"></span></div>
+        </div>
+    {% endfor %}
+    <div class="row mt-3 text-center">
+        <div class="col-4"><div class="v" style="font-weight:800;">{{ view_to_basket }}%</div><div class="mini">{% trans "View → Basket" %}</div></div>
+        <div class="col-4"><div class="v" style="font-weight:800;">{{ basket_to_purchase }}%</div><div class="mini">{% trans "Basket → Purchase" %}</div></div>
+        <div class="col-4"><div class="v" style="font-weight:800;">{{ view_to_purchase }}%</div><div class="mini">{% trans "View → Purchase" %}</div></div>
+    </div>
+</div>
+
+{# ---- Top customers ---- #}
+<div class="table-header"><i class="fas fa-user-friends"></i> {% trans "Top customers by spend" %}</div>
+<table class="table table-striped table-bordered mb-4">
+    <thead><tr>
+        <th>{% trans "Customer" %}</th><th class="text-right">{% trans "Orders" %}</th>
+        <th class="text-right">{% trans "Items" %}</th><th class="text-right">{% trans "Product views" %}</th>
+        <th class="text-right">{% trans "Total spent" %}</th><th>{% trans "Last order" %}</th>
+    </tr></thead>
+    <tbody>
+        {% for r in top_customers %}
+            <tr>
+                <td>{{ r.user.get_full_name|default:r.user.email|default:r.user }}</td>
+                <td class="text-right">{{ r.num_orders }}</td>
+                <td class="text-right">{{ r.num_order_items }}</td>
+                <td class="text-right">{{ r.num_product_views }}</td>
+                <td class="text-right"><strong>{{ r.total_spent|currency }}</strong></td>
+                <td>{{ r.date_last_order|date:"d M Y"|default:"—" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="text-center py-3">{% trans "No customer activity yet." %}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="row">
+    {# ---- Most viewed ---- #}
+    <div class="col-md-6">
+        <div class="table-header"><i class="fas fa-eye"></i> {% trans "Most viewed products" %}</div>
+        <table class="table table-striped table-bordered mb-4">
+            <tbody>
+                {% for p in most_viewed %}
+                    <tr><td>{{ p.product }}</td><td class="text-right">{{ p.num_views }} {% trans "views" %}</td></tr>
+                {% empty %}
+                    <tr><td class="text-center py-3">{% trans "No views recorded." %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# ---- Best sellers ---- #}
+    <div class="col-md-6">
+        <div class="table-header"><i class="fas fa-trophy"></i> {% trans "Best sellers" %}</div>
+        <table class="table table-striped table-bordered mb-4">
+            <tbody>
+                {% for p in best_sellers %}
+                    <tr><td>{{ p.product }}</td><td class="text-right">{{ p.num_purchases }} {% trans "sold" %}</td></tr>
+                {% empty %}
+                    <tr><td class="text-center py-3">{% trans "No purchases recorded." %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ---- Drop-off ---- #}
+<div class="table-header"><i class="fas fa-cart-arrow-down"></i> {% trans "Added to basket but never bought" %}</div>
+<table class="table table-striped table-bordered mb-4">
+    <tbody>
+        {% for p in abandoned %}
+            <tr><td>{{ p.product }}</td><td class="text-right">{{ p.num_basket_additions }} {% trans "basket adds, 0 sales" %}</td></tr>
+        {% empty %}
+            <tr><td class="text-center py-3">{% trans "Nothing abandoned — nice." %}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# ---- Searches ---- #}
+<div class="table-header"><i class="fas fa-search"></i> {% trans "What customers search for" %} ({{ total_searches }})</div>
+<div class="card card-body mb-4">
+    {% for s in top_searches %}
+        <span class="chip">{{ s.query }} <b>{{ s.n }}</b></span>
+    {% empty %}
+        <span class="mini">{% trans "No searches recorded yet." %}</span>
+    {% endfor %}
+</div>
+
+{# ---- Recent activity ---- #}
+<div class="table-header"><i class="fas fa-history"></i> {% trans "Recent product views" %}</div>
+<table class="table table-striped table-bordered">
+    <tbody>
+        {% for v in recent_views %}
+            <tr>
+                <td>{{ v.user.get_full_name|default:v.user.email|default:v.user }}</td>
+                <td>{{ v.product }}</td>
+                <td class="text-right mini">{{ v.date_created|timesince }} {% trans "ago" %}</td>
+            </tr>
+        {% empty %}
+            <tr><td class="text-center py-3">{% trans "No recent views." %}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

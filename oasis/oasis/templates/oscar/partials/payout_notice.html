@@ -1,0 +1,9 @@
+{% load i18n %}
+{# Payout schedule notice for sellers and riders. Emoji avoids icon-font deps
+   so it renders in both the storefront and the Oscar dashboard. #}
+<div class="alert alert-info" style="border-radius:12px;">
+    💸 {% trans "Your earnings are paid out to you at" %} <strong>{% trans "10:00 AM the next working day" %}</strong>.
+    {% if next_payout_at %}
+        <br><small class="text-muted">{% trans "Next payout run" %}: {{ next_payout_at|date:"l, j M Y" }}, 10:00 AM.</small>
+    {% endif %}
+</div>
