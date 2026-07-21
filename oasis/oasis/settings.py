@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'rest_framework',
     "rest_framework.authtoken",
     'corsheaders',
-
+    
+    
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
     #'oscar.apps.checkout.apps.CheckoutConfig',
@@ -83,6 +84,7 @@ INSTALLED_APPS = [
     'apps.order.apps.OrderConfig',
     #'oscar.apps.order.apps.OrderConfig',
     'oscar.apps.customer.apps.CustomerConfig',
+    #'apps.customer.apps.CustomerConfig',
     #'oscar.apps.search.apps.SearchConfig',
     'apps.search.apps.SearchConfig',
     'oscar.apps.voucher.apps.VoucherConfig',

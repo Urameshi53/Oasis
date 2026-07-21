@@ -40,7 +40,26 @@
                 <form id="register_form" method="post" novalidate>
                     {% csrf_token %}
 
-                    {% include "oscar/partials/form_fields.html" with form=form %}
+                    <div class="mb-3">
+  <label>First Name</label>
+  {{ form.first_name }}
+</div>
+
+<div class="mb-3">
+  <label>Last Name</label>
+  {{ form.last_name }}
+</div>
+
+<div class="mb-3">
+  <label>Phone</label>
+  {{ form.phone }}
+</div>
+
+<div class="mb-3">
+  <label>Location</label>
+  {{ form.location }}
+</div>
+
 
                     <button type="submit"
                             name="registration_submit"
@@ -53,7 +72,7 @@
                 {% if cancel_url %}
                     <p class="text-center mt-3 mb-0">
                         {% trans "Already have an account?" %}
-                        <a href="{{ cancel_url }}">
+                        <a href="{% url 'customer:login' %}">
                             {% trans "Log in" %}
                         </a>
                     </p>
