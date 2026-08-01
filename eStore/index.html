@@ -27,6 +27,14 @@
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'light';
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+      }
+    })();
+  </script>
 </head>
 
 <body class="index-page">
@@ -171,6 +179,11 @@
               <i class="bi bi-cart3"></i>
               <span class="badge">3</span>
             </a>
+
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="header-action-btn" aria-label="Toggle theme">
+              <i class="bi bi-moon"></i>
+            </button>
 
             <!-- Mobile Navigation Toggle -->
             <i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
@@ -767,7 +780,6 @@
               </li><!-- End Products Mega Menu 2 -->
 
               <li><a href="contact.html">Contact</a></li>
-
             </ul>
           </nav>
         </div>

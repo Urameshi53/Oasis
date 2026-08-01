@@ -960,4 +960,47 @@
     });
   });
 
+  /**
+   * Theme Toggle
+   */
+  document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleBtns = document.querySelectorAll('#themeToggle');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+
+    // Set initial icon classes
+    themeToggleBtns.forEach(btn => {
+      const icon = btn.querySelector('i');
+      if (icon) {
+        if (currentTheme === 'dark') {
+          icon.className = 'bi bi-sun';
+        } else {
+          icon.className = 'bi bi-moon';
+        }
+      }
+    });
+
+    themeToggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark-mode');
+        if (isDark) {
+          document.documentElement.classList.remove('dark-mode');
+          document.body.classList.remove('dark-mode');
+          localStorage.setItem('theme', 'light');
+          themeToggleBtns.forEach(b => {
+            const icon = b.querySelector('i');
+            if (icon) icon.className = 'bi bi-moon';
+          });
+        } else {
+          document.documentElement.classList.add('dark-mode');
+          document.body.classList.add('dark-mode');
+          localStorage.setItem('theme', 'dark');
+          themeToggleBtns.forEach(b => {
+            const icon = b.querySelector('i');
+            if (icon) icon.className = 'bi bi-sun';
+          });
+        }
+      });
+    });
+  });
+
 })();
