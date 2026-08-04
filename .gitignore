@@ -88,3 +88,6 @@ yarn-error.log
 dmypy.json
 oasis/db.sqlite3
 oasis/oasis/public/media/cache
+oasis/apps/address/__pycache__
+oasis/apps/__pycache__
+oasis/restaurant/__pycache__
