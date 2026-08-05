@@ -6,7 +6,7 @@
         <div class="row align-items-center">
           <div class="col-lg-4 d-none d-lg-flex">
             <div class="top-bar-item">
-              <i class="bi bi-telephone-fill me-2"></i>
+              <i class="ri-phone-fill me-2"></i>
               <span>Need help? Call us: </span>
               <a href="tel:+233548932933">+233 548 932 933</a>
             </div>
@@ -38,216 +38,17 @@
             <div class="d-flex justify-content-end">
               <div class="top-bar-item dropdown me-3">
                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-                  <i class="bi bi-translate me-2"></i>EN
+                  <i class="ri-global-line me-2"></i>EN
                 </a>
               </div>
               <div class="top-bar-item dropdown">
                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-                  <i class="bi bi-currency-cedis me-2"></i>GHS
+                  <i class="ri-money-dollar-circle-line me-2"></i>GHS
                 </a>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Main Header -->
-    <div class="main-header">
-      <div class="container-fluid container-xl">
-        <div class="d-flex py-3 align-items-center justify-content-between">
-
-          <!-- Logo -->
-          <a href="{% url 'catalogue:index' %}" class="logo d-flex align-items-center">
-            <img src="{% static 'oscar/logo/logo.png' %}" alt="Oasis Logo">
-          </a>
-
-          <!-- Search -->
-          <form class="search-form desktop-search-form" action="{% url 'search' %}" method="get">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search for products">
-              <button class="btn" type="submit">
-                <i class="bi bi-search"></i>
-              </button>
-            </div>
-          </form>
-
-          <!-- Actions -->
-          <div class="header-actions d-flex align-items-center justify-content-end">
-
-            <!-- Mobile Search Toggle -->
-            <button class="header-action-btn mobile-search-toggle d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
-              <i class="bi bi-search"></i>
-            </button>
-
-            <!-- Notifications -->
-            {% if request.user.is_authenticated %}
-            <div class="dropdown notif-dropdown">
-              <button class="header-action-btn position-relative" data-bs-toggle="dropdown" aria-label="Notifications">
-                <i class="bi bi-bell"></i>
-                <span id="notif-badge" class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" style="font-size:.6rem;{% if not notif_unread_count %}display:none;{% endif %}">{{ notif_unread_count }}</span>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end" style="min-width:300px;">
-                <div class="dropdown-header"><strong>Notifications</strong></div>
-                <div id="notif-list">
-                {% for n in notif_recent %}
-                  <a class="dropdown-item d-flex align-items-start gap-2 {% if not n.is_read %}fw-semibold{% endif %}" style="white-space:normal;"
-                     href="{% url 'notifications:open' n.pk %}">
-                    <i class="bi bi-{{ n.icon|default:'bell' }} mt-1"></i>
-                    <span>
-                      <span class="d-block small">{{ n.message }}</span>
-                      <span class="text-muted" style="font-size:.72rem;">{{ n.created_at|timesince }} ago</span>
-                    </span>
-                  </a>
-                {% empty %}
-                  <span class="dropdown-item text-muted small">You're all caught up.</span>
-                {% endfor %}
-                </div>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item text-center small" href="{% url 'notifications:list' %}">See all notifications</a>
-              </div>
-            </div>
-
-            <script>
-            (function () {
-                var FEED = "{% url 'notifications:feed' %}";
-                var POLL_MS = 25000;
-                var seen = null;  // ids already known; null until first poll seeds it
-                function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-                function render(data){
-                    var badge = document.getElementById('notif-badge');
-                    if (badge){
-                        if (data.unread > 0){ badge.textContent = data.unread; badge.style.display=''; }
-                        else { badge.style.display='none'; }
-                    }
-                    var list = document.getElementById('notif-list');
-                    if (list){
-                        if (!data.items.length){ list.innerHTML = '<span class="dropdown-item text-muted small">You’re all caught up.</span>'; }
-                        else {
-                            list.innerHTML = data.items.map(function(n){
-                                return '<a class="dropdown-item d-flex align-items-start gap-2 '+(n.is_read?'':'fw-semibold')+'" style="white-space:normal;" href="'+n.url+'">'+
-                                    '<i class="bi bi-'+n.icon+' mt-1"></i><span><span class="d-block small">'+esc(n.message)+'</span>'+
-                                    '<span class="text-muted" style="font-size:.72rem;">'+esc(n.ago)+'</span></span></a>';
-                            }).join('');
-                        }
-                    }
-                }
-                function poll(){
-                    fetch(FEED, {headers:{'X-Requested-With':'XMLHttpRequest'}, credentials:'same-origin'})
-                        .then(function(r){ return r.ok ? r.json() : null; })
-                        .then(function(data){
-                            if (!data) return;
-                            if (seen === null){ seen = {}; data.items.forEach(function(n){ seen[n.id]=1; }); }
-                            else {
-                                data.items.forEach(function(n){
-                                    if (!seen[n.id]){ seen[n.id]=1; if (!n.is_read && window.oasisToast) window.oasisToast(n.message, n.level, n.icon); }
-                                });
-                            }
-                            render(data);
-                        }).catch(function(){});
-                }
-                document.addEventListener('visibilitychange', function(){ if (!document.hidden) poll(); });
-                setInterval(function(){ if (!document.hidden) poll(); }, POLL_MS);
-            })();
-            </script>
-            {% endif %}
-
-            <!-- Account -->
-            <div class="dropdown account-dropdown">
-              <button class="header-action-btn" data-bs-toggle="dropdown">
-                <i class="bi bi-person"></i>
-              </button>
-              <div class="dropdown-menu">
-                <div class="dropdown-header">
-                  <h6>Welcome to <span class="sitename">Oasis</span></h6>
-                  <p class="mb-0">Access account & manage orders</p>
-                </div>
-                <div class="dropdown-body">
-                  {% if request.user.is_authenticated %}
-                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:profile-view' %}">
-                      <i class="bi bi-person-circle me-2"></i>
-                      <span>My Profile</span>
-                    </a>
-                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:order-list' %}">
-                      <i class="bi bi-bag-check me-2"></i>
-                      <span>My Orders</span>
-                    </a>
-                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:wishlists-list' %}">
-                      <i class="bi bi-heart me-2"></i>
-                      <span>My Wishlist</span>
-                    </a>
-                    {% if request.user.partners.exists %}
-                      <a class="dropdown-item d-flex align-items-center" href="/dashboard/">
-                        <i class="bi bi-shop me-2"></i>
-                        <span>Seller Dashboard</span>
-                      </a>
-                    {% else %}
-                      <a class="dropdown-item d-flex align-items-center" href="{% url 'vendor:become-seller' %}">
-                        <i class="bi bi-shop me-2"></i>
-                        <span>Become a Seller</span>
-                      </a>
-                    {% endif %}
-                    {% if request.user.rider_profile %}
-                      <a class="dropdown-item d-flex align-items-center" href="{% url 'rider:dashboard' %}">
-                        <i class="bi bi-scooter me-2"></i>
-                        <span>Rider Dashboard</span>
-                      </a>
-                    {% else %}
-                      <a class="dropdown-item d-flex align-items-center" href="{% url 'rider:become-rider' %}">
-                        <i class="bi bi-scooter me-2"></i>
-                        <span>Become a Rider</span>
-                      </a>
-                    {% endif %}
-                  {% endif %}
-                </div>
-                <div class="dropdown-footer">
-                  {% if request.user.is_authenticated %}
-                    <a href="{% url 'customer:summary' %}" class="btn btn-primary w-100 mb-2">My Account</a>
-                    <a href="{% url 'customer:logout' %}" class="btn btn-outline-primary w-100">Logout</a>
-                  {% else %}
-                    <a href="{% url 'customer:login' %}" class="btn btn-primary w-100 mb-2">Sign In</a>
-                    <a href="{% url 'customer:register' %}" class="btn btn-outline-primary w-100">Register</a>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-
-            <!-- Wishlist -->
-            <a href="#" class="header-action-btn d-none d-md-block">
-              <i class="bi bi-heart"></i>
-              <span class="badge">0</span>
-            </a>
-
-            <!-- Cart -->
-            <a href="{% url 'basket:summary' %}" class="header-action-btn">
-              <i class="bi bi-cart3"></i>
-              <span class="badge">{{ request.basket.num_items }}</span>
-            </a>
-
-            <!-- Theme Toggle -->
-            <button id="themeToggle" class="header-action-btn" aria-label="Toggle theme">
-              <i class="bi bi-moon"></i>
-            </button>
-
-            <!-- Mobile Navigation Toggle -->
-            <i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mobile Search (collapsible) -->
-    <div class="collapse d-xl-none" id="mobileSearch">
-      <div class="container-fluid container-xl py-2">
-        <form class="search-form" action="{% url 'search' %}" method="get" role="search">
-          <div class="input-group">
-            <input type="text" name="q" class="form-control" placeholder="Search for products" aria-label="Search">
-            <button class="btn btn-primary" type="submit">
-              <i class="bi bi-search"></i>
-            </button>
-          </div>
-        </form>
       </div>
     </div>
 
@@ -267,8 +68,164 @@
             </ul>
           </nav><!-- End Nav Menu -->
 
-          <i class="mobile-nav-close d-xl-none bi bi-x"></i>
+          <i class="mobile-nav-close d-xl-none ri-close-line"></i>
         </div>
+      </div>
+    </div>
+
+    <!-- Main Header -->
+    <div class="main-header">
+      <div class="container-fluid container-xl">
+        <div class="d-flex py-3 align-items-center justify-content-between">
+
+          <!-- Logo -->
+          <a href="{% url 'catalogue:index' %}" class="logo d-flex align-items-center">
+            <img src="{% static 'oscar/logo/logo.png' %}" alt="Oasis Logo">
+          </a>
+
+          <!-- Search -->
+          <form class="search-form desktop-search-form" action="{% url 'search' %}" method="get">
+            <div class="input-group">
+              <input type="text" name="q" class="form-control" placeholder="Search for products">
+              <button class="btn" type="submit">
+                <i class="ri-search-2-line"></i>
+              </button>
+            </div>
+          </form>
+
+          <!-- Actions -->
+          <div class="header-actions d-flex align-items-center justify-content-end">
+
+            <!-- Mobile Search Toggle -->
+            <button class="header-action-btn mobile-search-toggle d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
+              <i class="ri-search-2-line"></i>
+            </button>
+
+            <!-- Notifications -->
+            {% if request.user.is_authenticated %}
+            <div class="dropdown notif-dropdown">
+              <button class="header-action-btn position-relative" data-bs-toggle="dropdown" aria-label="Notifications">
+                <i class="ri-notification-3-line"></i>
+                <span id="notif-badge" class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" style="font-size:.6rem;{% if not notif_unread_count %}display:none;{% endif %}">{{ notif_unread_count }}</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end" style="min-width:300px;">
+                <div class="dropdown-header"><strong>Notifications</strong></div>
+                <div id="notif-list">
+                {% for n in notif_recent %}
+                  <a class="dropdown-item d-flex align-items-start gap-2 {% if not n.is_read %}fw-semibold{% endif %}" style="white-space:normal;"
+                     href="{% url 'notifications:open' n.pk %}">
+                    <i class="ri-notification-line mt-1"></i>
+                    <span>
+                      <span class="d-block small">{{ n.message }}</span>
+                      <span class="text-muted" style="font-size:.72rem;">{{ n.created_at|timesince }} ago</span>
+                    </span>
+                  </a>
+                {% empty %}
+                  <span class="dropdown-item text-muted small">You're all caught up.</span>
+                {% endfor %}
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-center small" href="{% url 'notifications:list' %}">See all notifications</a>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Account -->
+            <div class="dropdown account-dropdown">
+              <button class="header-action-btn" data-bs-toggle="dropdown">
+                <i class="ri-user-3-line"></i>
+              </button>
+              <div class="dropdown-menu">
+                <div class="dropdown-header">
+                  <h6>Welcome to <span class="sitename">Oasis</span></h6>
+                  <p class="mb-0">Access account & manage orders</p>
+                </div>
+                <div class="dropdown-body">
+                  {% if request.user.is_authenticated %}
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:profile-view' %}">
+                      <i class="ri-user-settings-line me-2"></i>
+                      <span>My Profile</span>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:order-list' %}">
+                      <i class="ri-shopping-bag-line me-2"></i>
+                      <span>My Orders</span>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:wishlists-list' %}">
+                      <i class="ri-heart-3-line me-2"></i>
+                      <span>My Wishlist</span>
+                    </a>
+                    {% if request.user.partners.exists %}
+                      <a class="dropdown-item d-flex align-items-center" href="/dashboard/">
+                        <i class="ri-store-2-line me-2"></i>
+                        <span>Seller Dashboard</span>
+                      </a>
+                    {% else %}
+                      <a class="dropdown-item d-flex align-items-center" href="{% url 'vendor:become-seller' %}">
+                        <i class="ri-store-2-line me-2"></i>
+                        <span>Become a Seller</span>
+                      </a>
+                    {% endif %}
+                    {% if request.user.rider_profile %}
+                      <a class="dropdown-item d-flex align-items-center" href="{% url 'rider:dashboard' %}">
+                        <i class="ri-motorbike-line me-2"></i>
+                        <span>Rider Dashboard</span>
+                      </a>
+                    {% else %}
+                      <a class="dropdown-item d-flex align-items-center" href="{% url 'rider:become-rider' %}">
+                        <i class="ri-motorbike-line me-2"></i>
+                        <span>Become a Rider</span>
+                      </a>
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="dropdown-footer">
+                  {% if request.user.is_authenticated %}
+                    <a href="{% url 'customer:summary' %}" class="btn btn-primary w-100 mb-2">My Account</a>
+                    <a href="{% url 'customer:logout' %}" class="btn btn-outline-primary w-100">Logout</a>
+                  {% else %}
+                    <a href="{% url 'customer:login' %}" class="btn btn-primary w-100 mb-2">Sign In</a>
+                    <a href="{% url 'customer:register' %}" class="btn btn-outline-primary w-100">Register</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Wishlist -->
+            <a href="#" class="header-action-btn d-none d-md-block">
+              <i class="ri-heart-3-line"></i>
+              <span class="badge">0</span>
+            </a>
+
+            <!-- Cart -->
+            <a href="{% url 'basket:summary' %}" class="header-action-btn">
+              <i class="ri-shopping-cart-2-line"></i>
+              <span class="badge">{{ request.basket.num_items }}</span>
+            </a>
+
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="header-action-btn" aria-label="Toggle theme">
+              <i class="ri-moon-line"></i>
+            </button>
+
+            <!-- Mobile Navigation Toggle -->
+            <i class="mobile-nav-toggle d-xl-none ri-menu-line me-0"></i>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Search (collapsible) -->
+    <div class="collapse d-xl-none" id="mobileSearch">
+      <div class="container-fluid container-xl py-2">
+        <form class="search-form" action="{% url 'search' %}" method="get" role="search">
+          <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search for products" aria-label="Search">
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
