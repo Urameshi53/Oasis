@@ -6,91 +6,147 @@
 {% block content %}
 <main class="main">
 
-    <!-- Page Title -->
-    <div class="page-title light-background">
+    <!-- Hero Header -->
+    <div class="page-title light-background py-4 mb-5 border-bottom">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Contact</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'catalogue:index' %}">Home</a></li>
-            <li class="current">Contact</li>
+        <div>
+          <h1 class="fw-bold mb-1">Get in Touch</h1>
+          <p class="text-muted mb-0">Have questions about Oasis or need help with an order? We're here for you.</p>
+        </div>
+        <nav class="breadcrumbs mt-3 mt-lg-0">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'catalogue:index' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contact</li>
           </ol>
         </nav>
       </div>
-    </div><!-- End Page Title -->
+    </div>
 
-    <!-- Contact 2 Section -->
-    <section id="contact-2" class="contact-2 section">
+    <!-- Contact Section -->
+    <section id="contact" class="contact section pb-5">
+      <div class="container" data-aos="fade-up">
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <!-- Contact Cards Grid -->
+        <div class="row g-4 mb-5">
 
-        <div class="row gy-4">
-
-          <div class="col-lg-6">
-            <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
-              <i class="bi bi-geo-alt"></i>
-              <h3>Address</h3>
-              <p>KNUST, Kumasi, Ghana</p>
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="card h-100 border-0 shadow-sm p-4 text-center contact-card rounded-4">
+              <div class="icon-box mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary" style="width: 64px; height: 64px; font-size: 28px;">
+                <i class="ri-map-pin-2-fill"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Visit Us</h5>
+              <p class="text-muted mb-0">KNUST Campus, Kotei Road<br>Kumasi, Ghana</p>
             </div>
-          </div><!-- End Info Item -->
+          </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
-              <i class="bi bi-telephone"></i>
-              <h3>Call Us</h3>
-              <p>+233 548 932 933</p>
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 border-0 shadow-sm p-4 text-center contact-card rounded-4">
+              <div class="icon-box mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success" style="width: 64px; height: 64px; font-size: 28px;">
+                <i class="ri-phone-fill"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Call Us Directly</h5>
+              <p class="text-muted mb-1"><a href="tel:+233548932933" class="text-decoration-none text-reset fw-medium">+233 548 932 933</a></p>
+              <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 align-self-center">Mon - Sat: 8am - 8pm</span>
             </div>
-          </div><!-- End Info Item -->
+          </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="400">
-              <i class="bi bi-envelope"></i>
-              <h3>Email Us</h3>
-              <p>support@oasis.shop</p>
+          <div class="col-lg-4 col-md-12" data-aos="fade-up" data-aos-delay="300">
+            <div class="card h-100 border-0 shadow-sm p-4 text-center contact-card rounded-4">
+              <div class="icon-box mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info" style="width: 64px; height: 64px; font-size: 28px;">
+                <i class="ri-mail-send-fill"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Email Support</h5>
+              <p class="text-muted mb-1"><a href="mailto:support@oasis.shop" class="text-decoration-none text-reset fw-medium">support@oasis.shop</a></p>
+              <p class="text-muted small mb-0">We usually reply within a few hours</p>
             </div>
-          </div><!-- End Info Item -->
+          </div>
 
         </div>
 
-        <div class="row gy-4 mt-1">
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.8248525854776!2d-1.5616789!3d6.704174!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdb968235d5a5db%3A0x2cdc8bbc5e1b8e4a!2sKNUST%20Kumasi!5e0!3m2!1sen!2sgh!4v1234567890" frameborder="0" style="border:0; width: 100%; height: 400px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div><!-- End Google Maps -->
+        <!-- Main Form & Map Container -->
+        <div class="row g-4 align-items-stretch">
+          
+          <!-- Interactive Form -->
+          <div class="col-lg-7" data-aos="fade-right" data-aos-delay="200">
+            <div class="card border-0 shadow-sm p-4 p-md-5 rounded-4 h-100">
+              <h3 class="fw-bold mb-2">Send Us a Message</h3>
+              <p class="text-muted mb-4">Fill out the form below and our team will reach out to you shortly.</p>
 
-          <div class="col-lg-6">
-            <form method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="400">
-              {% csrf_token %}
-              <div class="row gy-4">
+              <form method="post" class="php-email-form">
+                {% csrf_token %}
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input type="text" name="name" class="form-control rounded-3" id="contactName" placeholder="Your Name" required>
+                      <label for="contactName"><i class="ri-user-line me-1"></i> Your Name</label>
+                    </div>
+                  </div>
 
-                <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input type="email" name="email" class="form-control rounded-3" id="contactEmail" placeholder="Your Email" required>
+                      <label for="contactEmail"><i class="ri-mail-line me-1"></i> Your Email</label>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="form-floating">
+                      <input type="text" name="subject" class="form-control rounded-3" id="contactSubject" placeholder="Subject" required>
+                      <label for="contactSubject"><i class="ri-bookmark-line me-1"></i> Subject</label>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="form-floating">
+                      <textarea class="form-control rounded-3" name="message" id="contactMessage" placeholder="Message" style="height: 160px;" required></textarea>
+                      <label for="contactMessage"><i class="ri-chat-3-line me-1"></i> Your Message</label>
+                    </div>
+                  </div>
+
+                  <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-sm w-100 d-flex align-items-center justify-content-center gap-2 font-weight-bold">
+                      <span>Send Message</span>
+                      <i class="ri-send-plane-fill"></i>
+                    </button>
+                  </div>
                 </div>
+              </form>
+            </div>
+          </div>
 
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <button type="submit" class="btn btn-primary">Send Message</button>
-                </div>
-
-              </div>
-            </form>
-          </div><!-- End Contact Form -->
+          <!-- Embedded Map Card -->
+          <div class="col-lg-5" data-aos="fade-left" data-aos-delay="300">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 position-relative min-vh-300">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.8248525854776!2d-1.5616789!3d6.704174!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdb968235d5a5db%3A0x2cdc8bbc5e1b8e4a!2sKNUST%20Kumasi!5e0!3m2!1sen!2sgh!4v1234567890" 
+                style="border:0; width: 100%; height: 100%; min-height: 400px;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
+          </div>
 
         </div>
 
       </div>
-
-    </section><!-- /Contact 2 Section -->
+    </section>
 
 </main>
+
+<style>
+.contact-card {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.contact-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+}
+.contact-card .icon-box i {
+  transition: transform 0.3s ease;
+}
+.contact-card:hover .icon-box i {
+  transform: scale(1.2);
+}
+</style>
 {% endblock %}

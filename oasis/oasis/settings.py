@@ -150,9 +150,6 @@ MIDDLEWARE = [
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 
     'allauth.account.middleware.AccountMiddleware',
-
-    # Gate the whole site behind login (new visitors must sign in / register).
-    'oasis.middleware.LoginRequiredMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

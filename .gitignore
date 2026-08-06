@@ -82,8 +82,17 @@ yarn-error.log
 
 # Misc
 .venv
+# Caches & Temporary Files
+__pycache__/
+**/__pycache__/
 .cache/
+**/.cache/
+.pytest_cache/
 .mypy_cache/
 .dmypy.json
 dmypy.json
 oasis/db.sqlite3
+.ruff_cache/
+.sass-cache/
+**/media/cache/
+**/static/cache/
