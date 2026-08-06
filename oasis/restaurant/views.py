@@ -1,9 +1,15 @@
 from rest_framework import viewsets, permissions
-from .models import Restaurant, Order
-from .serializers import RestaurantSerializer, OrderSerializer
+from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
 from django.views import generic
 
+from .models import Restaurant, Category, Order
+from .serializers import RestaurantSerializer, OrderSerializer
 
+
+# ---------------------------------------------------------------------------
+# API (unchanged) — customers browse restaurants & manage their own orders
+# ---------------------------------------------------------------------------
 class RestaurantViewSet(viewsets.ReadOnlyModelViewSet):
     """Customers can browse restaurants & menus"""
     queryset = Restaurant.objects.filter(is_active=True)
@@ -27,13 +33,58 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(customer=self.request.user)
 
 
-class IndexView(generic.TemplateView):
-    template_name = "restaurant/index.html"
-    
-    def get_context_data(self, *args, **kwargs):
-        context = super(IndexView, self).get_context_data(*args, **kwargs)
+# ---------------------------------------------------------------------------
+# Storefront (HTML) — real data from the database
+# ---------------------------------------------------------------------------
+class RestaurantListView(generic.ListView):
+    """Public directory of active restaurants."""
+    template_name = "restaurant/restaurant_list.html"
+    context_object_name = "restaurants"
+    paginate_by = 12
 
-        if self.request.user.is_authenticated:
-            context['restaurants'] = Restaurant.objects.all()
+    def get_queryset(self):
+        qs = (
+            Restaurant.objects.filter(is_active=True)
+            .annotate(
+                num_items=Count(
+                    "categories__items",
+                    filter=Q(categories__items__is_available=True),
+                    distinct=True,
+                )
+            )
+            .order_by("name")
+        )
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            qs = qs.filter(Q(name__icontains=query) | Q(description__icontains=query))
+        return qs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q", "").strip()
+        return context
+
+
+class RestaurantDetailView(generic.DetailView):
+    """A single restaurant with its menu grouped by category."""
+    model = Restaurant
+    template_name = "restaurant/restaurant_detail.html"
+    context_object_name = "restaurant"
+
+    def get_queryset(self):
+        return Restaurant.objects.filter(is_active=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Only show categories that have at least one available item.
+        categories = (
+            self.object.categories.prefetch_related("items__addons")
+            .order_by("name")
+        )
+        menu = []
+        for category in categories:
+            items = [i for i in category.items.all() if i.is_available]
+            if items:
+                menu.append({"category": category, "items": items})
+        context["menu"] = menu
         return context

@@ -35,7 +35,7 @@ urlpatterns = [
     path('paystack/callback/', paystack_callback, name='paystack-callback'),
 
     path('admin/', admin.site.urls),
-    path("api/restaurant/", include("restaurant.urls")),
+    path("api/restaurant/", include("restaurant.api_urls")),
     path('restaurant/', include("restaurant.urls")),
     path("api/catalogue/", include("apps.catalogue.urls")),
     path('api/', include(router.urls)),

@@ -1,0 +1,69 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Food" %} | {{ block.super }}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="container pt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans "Food" %}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+
+<div class="shop-wrap">
+
+    <div class="shop-head">
+        <h1>{% trans "Order food on campus" %}</h1>
+        <p>{% trans "Browse restaurants and get your favourites delivered." %}</p>
+    </div>
+
+    <form method="get" class="shop-search mb-4">
+        <i class="bi bi-search"></i>
+        <input type="text" name="q" value="{{ query }}" class="shop-search__input"
+               placeholder="{% trans 'Search restaurants…' %}">
+        <button type="submit" class="shop-btn shop-search__btn">{% trans "Search" %}</button>
+    </form>
+
+    {% if restaurants %}
+        <div class="shop-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+            {% for restaurant in restaurants %}
+                <a class="shop-store-card" href="{% url 'restaurant_detail' pk=restaurant.pk %}">
+                    <span class="avatar">
+                        {% if restaurant.logo %}
+                            <img src="{{ restaurant.logo.url }}" alt="{{ restaurant.name }}">
+                        {% else %}
+                            {{ restaurant.name|first|upper }}
+                        {% endif %}
+                    </span>
+                    <span>
+                        <span class="name">{{ restaurant.name }}</span><br>
+                        <span class="sub">
+                            {% blocktrans count counter=restaurant.num_items %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}
+                        </span>
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+        {% include "oscar/partials/shop_pagination.html" %}
+    {% else %}
+        <div class="shop-panel text-center py-5">
+            <i class="bi bi-shop" style="font-size:2.5rem;opacity:.35;"></i>
+            <p class="mt-2 mb-0">
+                {% if query %}
+                    {% trans "No restaurants match your search." %}
+                {% else %}
+                    {% trans "No restaurants yet. Check back soon!" %}
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

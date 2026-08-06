@@ -1,0 +1,102 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+{% load currency_filters %}
+
+{% block title %}{{ restaurant.name }} | {{ block.super }}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="container pt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ homepage_url }}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'restaurant' %}">{% trans "Food" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ restaurant.name }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+
+<style>
+    .menu-item-card {
+        display: flex; gap: 1rem; padding: 1rem;
+        background: var(--surface-color, #fff); border: 1px solid var(--shop-border);
+        border-radius: var(--shop-radius); box-shadow: var(--shop-shadow);
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .menu-item-card:hover { transform: translateY(-2px); box-shadow: var(--shop-shadow-hover); }
+    .menu-item-card__img {
+        width: 96px; height: 96px; border-radius: 12px; object-fit: cover; flex-shrink: 0;
+        background: color-mix(in srgb, var(--default-color, #212529), transparent 92%);
+    }
+    .menu-item-card__img.ph { display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: var(--shop-muted); }
+    .menu-item-card__body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+    .menu-item-card__name { font-weight: 700; color: var(--heading-color); margin: 0 0 .15rem; }
+    .menu-item-card__desc { color: var(--shop-muted); font-size: .88rem; margin: 0 0 .5rem; }
+    .menu-item-card__foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; gap: .75rem; }
+    .menu-item-card__price { font-weight: 800; color: var(--heading-color); }
+    .menu-item-card__addons { font-size: .78rem; color: var(--shop-muted); margin-top: .25rem; }
+</style>
+
+<div class="shop-wrap">
+
+    <div class="shop-store-hero">
+        <div class="shop-store-bar">
+            <span class="shop-store-logo">
+                {% if restaurant.logo %}
+                    <img src="{{ restaurant.logo.url }}" alt="{{ restaurant.name }}">
+                {% else %}
+                    {{ restaurant.name|first|upper }}
+                {% endif %}
+            </span>
+            <span class="shop-store-meta">
+                <h1>{{ restaurant.name }}</h1>
+                {% if restaurant.address %}<p class="tagline"><i class="bi bi-geo-alt"></i> {{ restaurant.address }}</p>{% endif %}
+            </span>
+        </div>
+    </div>
+
+    {% if restaurant.description %}
+        <p class="shop-store-desc">{{ restaurant.description }}</p>
+    {% endif %}
+
+    {% for group in menu %}
+        <h2 class="shop-section-title" id="cat-{{ group.category.pk }}">{{ group.category.name }}</h2>
+        <div class="shop-grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">
+            {% for item in group.items %}
+                <div class="menu-item-card">
+                    {% if item.image %}
+                        <img class="menu-item-card__img" src="{{ item.image.url }}" alt="{{ item.name }}">
+                    {% else %}
+                        <span class="menu-item-card__img ph"><i class="bi bi-egg-fried"></i></span>
+                    {% endif %}
+                    <div class="menu-item-card__body">
+                        <p class="menu-item-card__name">{{ item.name }}</p>
+                        {% if item.description %}<p class="menu-item-card__desc">{{ item.description }}</p>{% endif %}
+                        {% if item.addons.all %}
+                            <p class="menu-item-card__addons">
+                                <i class="bi bi-plus-circle"></i>
+                                {% for addon in item.addons.all %}{{ addon.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                            </p>
+                        {% endif %}
+                        <div class="menu-item-card__foot">
+                            <span class="menu-item-card__price">{{ item.base_price|currency }}</span>
+                            <button type="button" class="shop-btn" style="width:auto;padding:.5rem 1rem;" disabled>
+                                <i class="bi bi-plus-lg"></i> {% trans "Add" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% empty %}
+        <div class="shop-panel text-center py-5">
+            <i class="bi bi-egg-fried" style="font-size:2.5rem;opacity:.35;"></i>
+            <p class="mt-2 mb-0">{% trans "This restaurant hasn't added any menu items yet." %}</p>
+        </div>
+    {% endfor %}
+
+</div>
+{% endblock %}
