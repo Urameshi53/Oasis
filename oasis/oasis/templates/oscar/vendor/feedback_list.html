@@ -1,0 +1,49 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+{% load vendor_tags %}
+{% load rating_tags %}
+
+{% block title %}{{ partner.display_name }} — {% trans "Seller feedback" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+{% seller_rating partner as rating %}
+<div class="shop-wrap">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'vendor:store-list' %}">{% trans "Stores" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'vendor:store' code=partner.code %}">{{ partner.display_name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Feedback" %}</li>
+        </ol>
+    </nav>
+
+    <div class="rating-summary">
+        <div class="rating-score">
+            <div class="rs-num">{% if rating.avg %}{{ rating.avg }}{% else %}—{% endif %}</div>
+            {% star_icons rating.avg %}
+            <div class="rs-count">{% blocktrans count n=rating.count %}{{ n }} rating{% plural %}{{ n }} ratings{% endblocktrans %}</div>
+        </div>
+        <div>
+            <div style="font-size:1.6rem;font-weight:800;color:var(--heading-color);">{{ rating.positive_pct }}%</div>
+            <div style="color:var(--shop-muted);">{% trans "positive feedback" %}</div>
+        </div>
+    </div>
+
+    <div class="mt-2">
+        {% for fb in feedback %}
+            <article class="review-item">
+                <div class="review-head">
+                    {% star_icons fb.score %}
+                    <span class="review-meta">{{ fb.user.get_full_name|default:fb.user.get_username }} &middot; {{ fb.created_at|date:"j M Y" }}</span>
+                </div>
+                {% if fb.comment %}<p class="review-body">{{ fb.comment }}</p>{% endif %}
+            </article>
+        {% empty %}
+            <div class="shop-panel" style="text-align:center;padding:2rem;color:var(--shop-muted);">
+                {% trans "This seller has no feedback yet." %}
+            </div>
+        {% endfor %}
+    </div>
+    {% include "oscar/partials/shop_pagination.html" %}
+</div>
+{% endblock content %}

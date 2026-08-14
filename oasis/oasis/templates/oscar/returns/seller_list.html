@@ -1,0 +1,52 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+{% load currency_filters %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .rt-badge{display:inline-flex;align-items:center;gap:.3rem;font-weight:700;font-size:.72rem;padding:.2rem .55rem;border-radius:999px;}
+    .rt-requested{background:rgba(13,110,253,.12);color:var(--accent-color,#0d6efd);}
+    .rt-approved{background:rgba(255,171,0,.15);color:#b7791f;}
+    .rt-refunded{background:rgba(25,135,84,.14);color:#198754;}
+    .rt-rejected,.rt-cancelled{background:rgba(220,53,69,.12);color:#dc3545;}
+</style>
+<div class="shop-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem;">
+        <h2 style="font-weight:800;color:var(--heading-color);margin:0;">
+            <i class="bi bi-arrow-return-left"></i> {% trans "Return requests" %}
+        </h2>
+        <a href="/dashboard/" class="shop-btn shop-btn--ghost">{% trans "Back to dashboard" %}</a>
+    </div>
+
+    {% if returns %}
+        <div style="display:flex;flex-direction:column;gap:.6rem;">
+            {% for rr in returns %}
+                <div class="shop-panel" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+                    <span>
+                        <span style="font-weight:700;color:var(--heading-color);">
+                            {% trans "Return" %} #{{ rr.pk }} &middot; {% trans "Order" %} {{ rr.order.number }}
+                        </span>
+                        <span style="display:block;color:var(--shop-muted);font-size:.85rem;">
+                            {{ rr.total_quantity }} {% trans "item" %}{{ rr.total_quantity|pluralize }}
+                            &middot; {{ rr.get_reason_display }}
+                            &middot; {{ rr.expected_refund|currency:rr.currency }}
+                            &middot; {{ rr.created_at|date:"j M Y" }}
+                        </span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:.6rem;">
+                        <span class="rt-badge rt-{{ rr.status }}">{{ rr.get_status_display }}</span>
+                        <a href="{% url 'returns:detail' pk=rr.pk %}" class="shop-btn">{% trans "Review" %}</a>
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+        {% include "oscar/partials/shop_pagination.html" %}
+    {% else %}
+        <div class="shop-panel" style="text-align:center;padding:2.5rem 1rem;">
+            <i class="bi bi-check2-circle" style="font-size:2.5rem;color:var(--shop-muted);"></i>
+            <p style="margin:.75rem 0 0;color:var(--shop-muted);">{% trans "No return requests. You're all caught up." %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

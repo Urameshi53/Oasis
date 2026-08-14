@@ -1,0 +1,49 @@
+{% extends "oscar/customer/baseaccountpage.html" %}
+{% load i18n %}
+
+{% block extra_breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'customer:order' order_number=order.number %}">{% trans 'Order' %} {{ order.number }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans 'Rate seller' %}</li>
+{% endblock %}
+
+{% block tabcontent %}
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .star-picker{display:inline-flex;flex-direction:row-reverse;gap:.15rem;font-size:2rem;}
+    .star-picker input{position:absolute;opacity:0;width:0;height:0;}
+    .star-picker label{color:#d7d3cb;cursor:pointer;transition:color .1s;}
+    .star-picker label:hover,.star-picker label:hover ~ label,
+    .star-picker input:checked ~ label{color:#f5a623;}
+</style>
+<div class="shop-wrap">
+    <h2 style="font-weight:800;color:var(--heading-color);margin:0 0 .25rem;">
+        {% trans "Rate your seller" %}
+    </h2>
+    <p style="color:var(--shop-muted);margin:0 0 1.25rem;">
+        {% blocktrans with name=partner.display_name number=order.number %}How was your experience buying from {{ name }} on order {{ number }}?{% endblocktrans %}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="shop-panel">
+            <label style="display:block;font-weight:700;color:var(--heading-color);margin-bottom:.5rem;">{% trans "Your rating" %}</label>
+            <div class="star-picker">
+                {% for n in "54321"|make_list %}
+                    <input type="radio" name="score" id="star{{ n }}" value="{{ n }}"
+                           {% if existing and existing.score|stringformat:'s' == n %}checked{% elif not existing and n == '5' %}checked{% endif %}>
+                    <label for="star{{ n }}" title="{{ n }}"><i class="bi bi-star-fill"></i></label>
+                {% endfor %}
+            </div>
+
+            <label style="display:block;font-weight:700;color:var(--heading-color);margin:1rem 0 .4rem;">{% trans "Comment (optional)" %}</label>
+            <textarea name="comment" rows="4" placeholder="{% trans 'Fast delivery, item as described…' %}"
+                      style="width:100%;padding:.6rem;border:1px solid var(--shop-border);border-radius:8px;background:var(--surface-color);color:var(--heading-color);">{% if existing %}{{ existing.comment }}{% endif %}</textarea>
+        </div>
+
+        <div style="display:flex;gap:.6rem;margin-top:1rem;">
+            <button type="submit" class="shop-btn"><i class="bi bi-check2"></i> {% if existing %}{% trans "Update feedback" %}{% else %}{% trans "Submit feedback" %}{% endif %}</button>
+            <a href="{% url 'customer:order' order_number=order.number %}" class="shop-btn shop-btn--ghost">{% trans "Back to order" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock tabcontent %}

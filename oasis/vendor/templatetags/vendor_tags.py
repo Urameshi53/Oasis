@@ -38,6 +38,57 @@ def seller_earnings(user):
 
 
 @register.simple_tag
+def seller_rating(partner):
+    """
+    Aggregate seller feedback for a partner::
+
+        {avg, count, positive_pct}
+
+    ``avg`` is the mean 1-5 score, ``positive_pct`` the share of ratings >= 4
+    (Amazon's "positive feedback" metric). Returns count 0 when unrated.
+    """
+    from django.db.models import Avg, Count
+
+    empty = {"avg": None, "count": 0, "positive_pct": 0}
+    if partner is None:
+        return empty
+
+    from vendor.models import SellerFeedback
+
+    qs = SellerFeedback.objects.filter(partner=partner)
+    agg = qs.aggregate(avg=Avg("score"), count=Count("id"))
+    count = agg["count"] or 0
+    if not count:
+        return empty
+    positive = qs.filter(score__gte=4).count()
+    return {
+        "avg": round(agg["avg"], 1),
+        "count": count,
+        "positive_pct": round(100 * positive / count),
+    }
+
+
+@register.simple_tag
+def sellers_for_order(order):
+    """Distinct partners (sellers) that supplied lines in this order."""
+    from oscar.core.loading import get_model
+
+    Partner = get_model("partner", "Partner")
+    partner_ids = order.lines.values_list("partner_id", flat=True)
+    return Partner.objects.filter(id__in=[p for p in partner_ids if p]).distinct()
+
+
+@register.simple_tag
+def seller_feedback_given(user, order, partner):
+    """True if the user has already left feedback for this seller on this order."""
+    if not user.is_authenticated:
+        return False
+    from vendor.models import SellerFeedback
+
+    return SellerFeedback.objects.filter(user=user, order=order, partner=partner).exists()
+
+
+@register.simple_tag
 def seller_for_product(product):
     """
     Return the vendor (Oscar ``Partner``) that sells the given product, or

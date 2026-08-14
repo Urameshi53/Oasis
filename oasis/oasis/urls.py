@@ -44,6 +44,10 @@ urlpatterns = [
     path('vendor/', include('vendor.urls')),
     path('rider/', include('rider.urls')),
     path('notifications/', include('notifications.urls')),
+    path('returns/', include('returns.urls')),
+    path('messages/', include('messaging.urls')),
+    path('qa/', include('qa.urls')),
+    path('membership/', include('membership.urls')),
     path('analytics/', include('insights.urls')),
     path('payments/', include('payments.urls')),
     
@@ -51,6 +55,16 @@ urlpatterns = [
     path('about/', AboutView.as_view(), name='about'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('search/', search_products, name='search'),
+    path('deals/', DealsView.as_view(), name='deals'),
+
+    # Customer order tracking (order status + rider delivery lifecycle).
+    path('orders/<str:order_number>/track/', OrderTrackingView.as_view(), name='order-track'),
+
+    # Printable order invoice / receipt.
+    path('orders/<str:order_number>/invoice/', OrderInvoiceView.as_view(), name='order-invoice'),
+
+    # Wishlist heart toggle (AJAX, JSON).
+    path('wishlist/toggle/<int:product_pk>/', wishlist_toggle, name='wishlist-toggle'),
 
     # Registration that also collects first/last name (shadows Oscar's register).
     path('accounts/register/', RegisterView.as_view(), name='register'),

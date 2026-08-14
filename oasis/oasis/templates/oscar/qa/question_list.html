@@ -1,0 +1,38 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Questions & answers" %} — {{ product.get_title }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+{% include "oscar/qa/partials/qa_styles.html" %}
+<div class="shop-wrap" style="max-width:760px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ product.get_absolute_url }}">{{ product.get_title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Q&A" %}</li>
+        </ol>
+    </nav>
+
+    <h2 style="font-weight:800;color:var(--heading-color);margin:0 0 1rem;">
+        <i class="bi bi-patch-question"></i> {% trans "Customer questions & answers" %}
+    </h2>
+
+    {% if request.user.is_authenticated %}
+        <form method="post" action="{% url 'qa:ask' product_pk=product.pk %}" class="qa-form qa-ask">
+            {% csrf_token %}
+            <textarea name="body" rows="2" required placeholder="{% trans 'Ask a question about this product…' %}"></textarea>
+            <button type="submit" class="shop-btn"><i class="bi bi-send"></i> {% trans "Ask" %}</button>
+        </form>
+    {% endif %}
+
+    <div class="qa-list">
+        {% for question in questions %}
+            {% include "oscar/qa/partials/qa_thread.html" %}
+        {% empty %}
+            <p class="qa-none">{% trans "No questions yet." %}</p>
+        {% endfor %}
+    </div>
+    {% include "oscar/partials/shop_pagination.html" %}
+</div>
+{% endblock content %}

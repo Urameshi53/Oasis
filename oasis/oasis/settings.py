@@ -17,32 +17,30 @@ import environ
 
 env = environ.Env()
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load secrets/config from an untracked `.env` next to manage.py. Secrets
+# (SECRET_KEY, OAuth, Paystack) live there — never hardcoded in this file.
+environ.Env.read_env(str(BASE_DIR / '.env'))
+
 # Path helper
 location = lambda x: os.path.join(
     os.path.dirname(os.path.realpath(__file__)), x)
 
-#DEBUG = env.bool('DEBUG', default=True)
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env.bool('DEBUG', default=True)
 
-#ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', '10.132.45.42'])
-#ALLOWED_HOSTS = ["10.132.45.42", "127.0.0.1", "localhost"]
-ALLOWED_HOSTS = ['*']
+# SECURITY WARNING: set a real SECRET_KEY via .env in production. The default
+# below is a throwaway for local dev only.
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-dev-only-change-me')
+
+# In DEBUG we accept any host for convenience; in production ALLOWED_HOSTS must
+# be provided explicitly via the environment.
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'] if DEBUG else [])
 
 EMAIL_SUBJECT_PREFIX = '[Oscar sandbox]'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-twekob**1cvid#27o=9gf%*+()i)0na*cag_=t0@ubo#@yh+6-'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 
 
@@ -62,6 +60,12 @@ INSTALLED_APPS = [
     'rider.apps.RiderConfig',
     'notifications.apps.NotificationsConfig',
     'insights.apps.InsightsConfig',
+    'recommendations.apps.RecommendationsConfig',
+    'ratings.apps.RatingsConfig',
+    'returns.apps.ReturnsConfig',
+    'messaging.apps.MessagingConfig',
+    'qa.apps.QaConfig',
+    'membership.apps.MembershipConfig',
     'rest_framework',
     "rest_framework.authtoken",
     'corsheaders',
@@ -186,6 +190,7 @@ TEMPLATES = [
                 # Custom context processor
                 'oasis.context_processors.modern_settings',
                 'oasis.context_processors.payout_schedule',
+                'oasis.context_processors.wishlist',
                 'notifications.context_processors.notifications',
             ],
             'debug': DEBUG,
@@ -269,8 +274,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'APP': {
-            'client_id': '789007336886-efm2802u73l1fjfk347f5m11ldbrcuij.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': env('GOOGLE_CLIENT_ID', default=''),
+            'secret': env('GOOGLE_CLIENT_SECRET', default=''),
             'key': ''
         }
     }
@@ -311,6 +316,14 @@ STORAGES = {
         "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
+
+# Under the test runner there's no collected manifest, so fall back to plain
+# static storage (the manifest backend raises on any {% static %} otherwise).
+import sys as _sys
+if "test" in _sys.argv:
+    STORAGES["staticfiles"]["BACKEND"] = (
+        "django.contrib.staticfiles.storage.StaticFilesStorage"
+    )
 
 
 # Language code for this installation. All choices can be found here:
@@ -509,3 +522,10 @@ PLATFORM_COMMISSION_RATE = 10
 
 # Flat fee (in store currency) a rider earns per completed delivery.
 RIDER_DELIVERY_FEE = 10
+
+# How many days after an order is placed a customer may request a return.
+RETURN_WINDOW_DAYS = 30
+
+# Oasis Plus membership: price per 30-day period + automatic member discount (%).
+MEMBERSHIP_PRICE = 15
+MEMBERSHIP_DISCOUNT_PERCENT = 5

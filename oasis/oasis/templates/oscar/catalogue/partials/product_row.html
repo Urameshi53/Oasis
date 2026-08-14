@@ -1,0 +1,19 @@
+{% comment %}
+Reusable "carousel" row of product cards.
+Params:
+  products     - iterable of Product
+  row_title    - heading text
+Renders nothing when `products` is empty.
+{% endcomment %}
+{% if products %}
+    <section class="shop-reco">
+        <h2 class="shop-section-title">{{ row_title }}</h2>
+        <div class="shop-reco__scroller">
+            {% for product in products %}
+                <div class="shop-reco__item">
+                    {% include "oscar/catalogue/partials/shop_product_card.html" %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

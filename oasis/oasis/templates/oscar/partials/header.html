@@ -61,7 +61,7 @@
               <li><a href="{% url 'catalogue:index' %}" class="active">Home</a></li>
               <li><a href="{% url 'about' %}">About</a></li>
               <li><a href="{% url 'catalogue:index' %}">Shop</a></li>
-              <li><a href="{% url 'restaurant' %}">Food</a></li>
+              <li><a href="{% url 'deals' %}">Deals</a></li>
               <li><a href="{% url 'vendor:store-list' %}">Stores</a></li>
               <li><a href="{% url 'basket:summary' %}">Cart</a></li>
               <li><a href="{% url 'checkout:index' %}">Checkout</a></li>
@@ -131,6 +131,16 @@
             </div>
             {% endif %}
 
+            <!-- Messages -->
+            {% if request.user.is_authenticated %}
+            {% load messaging_tags %}
+            {% unread_message_count request.user as msg_unread %}
+            <a href="{% url 'messaging:inbox' %}" class="header-action-btn position-relative" aria-label="Messages">
+              <i class="ri-chat-3-line"></i>
+              {% if msg_unread %}<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" style="font-size:.6rem;">{{ msg_unread }}</span>{% endif %}
+            </a>
+            {% endif %}
+
             <!-- Account -->
             <div class="dropdown account-dropdown">
               <button class="header-action-btn" data-bs-toggle="dropdown">
@@ -151,9 +161,23 @@
                       <i class="ri-shopping-bag-line me-2"></i>
                       <span>My Orders</span>
                     </a>
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'returns:list' %}">
+                      <i class="ri-arrow-go-back-line me-2"></i>
+                      <span>My Returns</span>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'messaging:inbox' %}">
+                      <i class="ri-chat-3-line me-2"></i>
+                      <span>My Messages</span>
+                    </a>
                     <a class="dropdown-item d-flex align-items-center" href="{% url 'customer:wishlists-list' %}">
                       <i class="ri-heart-3-line me-2"></i>
                       <span>My Wishlist</span>
+                    </a>
+                    {% load membership_tags %}
+                    {% is_member request.user as member %}
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'membership:home' %}">
+                      <i class="ri-vip-crown-2-line me-2"></i>
+                      <span>Oasis Plus{% if member %} <span class="badge bg-warning text-dark">Member</span>{% endif %}</span>
                     </a>
                     {% if request.user.partners.exists %}
                       <a class="dropdown-item d-flex align-items-center" href="/dashboard/">
@@ -192,9 +216,9 @@
             </div>
 
             <!-- Wishlist -->
-            <a href="#" class="header-action-btn d-none d-md-block">
+            <a href="{% url 'customer:wishlists-list' %}" class="header-action-btn d-none d-md-block" aria-label="Wishlist">
               <i class="ri-heart-3-line"></i>
-              <span class="badge">0</span>
+              <span class="badge" id="wishlist-badge"{% if not wishlist_count %} style="display:none;"{% endif %}>{{ wishlist_count }}</span>
             </a>
 
             <!-- Cart -->
@@ -231,3 +255,59 @@
     </div>
 
 </header><!-- End Header -->
+
+{% if request.user.is_authenticated %}
+<script>
+(function () {
+  // Delegated wishlist heart toggle (works for cards rendered now or later).
+  function getCookie(name) {
+    var m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return m ? m.pop() : '';
+  }
+  function updateBadge(count) {
+    var badge = document.getElementById('wishlist-badge');
+    if (!badge) return;
+    badge.textContent = count;
+    badge.style.display = count > 0 ? '' : 'none';
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.js-wishlist');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (btn.dataset.busy) return;
+    btn.dataset.busy = '1';
+    fetch('/wishlist/toggle/' + btn.dataset.pk + '/', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With': 'XMLHttpRequest' }
+    })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (data) {
+        var active = data.in_wishlist;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        btn.setAttribute('aria-label', active ? 'Remove from wishlist' : 'Add to wishlist');
+        var icon = btn.querySelector('i');
+        if (icon) icon.className = active ? 'bi bi-heart-fill' : 'bi bi-heart';
+        var label = btn.querySelector('.wl-label');
+        if (label) label.textContent = active ? 'In your wishlist' : 'Add to wishlist';
+        updateBadge(data.count);
+        if (window.oasisToast) {
+          window.oasisToast(active ? 'Added to your wishlist' : 'Removed from your wishlist',
+                            active ? 'success' : 'info', active ? 'bi-heart-fill' : 'bi-heart');
+        }
+        // On the wishlist page, drop the card when un-favourited.
+        if (!active && btn.dataset.removeCard) {
+          var card = btn.closest('.shop-card, .wl-item');
+          if (card) card.remove();
+        }
+      })
+      .catch(function () {
+        if (window.oasisToast) window.oasisToast('Could not update wishlist', 'warning', 'bi-exclamation-triangle');
+      })
+      .finally(function () { delete btn.dataset.busy; });
+  });
+})();
+</script>
+{% endif %}

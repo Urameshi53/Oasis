@@ -34,6 +34,12 @@
         <a href="{% url 'vendor:sales' %}" class="btn btn-secondary btn-lg">
             <i class="fas fa-wallet"></i> {% trans "Sales & payouts" %}
         </a>
+        <a href="{% url 'returns:seller-list' %}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-undo"></i> {% trans "Return requests" %}
+        </a>
+        <a href="{% url 'messaging:inbox' %}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-comments"></i> {% trans "Messages" %}
+        </a>
         <a href="{% url 'vendor:shop-settings' %}" class="btn btn-secondary btn-lg">
             <i class="fas fa-cog"></i> {% trans "Shop settings" %}
         </a>
@@ -45,6 +51,26 @@
             {% endif %}
         {% endwith %}
     </div>
+
+    {# ---- Seller rating ---- #}
+    {% with shop=request.user.partners.first %}
+        {% if shop %}
+            {% seller_rating shop as myrating %}
+            <div class="table-header"><i class="fas fa-star"></i> {% trans "Your seller rating" %}</div>
+            <div class="content-block">
+                {% if myrating.count %}
+                    <p style="font-size:1.1rem;">
+                        <strong style="font-size:1.5rem;color:#f5a623;">{{ myrating.avg }} ★</strong>
+                        {% trans "from" %} {{ myrating.count }} {% trans "buyer rating" %}{{ myrating.count|pluralize }}
+                        &middot; <strong>{{ myrating.positive_pct }}%</strong> {% trans "positive" %}
+                        &middot; <a href="{% url 'vendor:feedback-list' code=shop.code %}">{% trans "See feedback" %}</a>
+                    </p>
+                {% else %}
+                    <p class="text-muted">{% trans "No buyer ratings yet. Deliver great service and buyers can rate your store from their orders." %}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     {# ---- Earnings ---- #}
     {% seller_earnings request.user as earnings %}

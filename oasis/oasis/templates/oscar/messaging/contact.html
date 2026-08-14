@@ -1,0 +1,32 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Contact seller" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+<div class="shop-wrap" style="max-width:640px;">
+    <h2 style="font-weight:800;color:var(--heading-color);margin:0 0 .25rem;">
+        <i class="bi bi-chat-dots"></i> {% blocktrans with name=partner.display_name %}Message {{ name }}{% endblocktrans %}
+    </h2>
+    <p style="color:var(--shop-muted);margin:0 0 1.25rem;">
+        {% if product %}{% blocktrans with title=product.get_title %}About: {{ title }}{% endblocktrans %}
+        {% elif order %}{% blocktrans with number=order.number %}About order {{ number }}{% endblocktrans %}
+        {% else %}{% trans "Ask a question or raise an issue — the seller will be notified." %}{% endif %}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        {% if product %}<input type="hidden" name="product" value="{{ product.pk }}">{% endif %}
+        {% if order %}<input type="hidden" name="order" value="{{ order.number }}">{% endif %}
+        <div class="shop-panel">
+            <textarea name="body" rows="5" required placeholder="{% trans 'Type your message…' %}"
+                      style="width:100%;padding:.7rem;border:1px solid var(--shop-border);border-radius:10px;background:var(--surface-color);color:var(--heading-color);"></textarea>
+        </div>
+        <div style="display:flex;gap:.6rem;margin-top:1rem;">
+            <button type="submit" class="shop-btn"><i class="bi bi-send"></i> {% trans "Send message" %}</button>
+            <a href="{% url 'vendor:store' code=partner.code %}" class="shop-btn shop-btn--ghost">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

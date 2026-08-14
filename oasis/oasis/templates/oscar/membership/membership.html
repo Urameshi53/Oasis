@@ -1,0 +1,71 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+{% load currency_filters %}
+
+{% block title %}{% trans "Oasis Plus" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .plus-hero{background:linear-gradient(135deg,var(--accent-color,#0a4db8) 0%,#6610f2 100%);color:#fff;border-radius:18px;padding:2.2rem;text-align:center;margin-bottom:1.5rem;}
+    .plus-hero .logo{font-size:1.9rem;font-weight:900;letter-spacing:-.02em;}
+    .plus-hero .logo .plus{background:#ffd43b;color:#1b1f27;border-radius:6px;padding:0 .35rem;margin-left:.2rem;}
+    .plus-hero p{opacity:.9;margin:.4rem 0 0;}
+    .plus-benefits{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:1.5rem 0;}
+    .plus-benefit{background:var(--surface-color);border:1px solid var(--shop-border);border-radius:14px;padding:1.2rem;}
+    .plus-benefit i{font-size:1.5rem;color:var(--accent-color,#0d6efd);}
+    .plus-benefit h3{margin:.5rem 0 .25rem;font-size:1rem;color:var(--heading-color);}
+    .plus-benefit p{margin:0;color:var(--shop-muted);font-size:.9rem;}
+    .plus-status{display:inline-flex;align-items:center;gap:.4rem;background:#ffd43b;color:#1b1f27;font-weight:800;padding:.35rem .8rem;border-radius:999px;font-size:.85rem;}
+</style>
+<div class="shop-wrap" style="max-width:820px;">
+    <div class="plus-hero">
+        <div class="logo">Oasis<span class="plus">Plus</span></div>
+        {% if membership and membership.active %}
+            <p><span class="plus-status"><i class="bi bi-patch-check-fill"></i> {% trans "Active member" %}</span></p>
+            <p>{% blocktrans with date=membership.expires_at|date:"j M Y" %}Your membership renews on {{ date }}.{% endblocktrans %}</p>
+        {% else %}
+            <p>{% blocktrans %}Save on every order and unlock member-only perks.{% endblocktrans %}</p>
+            <p style="font-size:1.4rem;font-weight:800;margin-top:.6rem;">{{ price|currency }} <span style="font-size:.9rem;font-weight:500;opacity:.85;">/ {% trans "month" %}</span></p>
+        {% endif %}
+    </div>
+
+    <div class="plus-benefits">
+        <div class="plus-benefit">
+            <i class="bi bi-percent"></i>
+            <h3>{{ discount_percent }}% {% trans "off every order" %}</h3>
+            <p>{% trans "An automatic discount applied at checkout — no code needed." %}</p>
+        </div>
+        <div class="plus-benefit">
+            <i class="bi bi-truck"></i>
+            <h3>{% trans "Priority delivery" %}</h3>
+            <p>{% trans "Your orders are flagged for faster rider pickup." %}</p>
+        </div>
+        <div class="plus-benefit">
+            <i class="bi bi-tags-fill"></i>
+            <h3>{% trans "Member-only deals" %}</h3>
+            <p>{% trans "Early access to promotions and exclusive coupons." %}</p>
+        </div>
+        <div class="plus-benefit">
+            <i class="bi bi-headset"></i>
+            <h3>{% trans "Priority support" %}</h3>
+            <p>{% trans "Your messages to sellers and support go to the front." %}</p>
+        </div>
+    </div>
+
+    {% if membership and membership.active %}
+        <form method="post" action="{% url 'membership:cancel' %}" onsubmit="return confirm('{% trans "Cancel your Oasis Plus membership?" %}');">
+            {% csrf_token %}
+            <button type="submit" class="shop-btn shop-btn--ghost">{% trans "Cancel membership" %}</button>
+        </form>
+    {% else %}
+        <form method="post" action="{% url 'membership:join' %}" style="text-align:center;">
+            {% csrf_token %}
+            <button type="submit" class="shop-btn shop-btn--lg" style="max-width:320px;">
+                <i class="bi bi-star-fill"></i> {% blocktrans with amount=price|currency %}Join Oasis Plus — {{ amount }}/month{% endblocktrans %}
+            </button>
+            <p style="color:var(--shop-muted);font-size:.82rem;margin-top:.6rem;">{% trans "Cancel anytime. Activates instantly." %}</p>
+        </form>
+    {% endif %}
+</div>
+{% endblock content %}

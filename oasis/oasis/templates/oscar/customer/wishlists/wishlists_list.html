@@ -2,55 +2,42 @@
 {% load i18n %}
 
 {% block tabcontent %}
+{% include "oscar/partials/shop_styles.html" %}
+
+<div class="shop-wrap">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.75rem; margin-bottom:1rem;">
+        <h2 style="font-weight:800; color:var(--heading-color); margin:0;">
+            <i class="bi bi-heart-fill" style="color:#e0245e;"></i> {% trans "My wish lists" %}
+        </h2>
+        <a href="{% url 'customer:wishlists-create' %}" class="shop-btn shop-btn--ghost">
+            <i class="bi bi-plus-lg"></i> {% trans "New wish list" %}
+        </a>
+    </div>
+
     {% if wishlists %}
-        <table class="table table-striped table-bordered">
-            <tbody>
-                <tr>
-                    <th>{% trans 'Name' %}</th>
-                    <th>{% trans 'Number of products' %}</th>
-                    <th>{% trans 'Action' %}</th>
-                </tr>
-                {% for wishlist in wishlists %}
-                    <tr>
-                        <td><a href="{% url 'customer:wishlists-detail' key=wishlist.key %}">{{ wishlist.name }}</a></td>
-                        <td>{{ wishlist.lines.count }}</td>
-                        <td>
-                            <div class="btn-group">
-                                <a class="btn btn-secondary" href="{% url 'customer:wishlists-detail' key=wishlist.key %}">{% trans 'View' %}</a>
-                                <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"></button>
-                                <div class="dropdown-menu">
-                                    <a href="{% url 'customer:wishlists-update' key=wishlist.key %}" class="dropdown-item">
-                                        {% trans 'Wish list settings' %}
-                                    </a>
-                                    {% if wishlist.is_shareable %}
-                                    <a href="{{ wishlist.get_shared_url }}" class="dropdown-item clipboard-item">
-                                        {% trans 'Copy sharing link' %}
-                                    </a>
-                                    {% endif %}
-                                    <a href="{% url 'customer:wishlists-delete' key=wishlist.key %}" class="dropdown-item">
-                                        {% trans 'Delete' %}
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="shop-grid">
+            {% for wishlist in wishlists %}
+                <div class="shop-panel" style="display:flex; flex-direction:column; gap:.5rem;">
+                    <a href="{% url 'customer:wishlists-detail' key=wishlist.key %}" style="font-weight:700; font-size:1.05rem; color:var(--heading-color); text-decoration:none;">
+                        {{ wishlist.name }}
+                    </a>
+                    <span style="color:var(--shop-muted); font-size:.9rem;">
+                        {% blocktrans count counter=wishlist.lines.count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}
+                    </span>
+                    <div style="display:flex; gap:.5rem; margin-top:.4rem;">
+                        <a class="shop-btn" href="{% url 'customer:wishlists-detail' key=wishlist.key %}">{% trans 'View' %}</a>
+                        <a class="shop-btn shop-btn--ghost" href="{% url 'customer:wishlists-update' key=wishlist.key %}">{% trans 'Settings' %}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
         {% include "oscar/partials/pagination.html" %}
     {% else %}
-        <p>
-            {% trans "You don't have any wish lists yet." %}
-        </p>
+        <div class="shop-panel" style="text-align:center; padding:2.5rem 1rem;">
+            <i class="bi bi-heart" style="font-size:2.5rem; color:var(--shop-muted);"></i>
+            <p style="margin:.75rem 0 1rem; color:var(--shop-muted);">{% trans "You don't have any wish lists yet. Tap the heart on any product to start one." %}</p>
+            <a class="shop-btn" href="{% url 'catalogue:index' %}">{% trans "Browse products" %}</a>
+        </div>
     {% endif %}
-
-    <p>
-        <a href="{% url 'customer:wishlists-create' %}" class="btn btn-primary">{% trans 'Create a new wish list' %}</a>
-    </p>
-
+</div>
 {% endblock tabcontent %}
-
-{% block onbodyload %}
-    {{ block.super }}
-    oscar.customer.wishlists.init();
-{% endblock %}

@@ -1,0 +1,37 @@
+{% comment %}Renders one question with its answers + an answer form. Needs `question`.{% endcomment %}
+{% load i18n %}
+<div class="qa-item">
+    <div class="qa-q">
+        <span class="qa-tag">Q</span>
+        <div>
+            <p class="qa-body">{{ question.body }}</p>
+            <span class="qa-meta">{{ question.user.get_full_name|default:question.user.get_username }} &middot; {{ question.created_at|date:"j M Y" }}</span>
+        </div>
+    </div>
+
+    {% for answer in question.answers.all %}
+        <div class="qa-a">
+            <span class="qa-tag qa-tag--a">A</span>
+            <div>
+                <p class="qa-body">{{ answer.body|linebreaksbr }}</p>
+                <span class="qa-meta">
+                    {% if answer.is_seller %}<span class="qa-seller"><i class="bi bi-shop"></i> {% trans "Seller" %}</span> &middot; {% endif %}
+                    {{ answer.user.get_full_name|default:answer.user.get_username }} &middot; {{ answer.created_at|date:"j M Y" }}
+                </span>
+            </div>
+        </div>
+    {% empty %}
+        <p class="qa-none">{% trans "No answers yet — be the first to help." %}</p>
+    {% endfor %}
+
+    {% if request.user.is_authenticated %}
+        <details class="qa-answer-toggle">
+            <summary>{% trans "Answer this question" %}</summary>
+            <form method="post" action="{% url 'qa:answer' question_pk=question.pk %}" class="qa-form">
+                {% csrf_token %}
+                <textarea name="body" rows="2" required placeholder="{% trans 'Share what you know…' %}"></textarea>
+                <button type="submit" class="shop-btn">{% trans "Post answer" %}</button>
+            </form>
+        </details>
+    {% endif %}
+</div>

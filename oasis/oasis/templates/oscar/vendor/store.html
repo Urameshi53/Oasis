@@ -1,6 +1,8 @@
 {% extends "oscar/layout.html" %}
 {% load i18n %}
 {% load static %}
+{% load vendor_tags %}
+{% load rating_tags %}
 
 {% block title %}{{ partner.display_name }} | {{ block.super }}{% endblock %}
 
@@ -42,6 +44,14 @@
                 <span class="count">
                     {% blocktrans count counter=product_count %}{{ counter }} product{% plural %}{{ counter }} products{% endblocktrans %}
                 </span>
+                {% seller_rating partner as rating %}
+                {% if rating.count %}
+                    <a href="{% url 'vendor:feedback-list' code=partner.code %}" style="display:inline-flex;align-items:center;gap:.4rem;text-decoration:none;margin-top:.3rem;">
+                        {% star_icons rating.avg %}
+                        <strong style="color:var(--heading-color);">{{ rating.avg }}</strong>
+                        <span style="color:var(--shop-muted);font-size:.85rem;">({{ rating.count }} · {{ rating.positive_pct }}% {% trans "positive" %})</span>
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>

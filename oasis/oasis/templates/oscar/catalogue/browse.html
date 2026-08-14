@@ -3,6 +3,7 @@
 {% load category_tags %}
 {% load i18n %}
 {% load static %}
+{% load recommendation_tags %}
 
 {% block title %}
     {% if summary %}{{ summary }} |{% endif %} {{ block.super }}
@@ -66,6 +67,18 @@
         </div>
     {% endif %}
     {% endblock %}
+
+    {# ---- Buy it again (returning shoppers) ---- #}
+    {% buy_again request limit=8 as buy_again_products %}
+    {% include "oscar/catalogue/partials/product_row.html" with products=buy_again_products row_title=_("Buy it again") %}
+
+    {# ---- Best sellers ---- #}
+    {% best_sellers 8 as bestseller_products %}
+    {% include "oscar/catalogue/partials/product_row.html" with products=bestseller_products row_title=_("Best sellers") %}
+
+    {# ---- Recently viewed (this user) ---- #}
+    {% recently_viewed_products request limit=8 as recent_products %}
+    {% include "oscar/catalogue/partials/product_row.html" with products=recent_products row_title=_("Recently viewed") %}
 
 </div>
 {% endblock content %}

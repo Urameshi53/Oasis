@@ -1,62 +1,38 @@
-{% load reviews_tags %}
 {% load i18n %}
+{% load reviews_tags %}
+{% load rating_tags %}
 
-<article class="review">
-    <header>
-        <h3 class="star-rating {{ review.score|as_stars }}">
-            <span>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-            </span>
-            <a href="{{ review.get_absolute_url }}">{{ review.title }}</a>
-        </h3>
-    </header>
+<article class="review-item">
+    <div class="review-head">
+        {% star_icons review.score %}
+        {% if review.title %}<span class="review-title">{{ review.title }}</span>{% endif %}
+    </div>
 
-    <p>{{ review.body|striptags }}</p>
-
-    <p>
-        <small>
-            {% if review.user == user %}
-                {% blocktrans with review_date=review.date_created %}
-                Reviewed by you on {{ review_date }}
-                {% endblocktrans %}
-            {% else %}
-                {% blocktrans with name=review.reviewer_name review_date=review.date_created %}
-                    Reviewed by <strong>{{ name }}</strong> on {{ review_date }}
-                {% endblocktrans %}
-            {% endif %}
-            | <a href="{% url 'catalogue:reviews-detail' product_slug=product.slug product_pk=product.pk pk=review.pk %}">{% trans 'Permalink' %}</a>
-        </small>
-    </p>
-
-    {% if review|may_vote:user %}
-        <small>{% trans "Is this review helpful?" %}</small>
-        <form action="{% url 'catalogue:reviews-vote' product_slug=product.slug product_pk=product.pk pk=review.pk %}" method="post" class="vote_agree" >
-            {% csrf_token %}
-            <input type="hidden" name="delta" value="1"/>
-            <button type="submit" class="btn btn-success btn-sm" data-loading-text="{% trans 'Submitting...' %}">{% trans "Yes" %}</button>
-        </form>
-        <form  action="{% url 'catalogue:reviews-vote' product_slug=product.slug product_pk=product.pk pk=review.pk %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="delta" value="-1"/>
-            <button type="submit" class="btn btn-danger btn-sm" data-loading-text="{% trans 'Submitting...' %}">{% trans "No" %}</button>
-        </form>
-    {% endif %}
-
-    <p>
-        <small>
-        {% if review.has_votes %}
-            {% blocktrans with num_up_votes=review.num_up_votes count num_votes=review.total_votes %}
-            <strong>{{ num_up_votes }}</strong> of {{ num_votes }} customer found this useful
-            {% plural %}
-            <strong>{{ num_up_votes }}</strong> of {{ num_votes }} customers found this useful
-            {% endblocktrans %}
-        {% else %}
-            {% trans "This review has no votes." %}
+    <div class="review-meta">
+        {% if review.user == user %}{% trans "You" %}{% else %}{{ review.reviewer_name }}{% endif %}
+        &middot; {{ review.date_created|date:"j M Y" }}
+        {% is_verified_purchase review as verified %}
+        {% if verified %}
+            &middot; <span class="review-verified"><i class="bi bi-patch-check-fill"></i> {% trans "Verified Purchase" %}</span>
         {% endif %}
-        </small>
-    </p>
+    </div>
+
+    {% if review.body %}<p class="review-body">{{ review.body|striptags }}</p>{% endif %}
+
+    <div class="review-meta mt-2 d-flex align-items-center" style="gap:.6rem;">
+        {% if review.has_votes %}
+            <span>
+                {% blocktrans with num_up_votes=review.num_up_votes count num_votes=review.total_votes %}{{ num_up_votes }} of {{ num_votes }} found this helpful{% plural %}{{ num_up_votes }} of {{ num_votes }} found this helpful{% endblocktrans %}
+            </span>
+        {% endif %}
+        {% if review|may_vote:user %}
+            <form action="{% url 'catalogue:reviews-vote' product_slug=product.slug product_pk=product.pk pk=review.pk %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delta" value="1"/>
+                <button type="submit" class="shop-btn shop-btn--ghost" style="padding:.2rem .6rem; font-size:.78rem;">
+                    <i class="bi bi-hand-thumbs-up"></i> {% trans "Helpful" %}
+                </button>
+            </form>
+        {% endif %}
+    </div>
 </article>

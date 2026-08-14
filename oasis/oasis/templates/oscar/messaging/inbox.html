@@ -1,0 +1,50 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+{% load messaging_tags %}
+
+{% block title %}{% trans "Messages" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .msg-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;text-decoration:none;}
+    .msg-unread-dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--accent-color,#0d6efd);flex-shrink:0;}
+    .msg-count{background:var(--accent-color,#0d6efd);color:#fff;border-radius:999px;font-size:.72rem;font-weight:700;padding:.05rem .45rem;}
+</style>
+<div class="shop-wrap">
+    <h2 style="font-weight:800;color:var(--heading-color);margin:0 0 1rem;">
+        <i class="bi bi-chat-dots"></i> {% trans "Messages" %}
+    </h2>
+
+    {% if threads %}
+        <div style="display:flex;flex-direction:column;gap:.55rem;">
+            {% for thread in threads %}
+                {% thread_unread thread request.user as unread %}
+                {% other_party thread request.user as who %}
+                <a href="{% url 'messaging:thread' pk=thread.pk %}" class="shop-panel msg-row">
+                    <span style="display:flex;align-items:center;gap:.7rem;min-width:0;">
+                        {% if unread %}<span class="msg-unread-dot"></span>{% endif %}
+                        <span style="min-width:0;">
+                            <span style="font-weight:700;color:var(--heading-color);">{{ who }}</span>
+                            <span style="display:block;color:var(--shop-muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                {{ thread.subject }}
+                                {% with last=thread.messages.last %}{% if last %} — {{ last.body|truncatechars:60 }}{% endif %}{% endwith %}
+                            </span>
+                        </span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;">
+                        {% if unread %}<span class="msg-count">{{ unread }}</span>{% endif %}
+                        <span style="color:var(--shop-muted);font-size:.78rem;white-space:nowrap;">{{ thread.updated_at|date:"j M" }}</span>
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+        {% include "oscar/partials/shop_pagination.html" %}
+    {% else %}
+        <div class="shop-panel" style="text-align:center;padding:2.5rem 1rem;">
+            <i class="bi bi-chat-square-text" style="font-size:2.5rem;color:var(--shop-muted);"></i>
+            <p style="margin:.75rem 0 0;color:var(--shop-muted);">{% trans "No messages yet. Ask a seller a question from any product page." %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

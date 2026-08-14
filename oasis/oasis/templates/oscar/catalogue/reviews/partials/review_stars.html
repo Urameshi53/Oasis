@@ -1,29 +1,24 @@
-{% load reviews_tags %}
 {% load i18n %}
+{% load reviews_tags %}
+{% load rating_tags %}
 
-{% if product.rating != None %}
-    <p class="star-rating {{ product.rating|as_stars }}">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
+<div class="d-flex align-items-center flex-wrap" style="gap:.5rem;">
+    {% if product.rating != None %}
+        {% star_icons product.rating %}
+        <strong style="color:var(--heading-color);">{{ product.rating|floatformat:1 }}</strong>
+        <a href="{% url 'catalogue:reviews-list' product_slug=product.slug product_pk=product.id %}" class="small" style="color:var(--shop-muted);">
+            {% blocktrans count product.num_approved_reviews as num_reviews %}{{ num_reviews }} review{% plural %}{{ num_reviews }} reviews{% endblocktrans %}
+        </a>
+    {% else %}
+        <span class="stars" aria-hidden="true">
+            <i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+        </span>
+        <span class="small" style="color:var(--shop-muted);">{% trans "No reviews yet" %}</span>
+    {% endif %}
 
-        <small><a href="{% url 'catalogue:reviews-list' product_slug=product.slug product_pk=product.id %}">
-                {% blocktrans count product.num_approved_reviews as num_reviews %}
-                    {{ num_reviews }} customer review
-                {% plural %}
-                    {{ num_reviews }} customer reviews
-                {% endblocktrans %}
-        </a></small>
-        &nbsp;
-{% else %}
-    <p>
-{% endif %}
-
-{% if product|is_review_permitted:user %}
-    <a id="write_review" href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview" class="btn btn-success btn-sm">
-        {% trans "Write a review" %}
-    </a>
-{% endif %}
-</p>
+    {% if product|is_review_permitted:user %}
+        <a id="write_review" href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview" class="small">
+            <i class="bi bi-pencil"></i> {% trans "Write a review" %}
+        </a>
+    {% endif %}
+</div>

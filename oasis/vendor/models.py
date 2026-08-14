@@ -56,6 +56,38 @@ class VendorProfile(models.Model):
         return Decimal(str(getattr(settings, "PLATFORM_COMMISSION_RATE", 10)))
 
 
+class SellerFeedback(models.Model):
+    """
+    A buyer's rating of a *seller* (distinct from a product review) — Amazon's
+    seller-feedback model. Tied to an order so it can be marked as coming from a
+    real purchase, one rating per (seller, buyer, order).
+    """
+
+    partner = models.ForeignKey(
+        "partner.Partner", on_delete=models.CASCADE, related_name="feedback"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="seller_feedback"
+    )
+    order = models.ForeignKey(
+        "order.Order",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="seller_feedback",
+    )
+    score = models.PositiveSmallIntegerField(default=5)  # 1..5
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("partner", "user", "order")
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.score}★ for {self.partner.display_name} by {self.user}"
+
+
 class VendorSale(models.Model):
     """
     Ledger row recording one vendor's share of a single order.

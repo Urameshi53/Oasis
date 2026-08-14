@@ -1,0 +1,69 @@
+{% extends "oscar/layout.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Deals & coupons" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .deal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;}
+    .deal-card{border:1px solid var(--shop-border);border-radius:14px;padding:1.2rem;background:var(--surface-color);position:relative;overflow:hidden;}
+    .deal-card .big{font-size:1.6rem;font-weight:800;color:var(--accent-color,#0d6efd);}
+    .deal-card h3{margin:.3rem 0 .2rem;color:var(--heading-color);font-size:1.05rem;}
+    .deal-card p{margin:0;color:var(--shop-muted);font-size:.9rem;}
+    .coupon{border:1px dashed var(--accent-color,#0d6efd);border-radius:14px;padding:1.2rem;display:flex;flex-direction:column;gap:.5rem;background:var(--accent-soft,rgba(13,110,253,.06));}
+    .coupon .code{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.3rem;letter-spacing:.05em;color:var(--heading-color);border:1px solid var(--shop-border);border-radius:8px;padding:.4rem .7rem;background:var(--surface-color);display:flex;justify-content:space-between;align-items:center;gap:.5rem;}
+    .coupon button{border:0;background:var(--accent-color,#0d6efd);color:#fff;border-radius:6px;font-size:.75rem;font-weight:700;padding:.25rem .6rem;cursor:pointer;}
+</style>
+<div class="shop-wrap">
+    <h1 style="font-weight:800;color:var(--heading-color);margin:0 0 .25rem;">
+        <i class="bi bi-tags-fill"></i> {% trans "Deals & coupons" %}
+    </h1>
+    <p style="color:var(--shop-muted);margin:0 0 1.5rem;">{% trans "Save more on your student essentials." %}</p>
+
+    <a href="{% url 'membership:home' %}" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:linear-gradient(135deg,var(--accent-color,#0a4db8) 0%,#6610f2 100%);color:#fff;border-radius:14px;padding:1.1rem 1.4rem;text-decoration:none;margin-bottom:1.5rem;">
+        <span style="font-weight:700;"><i class="bi bi-star-fill"></i> {% trans "Join Oasis Plus for an automatic discount on every order" %}</span>
+        <span class="shop-btn shop-btn--ghost" style="background:#fff;width:auto;">{% trans "Learn more" %}</span>
+    </a>
+
+    {% if site_offers %}
+        <h2 class="shop-section-title" style="margin-top:0;">{% trans "Automatic deals" %} <small style="font-size:.8rem;color:var(--shop-muted);font-weight:400;">{% trans "applied at checkout — no code needed" %}</small></h2>
+        <div class="deal-grid">
+            {% for offer in site_offers %}
+                <div class="deal-card">
+                    <div class="big">
+                        {% if offer.benefit.type == 'Percentage' %}{{ offer.benefit.value|floatformat:"-2" }}% {% trans "OFF" %}
+                        {% else %}{% trans "SAVE" %} {{ offer.benefit.value|floatformat:"-2" }}{% endif %}
+                    </div>
+                    <h3>{{ offer.name }}</h3>
+                    <p>{{ offer.description|default:offer.benefit }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if vouchers %}
+        <h2 class="shop-section-title">{% trans "Coupon codes" %}</h2>
+        <div class="deal-grid">
+            {% for v in vouchers %}
+                <div class="coupon">
+                    <div class="code">
+                        <span>{{ v.code }}</span>
+                        <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ v.code }}'); this.textContent='{% trans "Copied" %}';">{% trans "Copy" %}</button>
+                    </div>
+                    <p style="margin:0;font-weight:600;color:var(--heading-color);">{{ v.name }}</p>
+                    <p style="margin:0;color:var(--shop-muted);font-size:.82rem;">{% trans "Apply at basket. Valid until" %} {{ v.end_datetime|date:"j M Y" }}.</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not site_offers and not vouchers %}
+        <div class="shop-panel" style="text-align:center;padding:2.5rem;color:var(--shop-muted);">
+            {% trans "No active deals right now — check back soon!" %}
+        </div>
+    {% endif %}
+
+    <a href="{% url 'catalogue:index' %}" class="shop-btn shop-btn--ghost mt-3" style="max-width:220px;">{% trans "Start shopping" %}</a>
+</div>
+{% endblock content %}

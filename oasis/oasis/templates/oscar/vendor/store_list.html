@@ -1,5 +1,7 @@
 {% extends "oscar/layout.html" %}
 {% load i18n %}
+{% load vendor_tags %}
+{% load rating_tags %}
 
 {% block title %}{% trans "Stores" %} | {{ block.super }}{% endblock %}
 
@@ -42,6 +44,13 @@
                         <span class="sub">
                             {% blocktrans count counter=partner.num_products %}{{ counter }} product{% plural %}{{ counter }} products{% endblocktrans %}
                         </span>
+                        {% seller_rating partner as rating %}
+                        {% if rating.count %}
+                            <span class="sub" style="display:inline-flex;align-items:center;gap:.3rem;">
+                                {% star_icons rating.avg %}
+                                <span>{{ rating.avg }} ({{ rating.count }})</span>
+                            </span>
+                        {% endif %}
                     </span>
                 </a>
             {% endfor %}

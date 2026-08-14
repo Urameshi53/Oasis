@@ -1,0 +1,109 @@
+{% extends "oscar/customer/baseaccountpage.html" %}
+{% load i18n %}
+{% load currency_filters %}
+
+{% block extra_breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'returns:list' %}">{% trans 'Returns' %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">#{{ return_request.pk }}</li>
+{% endblock %}
+
+{% block tabcontent %}
+{% include "oscar/partials/shop_styles.html" %}
+{% with rr=return_request %}
+<style>
+    .rt-badge{display:inline-flex;align-items:center;gap:.35rem;font-weight:700;font-size:.8rem;padding:.3rem .7rem;border-radius:999px;}
+    .rt-requested{background:rgba(13,110,253,.12);color:var(--accent-color,#0d6efd);}
+    .rt-approved{background:rgba(255,171,0,.15);color:#b7791f;}
+    .rt-refunded{background:rgba(25,135,84,.14);color:#198754;}
+    .rt-rejected,.rt-cancelled{background:rgba(220,53,69,.12);color:#dc3545;}
+    .rt-steps{display:flex;gap:.4rem;margin:1rem 0;flex-wrap:wrap;}
+    .rt-step{flex:1;min-width:120px;padding:.6rem .7rem;border-radius:10px;background:var(--surface-color);border:1px solid var(--shop-border);font-size:.82rem;color:var(--shop-muted);}
+    .rt-step.on{border-color:#198754;color:var(--heading-color);font-weight:600;}
+    .rt-step.on i{color:#198754;}
+</style>
+
+<div class="shop-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem;">
+        <h2 style="font-weight:800;color:var(--heading-color);margin:0;">{% trans "Return" %} #{{ rr.pk }}</h2>
+        <span class="rt-badge rt-{{ rr.status }}"><i class="bi bi-dot"></i>{{ rr.get_status_display }}</span>
+    </div>
+    <p style="color:var(--shop-muted);margin:.25rem 0 0;">
+        {% trans "Order" %} <a href="{% url 'customer:order' order_number=rr.order.number %}">{{ rr.order.number }}</a>
+        &middot; {{ rr.created_at|date:"j M Y, H:i" }}
+    </p>
+
+    {# progress #}
+    <div class="rt-steps">
+        <div class="rt-step on"><i class="bi bi-check-circle-fill"></i> {% trans "Requested" %}</div>
+        <div class="rt-step {% if rr.status == 'approved' or rr.status == 'refunded' %}on{% endif %}">
+            <i class="bi bi-check-circle-fill"></i> {% trans "Approved" %}
+        </div>
+        <div class="rt-step {% if rr.status == 'refunded' %}on{% endif %}">
+            <i class="bi bi-check-circle-fill"></i> {% trans "Refunded" %}
+        </div>
+    </div>
+
+    {% if rr.status == 'rejected' %}
+        <div class="shop-panel" style="border-left:4px solid #dc3545;">
+            <strong>{% trans "This return was declined." %}</strong>
+            {% if rr.resolution_note %}<p style="margin:.3rem 0 0;color:var(--shop-muted);">{{ rr.resolution_note }}</p>{% endif %}
+        </div>
+    {% elif rr.status == 'refunded' %}
+        <div class="shop-panel" style="border-left:4px solid #198754;">
+            <strong>{% trans "Refunded" %} {{ rr.refund_amount|currency:rr.currency }}</strong>
+            <p style="margin:.3rem 0 0;color:var(--shop-muted);">{% trans "The amount has been refunded to your original payment method." %}</p>
+        </div>
+    {% endif %}
+
+    <div class="shop-panel">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--heading-color);margin:0 0 .6rem;">{% trans "Items" %}</h3>
+        {% for line in rr.lines.all %}
+            <div class="shop-line" style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--shop-border);">
+                <span>{{ line.quantity }} &times; {{ line.order_line.title }}</span>
+                <span style="color:var(--heading-color);font-weight:600;">{{ line.refund_amount|currency:rr.currency }}</span>
+            </div>
+        {% endfor %}
+        <div style="display:flex;justify-content:space-between;padding:.6rem 0 0;font-weight:800;color:var(--heading-color);">
+            <span>{% trans "Expected refund" %}</span>
+            <span>{{ rr.expected_refund|currency:rr.currency }}</span>
+        </div>
+    </div>
+
+    <div class="shop-panel">
+        <div style="color:var(--shop-muted);font-size:.9rem;">
+            <strong style="color:var(--heading-color);">{% trans "Reason:" %}</strong> {{ rr.get_reason_display }}
+            {% if rr.comment %}<p style="margin:.4rem 0 0;">"{{ rr.comment }}"</p>{% endif %}
+        </div>
+    </div>
+
+    {# ---- Seller / staff actions ---- #}
+    {% if can_manage and rr.is_open %}
+        <div class="shop-panel" style="border:1px dashed var(--accent-color,#0d6efd);">
+            <h3 style="font-size:1rem;font-weight:700;color:var(--heading-color);margin:0 0 .6rem;">{% trans "Seller actions" %}</h3>
+            <form method="post" action="{% url 'returns:action' pk=rr.pk %}" style="display:flex;flex-direction:column;gap:.6rem;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <textarea name="note" rows="2" placeholder="{% trans 'Note to the customer (optional)…' %}"
+                          style="width:100%;padding:.5rem;border:1px solid var(--shop-border);border-radius:8px;background:var(--surface-color);color:var(--heading-color);"></textarea>
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                    {% if rr.status == 'requested' %}
+                        <button name="action" value="approve" class="shop-btn"><i class="bi bi-check2"></i> {% trans "Approve" %}</button>
+                        <button name="action" value="reject" class="shop-btn shop-btn--ghost"><i class="bi bi-x"></i> {% trans "Decline" %}</button>
+                    {% elif rr.status == 'approved' %}
+                        <button name="action" value="refund" class="shop-btn"><i class="bi bi-cash-coin"></i> {% trans "Mark refunded & restock" %}</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    {% endif %}
+
+    {# ---- Customer cancel ---- #}
+    {% if rr.user == request.user and rr.status == 'requested' %}
+        <form method="post" action="{% url 'returns:cancel' pk=rr.pk %}" style="margin-top:.5rem;">
+            {% csrf_token %}
+            <button class="shop-btn shop-btn--ghost">{% trans "Cancel this request" %}</button>
+        </form>
+    {% endif %}
+</div>
+{% endwith %}
+{% endblock tabcontent %}

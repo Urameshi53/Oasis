@@ -1,0 +1,136 @@
+{% load i18n %}
+{% load currency_filters %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% trans "Invoice" %} {{ order.number }} — {{ shop_name }}</title>
+<style>
+    :root{--ink:#1b1f27;--muted:#6b7280;--line:#e5e7eb;--accent:#0a4db8;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:#f3f4f6;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;}
+    .sheet{max-width:800px;margin:1.5rem auto;background:#fff;padding:2.5rem;box-shadow:0 2px 16px rgba(0,0,0,.08);border-radius:8px;}
+    .toolbar{max-width:800px;margin:1rem auto 0;display:flex;gap:.6rem;justify-content:flex-end;}
+    .btn{font:inherit;font-weight:600;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;}
+    .btn--primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .inv-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:1.25rem;}
+    .brand{font-size:1.7rem;font-weight:800;letter-spacing:-.02em;color:var(--accent);}
+    .brand small{display:block;font-size:.8rem;font-weight:500;color:var(--muted);letter-spacing:normal;}
+    .inv-title{text-align:right;}
+    .inv-title h1{margin:0;font-size:1.5rem;letter-spacing:.02em;text-transform:uppercase;}
+    .inv-title .num{color:var(--muted);font-size:.9rem;}
+    .status{display:inline-block;margin-top:.4rem;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:.2rem .6rem;border-radius:999px;}
+    .status.paid{background:#dcfce7;color:#15803d;}
+    .status.due{background:#fef3c7;color:#b45309;}
+    .meta{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin:1.5rem 0;}
+    .meta h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .35rem;}
+    .meta p{margin:0;font-size:.92rem;}
+    table{width:100%;border-collapse:collapse;margin-top:.5rem;}
+    th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line);padding:.5rem .4rem;}
+    td{padding:.6rem .4rem;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top;}
+    .num-col{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+    tfoot td{border-bottom:none;padding:.3rem .4rem;}
+    tfoot .total td{border-top:2px solid var(--ink);font-weight:800;font-size:1.05rem;padding-top:.6rem;}
+    .foot-note{margin-top:2rem;color:var(--muted);font-size:.82rem;text-align:center;border-top:1px solid var(--line);padding-top:1rem;}
+    @media print{
+        body{background:#fff;}
+        .toolbar{display:none;}
+        .sheet{box-shadow:none;margin:0;max-width:none;border-radius:0;padding:0;}
+        @page{margin:1.5cm;}
+    }
+</style>
+</head>
+<body>
+<div class="toolbar">
+    <a class="btn" href="{% url 'customer:order' order_number=order.number %}">← {% trans "Back to order" %}</a>
+    <button class="btn btn--primary" onclick="window.print()">🖨 {% trans "Print / Save as PDF" %}</button>
+</div>
+
+<div class="sheet">
+    <div class="inv-head">
+        <div>
+            <div class="brand">{{ shop_name }}<small>{% trans "Student marketplace" %}</small></div>
+        </div>
+        <div class="inv-title">
+            <h1>{% trans "Invoice" %}</h1>
+            <div class="num">#{{ order.number }}</div>
+            {% if paid %}
+                <span class="status paid">{% trans "Paid" %}</span>
+            {% else %}
+                <span class="status due">{% trans "Payment due" %}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="meta">
+        <div>
+            <h3>{% trans "Billed to" %}</h3>
+            <p>
+                {{ order.user.get_full_name|default:order.user.get_username }}<br>
+                {{ order.email }}
+            </p>
+        </div>
+        {% if order.shipping_address %}
+        <div>
+            <h3>{% trans "Ship to" %}</h3>
+            <p>
+                {% for field in order.shipping_address.active_address_fields %}{{ field }}<br>{% endfor %}
+                {% if order.shipping_address.phone_number %}{{ order.shipping_address.phone_number }}{% endif %}
+            </p>
+        </div>
+        {% endif %}
+        <div>
+            <h3>{% trans "Invoice date" %}</h3>
+            <p>{{ order.date_placed|date:"j M Y" }}</p>
+            <h3 style="margin-top:.75rem;">{% trans "Order status" %}</h3>
+            <p>{{ order.status|default:"—" }}</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "Sold by" %}</th>
+                <th class="num-col">{% trans "Qty" %}</th>
+                <th class="num-col">{% trans "Unit" %}</th>
+                <th class="num-col">{% trans "Amount" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in order.lines.all %}
+            <tr>
+                <td>{{ line.title }}</td>
+                <td>{{ line.partner_name|default:"—" }}</td>
+                <td class="num-col">{{ line.quantity }}</td>
+                <td class="num-col">{{ line.unit_price_incl_tax|currency:order.currency }}</td>
+                <td class="num-col">{{ line.line_price_incl_tax|currency:order.currency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"></td>
+                <td class="num-col">{% trans "Subtotal" %}</td>
+                <td class="num-col">{{ order.basket_total_incl_tax|currency:order.currency }}</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td class="num-col">{% trans "Shipping" %}</td>
+                <td class="num-col">{{ order.shipping_incl_tax|currency:order.currency }}</td>
+            </tr>
+            <tr class="total">
+                <td colspan="3"></td>
+                <td class="num-col">{% trans "Total" %}</td>
+                <td class="num-col">{{ order.total_incl_tax|currency:order.currency }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <p class="foot-note">
+        {% blocktrans with num=order.number %}Thank you for shopping with {{ shop_name }}. This invoice was generated for order {{ num }}.{% endblocktrans %}
+    </p>
+</div>
+</body>
+</html>

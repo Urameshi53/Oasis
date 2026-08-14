@@ -11,6 +11,24 @@ def payout_schedule(request):
     return {"next_payout_at": next_payout_datetime()}
 
 
+def wishlist(request):
+    """
+    Expose the set of product IDs in the user's wishlist(s) + a total count,
+    so product cards can show a filled/outline heart and the header a badge.
+    """
+    user = getattr(request, "user", None)
+    if user is None or not user.is_authenticated:
+        return {"wishlist_product_ids": set(), "wishlist_count": 0}
+
+    from oscar.core.loading import get_model
+
+    Line = get_model("wishlists", "Line")
+    ids = set(
+        Line.objects.filter(wishlist__owner=user).values_list("product_id", flat=True)
+    )
+    return {"wishlist_product_ids": ids, "wishlist_count": len(ids)}
+
+
 def modern_settings(request):
     return {
         'site_name': getattr(settings, 'OSCAR_SHOP_NAME', 'Modern Store'),

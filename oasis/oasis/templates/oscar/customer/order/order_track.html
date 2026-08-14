@@ -1,0 +1,145 @@
+{% extends "oscar/customer/baseaccountpage.html" %}
+{% load currency_filters %}
+{% load i18n %}
+
+{% block extra_breadcrumbs %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'customer:order-list' %}">{% trans 'Order history' %}</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans 'Track order' %}</li>
+{% endblock %}
+
+{% block tabcontent %}
+{% include "oscar/partials/shop_styles.html" %}
+<style>
+    .track-head { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.25rem; }
+    .track-head h2 { font-weight:800; color:var(--heading-color); margin:0 0 .25rem; }
+    .track-meta { color:var(--shop-muted); font-size:.9rem; }
+    .track-status-pill {
+        display:inline-flex; align-items:center; gap:.4rem; font-weight:700; font-size:.85rem;
+        padding:.4rem .8rem; border-radius:999px;
+        background:rgba(13,110,253,.1); color:var(--accent-color,#0d6efd);
+    }
+    .track-status-pill.done { background:rgba(25,135,84,.12); color:#198754; }
+    .track-status-pill.cancelled { background:rgba(220,53,69,.12); color:#dc3545; }
+
+    /* Vertical timeline */
+    .track-timeline { position:relative; margin:1.5rem 0 .5rem; padding-left:.5rem; }
+    .track-step { position:relative; display:flex; gap:1rem; padding-bottom:1.6rem; }
+    .track-step:last-child { padding-bottom:0; }
+    /* connector line */
+    .track-step::before {
+        content:""; position:absolute; left:19px; top:40px; bottom:-4px; width:2px;
+        background:var(--shop-border,#e3e6ef);
+    }
+    .track-step:last-child::before { display:none; }
+    .track-step.done::before { background:#198754; }
+    .track-dot {
+        flex-shrink:0; width:40px; height:40px; border-radius:50%; z-index:1;
+        display:flex; align-items:center; justify-content:center; font-size:1.05rem;
+        background:var(--surface-color,#fff); color:var(--shop-muted);
+        border:2px solid var(--shop-border,#e3e6ef);
+    }
+    .track-step.done .track-dot { background:#198754; border-color:#198754; color:#fff; }
+    .track-step.current .track-dot {
+        border-color:var(--accent-color,#0d6efd); color:var(--accent-color,#0d6efd);
+        box-shadow:0 0 0 4px rgba(13,110,253,.15);
+    }
+    .track-body { padding-top:.35rem; }
+    .track-body .t-label { font-weight:700; color:var(--heading-color); }
+    .track-step.current .t-label { color:var(--accent-color,#0d6efd); }
+    .track-body .t-desc { color:var(--shop-muted); font-size:.9rem; margin:.1rem 0 0; }
+    .track-body .t-time { color:var(--shop-muted); font-size:.8rem; margin-top:.15rem; }
+
+    .rider-card { display:flex; align-items:center; gap:.9rem; }
+    .rider-avatar {
+        width:48px; height:48px; border-radius:50%; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center; font-size:1.3rem;
+        background:linear-gradient(135deg, var(--accent-color,#0d6efd) 0%, #6610f2 100%); color:#fff;
+    }
+</style>
+
+<div class="shop-wrap">
+
+    <div class="track-head">
+        <div>
+            <h2>{% trans 'Track order' %} #{{ order.number }}</h2>
+            <div class="track-meta">
+                {% trans 'Placed on' %} {{ order.date_placed|date:"j M Y, H:i" }}
+                &middot; {{ order.num_items }} {% trans 'item' %}{{ order.num_items|pluralize }}
+                &middot; {{ order.total_incl_tax|currency:order.currency }}
+            </div>
+        </div>
+        <div>
+            {% if cancelled %}
+                <span class="track-status-pill cancelled"><i class="bi bi-x-circle"></i> {% trans 'Delivery cancelled' %}</span>
+            {% elif current_index >= 4 %}
+                <span class="track-status-pill done"><i class="bi bi-check-circle"></i> {% trans 'Delivered' %}</span>
+            {% else %}
+                <span class="track-status-pill"><i class="bi bi-truck"></i> {% trans 'In progress' %}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if cancelled %}
+        <div class="shop-panel" style="border-left:4px solid #dc3545;">
+            <strong>{% trans 'This delivery was cancelled.' %}</strong>
+            <p class="track-meta" style="margin:.3rem 0 0;">{% trans 'Please contact support if you were charged.' %}</p>
+        </div>
+    {% endif %}
+
+    <div class="shop-panel">
+        <div class="track-timeline">
+            {% for step in steps %}
+                <div class="track-step {% if step.done %}done{% endif %}{% if forloop.counter0 == current_index %} current{% endif %}">
+                    <div class="track-dot"><i class="bi {{ step.icon }}"></i></div>
+                    <div class="track-body">
+                        <div class="t-label">{{ step.label }}</div>
+                        <p class="t-desc">{{ step.desc }}</p>
+                        {% if step.at %}
+                            <div class="t-time"><i class="bi bi-clock"></i> {{ step.at|date:"j M Y, H:i" }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if rider and not cancelled %}
+        <div class="shop-panel">
+            <div class="rider-card">
+                <div class="rider-avatar"><i class="bi bi-person-fill"></i></div>
+                <div>
+                    <div class="t-label" style="font-weight:700; color:var(--heading-color);">
+                        {{ rider.user.get_full_name|default:rider.user.get_username }}
+                    </div>
+                    <div class="track-meta">
+                        {% trans 'Your rider' %} &middot; {{ rider.get_vehicle_type_display }}
+                        {% if rider.phone %}&middot; <a href="tel:{{ rider.phone }}">{{ rider.phone }}</a>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="shop-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.6rem;">
+            <div>
+                <div class="t-label" style="font-weight:700; color:var(--heading-color);">{% trans 'Delivering to' %}</div>
+                <div class="track-meta">
+                    {% if order.shipping_address %}
+                        {% for field in order.shipping_address.active_address_fields %}{{ field }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                        {% if order.shipping_address.phone_number %}<br>{{ order.shipping_address.phone_number }}{% endif %}
+                    {% else %}
+                        {% trans 'No shipping address on file.' %}
+                    {% endif %}
+                </div>
+            </div>
+            <a href="{% url 'customer:order' order_number=order.number %}" class="shop-btn shop-btn--ghost">
+                {% trans 'View order details' %}
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock tabcontent %}

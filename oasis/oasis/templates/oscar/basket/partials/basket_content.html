@@ -129,7 +129,20 @@
 
             {% for discount in basket.offer_discounts %}
                 <div class="shop-summary__row" style="color:#1a7f37;">
-                    <span>{{ discount.name }}</span>
+                    <span><i class="bi bi-tag-fill"></i> {{ discount.name }}</span>
+                    <span>-{{ discount.discount|currency:basket.currency }}</span>
+                </div>
+            {% endfor %}
+
+            {% for discount in basket.grouped_voucher_discounts %}
+                <div class="shop-summary__row" style="color:#1a7f37;">
+                    <span>
+                        <i class="bi bi-ticket-perforated-fill"></i> {{ discount.voucher.name }}
+                        <form action="{% url 'basket:vouchers-remove' pk=discount.voucher.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" title="{% trans 'Remove' %}" style="border:0;background:none;color:#dc3545;cursor:pointer;padding:0 0 0 .25rem;">&times;</button>
+                        </form>
+                    </span>
                     <span>-{{ discount.discount|currency:basket.currency }}</span>
                 </div>
             {% endfor %}
@@ -155,6 +168,18 @@
             <a href="{% url 'checkout:index' %}" class="shop-btn shop-btn--lg mt-3">
                 {% trans "Proceed to checkout" %} <i class="bi bi-arrow-right"></i>
             </a>
+
+            <form action="{% url 'basket:vouchers-add' %}" method="post" class="basket-coupon mt-3">
+                {% csrf_token %}
+                <label style="font-size:.85rem;color:var(--shop-muted);display:block;margin-bottom:.35rem;">
+                    <i class="bi bi-ticket-perforated"></i> {% trans "Have a coupon code?" %}
+                </label>
+                <div style="display:flex;gap:.5rem;">
+                    <input type="text" name="code" placeholder="{% trans 'Enter code' %}" autocomplete="off"
+                           style="flex:1;padding:.55rem;border:1px solid var(--shop-border);border-radius:8px;background:var(--surface-color);color:var(--heading-color);text-transform:uppercase;">
+                    <button type="submit" class="shop-btn shop-btn--ghost" style="width:auto;">{% trans "Apply" %}</button>
+                </div>
+            </form>
         </div>
 
     </div>

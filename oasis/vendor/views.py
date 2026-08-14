@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import FormView, ListView, TemplateView
 
 from oscar.core.loading import get_model
@@ -177,3 +179,82 @@ class StoreListView(ListView):
             .annotate(num_products=Count("stockrecords__product", distinct=True))
             .order_by("name")
         )
+
+
+Order = get_model("order", "Order")
+
+
+def sellers_in_order(order):
+    """Distinct partners that sold something in this order."""
+    partner_ids = order.lines.values_list("partner_id", flat=True)
+    return Partner.objects.filter(id__in=[p for p in partner_ids if p]).distinct()
+
+
+class LeaveSellerFeedbackView(LoginRequiredMixin, View):
+    """A buyer rates a seller for one of their orders (1-5 + comment)."""
+
+    template_name = "oscar/vendor/leave_feedback.html"
+
+    def _get(self):
+        order = get_object_or_404(
+            Order, number=self.kwargs["order_number"], user=self.request.user
+        )
+        partner = get_object_or_404(Partner, code=self.kwargs["code"])
+        if not sellers_in_order(order).filter(pk=partner.pk).exists():
+            raise PermissionDenied  # this seller wasn't part of this order
+        return order, partner
+
+    def get(self, request, *args, **kwargs):
+        from vendor.models import SellerFeedback
+
+        order, partner = self._get()
+        existing = SellerFeedback.objects.filter(
+            partner=partner, user=request.user, order=order
+        ).first()
+        return render(
+            request,
+            self.template_name,
+            {"order": order, "partner": partner, "existing": existing},
+        )
+
+    def post(self, request, *args, **kwargs):
+        from vendor.models import SellerFeedback
+
+        order, partner = self._get()
+        try:
+            score = int(request.POST.get("score", 5))
+        except (TypeError, ValueError):
+            score = 5
+        score = max(1, min(5, score))
+        comment = request.POST.get("comment", "").strip()
+
+        SellerFeedback.objects.update_or_create(
+            partner=partner,
+            user=request.user,
+            order=order,
+            defaults={"score": score, "comment": comment},
+        )
+        messages.success(request, "Thanks — your seller feedback was saved.")
+        return redirect("customer:order", order_number=order.number)
+
+
+class SellerFeedbackListView(LoginRequiredMixin, ListView):
+    """Public list of a seller's feedback, shown on the store page's reviews tab."""
+
+    template_name = "oscar/vendor/feedback_list.html"
+    context_object_name = "feedback"
+    paginate_by = 20
+
+    def dispatch(self, request, *args, **kwargs):
+        self.partner = get_object_or_404(Partner, code=kwargs["code"])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        from vendor.models import SellerFeedback
+
+        return SellerFeedback.objects.filter(partner=self.partner).select_related("user")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["partner"] = self.partner
+        return ctx

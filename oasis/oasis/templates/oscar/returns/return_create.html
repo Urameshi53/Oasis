@@ -1,0 +1,64 @@
+{% extends "oscar/customer/baseaccountpage.html" %}
+{% load i18n %}
+{% load currency_filters %}
+
+{% block extra_breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'customer:order-list' %}">{% trans 'Orders' %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans 'Return items' %}</li>
+{% endblock %}
+
+{% block tabcontent %}
+{% include "oscar/partials/shop_styles.html" %}
+<div class="shop-wrap">
+    <h2 style="font-weight:800;color:var(--heading-color);margin:0 0 .25rem;">
+        <i class="bi bi-arrow-return-left"></i> {% trans "Return or refund items" %}
+    </h2>
+    <p style="color:var(--shop-muted);margin:0 0 1.25rem;">
+        {% blocktrans with number=order.number %}Order {{ number }} — choose what to send back.{% endblocktrans %}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="shop-panel">
+            {% for row in lines %}
+                {% with line=row.line %}
+                <label class="return-line" style="display:flex;gap:.9rem;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--shop-border);cursor:pointer;">
+                    <input type="checkbox" name="line_{{ line.id }}" value="1" style="width:1.15rem;height:1.15rem;flex-shrink:0;">
+                    <span style="flex:1;">
+                        <span style="font-weight:700;color:var(--heading-color);">{{ line.title }}</span>
+                        <span style="display:block;color:var(--shop-muted);font-size:.85rem;">
+                            {{ line.unit_price_incl_tax|currency:order.currency }} {% trans "each" %}
+                            &middot; {% blocktrans count n=row.max_qty %}{{ n }} eligible{% plural %}{{ n }} eligible{% endblocktrans %}
+                        </span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:.4rem;">
+                        <span style="color:var(--shop-muted);font-size:.85rem;">{% trans "Qty" %}</span>
+                        <input type="number" name="qty_{{ line.id }}" value="1" min="1" max="{{ row.max_qty }}"
+                               style="width:4rem;padding:.35rem;border:1px solid var(--shop-border);border-radius:8px;background:var(--surface-color);color:var(--heading-color);">
+                    </span>
+                </label>
+                {% endwith %}
+            {% endfor %}
+        </div>
+
+        <div class="shop-panel">
+            <label style="display:block;font-weight:700;color:var(--heading-color);margin-bottom:.4rem;">{% trans "Reason for return" %}</label>
+            <select name="reason" required style="width:100%;padding:.6rem;border:1px solid var(--shop-border);border-radius:8px;background:var(--surface-color);color:var(--heading-color);">
+                {% for value, label in reasons %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <label style="display:block;font-weight:700;color:var(--heading-color);margin:1rem 0 .4rem;">{% trans "Comments (optional)" %}</label>
+            <textarea name="comment" rows="3" placeholder="{% trans 'Tell the seller what went wrong…' %}"
+                      style="width:100%;padding:.6rem;border:1px solid var(--shop-border);border-radius:8px;background:var(--surface-color);color:var(--heading-color);"></textarea>
+        </div>
+
+        <div style="display:flex;gap:.6rem;margin-top:1rem;">
+            <button type="submit" class="shop-btn"><i class="bi bi-check2"></i> {% trans "Submit return request" %}</button>
+            <a href="{% url 'customer:order' order_number=order.number %}" class="shop-btn shop-btn--ghost">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock tabcontent %}

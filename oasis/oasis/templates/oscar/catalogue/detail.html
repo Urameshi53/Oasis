@@ -8,6 +8,8 @@
 {% load display_tags %}
 {% load i18n %}
 {% load purchase_info_tags %}
+{% load recommendation_tags %}
+{% load rating_tags %}
 {% load vendor_tags %}
 
 {% block title %}
@@ -88,7 +90,17 @@
                     <i class="bi bi-shop"></i>
                     {% trans "Sold by" %}
                     <a href="{% url 'vendor:store' code=seller.code %}">{{ seller.display_name }}</a>
+                    {% seller_rating seller as srating %}
+                    {% if srating.count %}
+                        <a href="{% url 'vendor:feedback-list' code=seller.code %}" style="text-decoration:none;white-space:nowrap;" title="{{ srating.positive_pct }}% positive ({{ srating.count }})">
+                            <span class="stars" style="font-size:.8rem;"><i class="bi bi-star-fill"></i></span>
+                            <strong style="color:var(--heading-color);">{{ srating.avg }}</strong>
+                        </a>
+                    {% endif %}
                 </p>
+                <a href="{% url 'messaging:contact' code=seller.code %}?product={{ product.pk }}" class="shop-btn shop-btn--ghost" style="padding:.3rem .7rem;font-size:.85rem;margin-bottom:.75rem;">
+                    <i class="bi bi-chat-dots"></i> {% trans "Ask a question" %}
+                </a>
             {% endif %}
 
             {% iffeature "reviews" %}
@@ -129,6 +141,17 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+            {% endif %}
+
+            {% if request.user.is_authenticated and not product.is_parent %}
+                <button type="button"
+                        class="shop-btn shop-btn--ghost js-wishlist shop-detail__wishlist{% if product.pk in wishlist_product_ids %} is-active{% endif %}"
+                        data-pk="{{ product.pk }}"
+                        aria-pressed="{% if product.pk in wishlist_product_ids %}true{% else %}false{% endif %}"
+                        style="margin-top:.6rem;">
+                    <i class="bi {% if product.pk in wishlist_product_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                    <span class="wl-label">{% if product.pk in wishlist_product_ids %}{% trans "In your wishlist" %}{% else %}{% trans "Add to wishlist" %}{% endif %}</span>
+                </button>
             {% endif %}
         </div>
 
@@ -174,16 +197,70 @@
                 {% endif %}
             </p>
         {% else %}
-            <ol class="list-unstyled review-list mt-3">
-                {% for review in product.reviews.approved.all|slice:":3" %}
-                    <li>{% include 'oscar/catalogue/partials/review.html' %}</li>
+            <div class="rating-summary">
+                <div class="rating-score">
+                    <div class="rs-num">{{ product.rating|floatformat:1 }}</div>
+                    {% star_icons product.rating %}
+                    <div class="rs-count">{% blocktrans count n=product.num_approved_reviews %}{{ n }} review{% plural %}{{ n }} reviews{% endblocktrans %}</div>
+                </div>
+                <div class="rating-hist">
+                    {% rating_breakdown product as breakdown %}
+                    {% for row in breakdown %}
+                        <a class="rh-row" href="{% url 'catalogue:reviews-list' product_slug=product.slug product_pk=product.id %}" style="text-decoration:none;">
+                            <span class="rh-label">{{ row.score }} <i class="bi bi-star-fill" style="color:#f5a623;"></i></span>
+                            <span class="rh-bar"><span style="width:{{ row.pct }}%;"></span></span>
+                            <span class="rh-pct">{{ row.pct }}%</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if product|is_review_permitted:user %}
+                <a href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview" class="shop-btn shop-btn--ghost" style="margin-bottom:.5rem;">
+                    <i class="bi bi-pencil"></i> {% trans "Write a review" %}
+                </a>
+            {% endif %}
+
+            <div class="mt-2">
+                {% for review in product.reviews.approved.all|slice:":5" %}
+                    {% include 'oscar/catalogue/partials/review.html' %}
                 {% endfor %}
-            </ol>
+            </div>
         {% endif %}
     </section>
     {% endiffeature %}
 
-    {# ---- Recommended ---- #}
+    {# ---- Customer Q&A ---- #}
+    {% load qa_tags %}
+    {% include "oscar/qa/partials/qa_styles.html" %}
+    <section id="qa">
+        {% question_count product as q_total %}
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="shop-section-title mb-0">{% trans "Customer questions & answers" %}</h2>
+            {% if q_total > 3 %}
+                <a href="{% url 'qa:list' product_pk=product.pk %}" class="small">{% trans "See all" %} ({{ q_total }})</a>
+            {% endif %}
+        </div>
+
+        {% if request.user.is_authenticated %}
+            <form method="post" action="{% url 'qa:ask' product_pk=product.pk %}" class="qa-form qa-ask mt-3">
+                {% csrf_token %}
+                <textarea name="body" rows="1" required placeholder="{% trans 'Have a question? Ask the community or the seller…' %}"></textarea>
+                <button type="submit" class="shop-btn"><i class="bi bi-send"></i> {% trans "Ask" %}</button>
+            </form>
+        {% endif %}
+
+        {% top_questions product 3 as questions %}
+        <div class="qa-list">
+            {% for question in questions %}
+                {% include "oscar/qa/partials/qa_thread.html" %}
+            {% empty %}
+                <p class="qa-none" style="margin-left:0;">{% trans "No questions yet. Ask the first one!" %}</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# ---- Curated recommendations (manual M2M) ---- #}
     {% with recommended_products=product.sorted_recommended_products|slice:":5" %}
         {% if recommended_products %}
             <h2 class="shop-section-title">{% trans "You might also like" %}</h2>
@@ -194,6 +271,14 @@
             </div>
         {% endif %}
     {% endwith %}
+
+    {# ---- Similar products (same category, by popularity) ---- #}
+    {% products_like product limit=8 as similar_products %}
+    {% include "oscar/catalogue/partials/product_row.html" with products=similar_products row_title=_("Products like this") %}
+
+    {# ---- Recently viewed (this user, excluding the current product) ---- #}
+    {% recently_viewed_products request exclude=product limit=8 as recent_products %}
+    {% include "oscar/catalogue/partials/product_row.html" with products=recent_products row_title=_("Recently viewed") %}
 
 </div>
 {% endblock content %}

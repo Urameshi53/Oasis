@@ -54,6 +54,7 @@
                 <th>{% trans "Num items" %}</th>
                 <th>{% trans "Total inc tax" %}</th>
                 <th>{% trans "Date submitted" %}</th>
+                <th></th>
             </tr>
             {% for order in orders %}
                 <tr>
@@ -61,6 +62,10 @@
                     <td>{{ order.num_items }}</td>
                     <td>{{ order.total_incl_tax|currency:order.currency }}</td>
                     <td>{{ order.date_placed }}</td>
+                    <td>
+                        <a class="btn btn-outline-primary btn-sm" href="{% url 'order-track' order_number=order.number %}">{% trans "Track order" %}</a>
+                        <a class="btn btn-outline-secondary btn-sm" href="{% url 'order-invoice' order_number=order.number %}" target="_blank">{% trans "Invoice" %}</a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>

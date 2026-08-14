@@ -8,6 +8,12 @@
     <a href="{% url 'customer:order-list' %}" class="nav-link{% if active_tab == 'orders' %} active{% endif %}">{% trans "Order History" %}</a>
 </li>
 <li class="nav-item">
+    <a href="{% url 'returns:list' %}" class="nav-link{% if active_tab == 'returns' %} active{% endif %}">{% trans "Returns" %}</a>
+</li>
+<li class="nav-item">
+    <a href="{% url 'messaging:inbox' %}" class="nav-link{% if active_tab == 'messages' %} active{% endif %}">{% trans "Messages" %}</a>
+</li>
+<li class="nav-item">
     <a href="{% url 'customer:address-list' %}" class="nav-link{% if active_tab == 'addresses' %} active{% endif %}">{% trans "Address Book" %}</a>
 </li>
 <li class="nav-item">

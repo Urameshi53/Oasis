@@ -73,6 +73,7 @@
         transition: transform .15s ease, box-shadow .15s ease;
     }
     .shop-card:hover { transform: translateY(-3px); box-shadow: var(--shop-shadow-hover); }
+    .shop-card__media { position: relative; }
     .shop-card__img {
         position: relative; display: block; aspect-ratio: 1 / 1;
         background: color-mix(in srgb, var(--default-color, #212529), transparent 95%);
@@ -87,6 +88,9 @@
         box-shadow: var(--shop-shadow); transition: color .15s ease;
     }
     .shop-card__fav:hover { color: #e0245e; }
+    .shop-card__fav.is-active { color: #e0245e; }
+    .shop-card__fav.is-active:hover { color: #b3123f; }
+    .shop-card__fav[data-busy] { opacity: .5; }
     .shop-card__body { display: flex; flex-direction: column; gap: .5rem; padding: .85rem; flex: 1; }
     .shop-card__title { font-size: .95rem; font-weight: 600; line-height: 1.3; margin: 0; }
     .shop-card__title a { color: var(--default-color); text-decoration: none; }
@@ -184,6 +188,46 @@
     .shop-divider { border: 0; border-top: 1px solid var(--shop-border); margin: 1.25rem 0; }
 
     .shop-section-title { font-weight: 800; font-size: 1.25rem; color: var(--heading-color); margin: 2.5rem 0 1rem; }
+
+    /* Star ratings (Amazon-style) */
+    .stars { color: #f5a623; letter-spacing: 1px; display: inline-flex; gap: 1px; }
+    .stars .bi-star { color: #d7d3cb; }
+    .shop-card__rating { display: flex; align-items: center; gap: .35rem; font-size: .85rem; }
+    .shop-card__rating .stars { font-size: .8rem; }
+    .shop-card__rating .rc-count { color: var(--shop-muted); font-size: .78rem; }
+
+    .rating-summary { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; margin: .5rem 0 1rem; }
+    .rating-score { text-align: center; min-width: 120px; }
+    .rating-score .rs-num { font-size: 2.6rem; font-weight: 800; line-height: 1; color: var(--heading-color); }
+    .rating-score .stars { font-size: 1.1rem; margin: .3rem 0; }
+    .rating-score .rs-count { color: var(--shop-muted); font-size: .85rem; }
+    .rating-hist { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: .3rem; }
+    .rh-row { display: flex; align-items: center; gap: .5rem; font-size: .82rem; color: var(--shop-muted); }
+    .rh-row .rh-label { white-space: nowrap; }
+    .rh-bar { flex: 1; height: 9px; background: var(--shop-border); border-radius: 6px; overflow: hidden; }
+    .rh-bar span { display: block; height: 100%; background: #f5a623; border-radius: 6px; }
+    .rh-pct { width: 34px; text-align: right; }
+
+    .review-item { padding: 1rem 0; border-top: 1px solid var(--shop-border); }
+    .review-item:first-child { border-top: 0; }
+    .review-head { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+    .review-title { font-weight: 700; color: var(--heading-color); margin: .35rem 0 .2rem; }
+    .review-meta { color: var(--shop-muted); font-size: .8rem; }
+    .review-verified { color: #198754; font-size: .78rem; font-weight: 700; display: inline-flex; align-items: center; gap: .25rem; }
+    .review-body { margin: .35rem 0 0; color: var(--default-color); }
+
+    /* Horizontal recommendation rows ("Recently viewed", "Products like this") */
+    .shop-reco { margin-top: 1rem; }
+    .shop-reco__scroller {
+        display: flex; gap: 1rem; overflow-x: auto; padding: .25rem .25rem 1rem;
+        scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    .shop-reco__scroller::-webkit-scrollbar { height: 8px; }
+    .shop-reco__scroller::-webkit-scrollbar-thumb { background: var(--shop-border); border-radius: 8px; }
+    .shop-reco__item { flex: 0 0 auto; width: 200px; scroll-snap-align: start; }
+    .shop-reco__item .shop-card { height: 100%; }
+    @media (min-width: 768px) { .shop-reco__item { width: 220px; } }
     .shop-spec { width: 100%; border-collapse: collapse; }
     .shop-spec th, .shop-spec td { text-align: left; padding: .65rem .5rem; border-bottom: 1px solid var(--shop-border); font-size: .95rem; }
     .shop-spec th { color: var(--shop-muted); font-weight: 600; width: 40%; }

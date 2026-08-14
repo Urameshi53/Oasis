@@ -11,6 +11,43 @@
 {% endblock %}
 
 {% block tabcontent %}
+    {% load returns_tags %}
+    {% load vendor_tags %}
+    <p>
+        <a class="btn btn-primary" href="{% url 'order-track' order_number=order.number %}">
+            {% trans 'Track this order' %}
+        </a>
+        {% can_return request.user order as returnable %}
+        {% if returnable %}
+            <a class="btn btn-outline-secondary" href="{% url 'returns:create' order_number=order.number %}">
+                <i class="fas fa-undo"></i> {% trans 'Return or refund items' %}
+            </a>
+        {% endif %}
+        <a class="btn btn-outline-secondary" href="{% url 'order-invoice' order_number=order.number %}" target="_blank">
+            <i class="fas fa-file-invoice"></i> {% trans 'Invoice' %}
+        </a>
+    </p>
+
+    {% sellers_for_order order as order_sellers %}
+    {% if order_sellers %}
+        <div class="mb-3">
+            <strong>{% trans "Rate your sellers:" %}</strong>
+            {% for s in order_sellers %}
+                {% seller_feedback_given request.user order s as rated %}
+                {% if rated %}
+                    <span class="badge badge-success" style="font-weight:600;"><i class="fas fa-check"></i> {{ s.display_name }}</span>
+                {% else %}
+                    <a class="btn btn-sm btn-outline-warning" href="{% url 'vendor:leave-feedback' order_number=order.number code=s.code %}">
+                        <i class="fas fa-star"></i> {% blocktrans with name=s.display_name %}Rate {{ name }}{% endblocktrans %}
+                    </a>
+                {% endif %}
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'messaging:contact' code=s.code %}?order={{ order.number }}">
+                    <i class="fas fa-comment"></i> {% trans "Contact" %}
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if order.status %}
     <h2>{% trans 'Status' %}</h2>
     <p>{{ order.status }}</p>
